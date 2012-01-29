@@ -293,9 +293,14 @@
             tooltip.remove();
        }, 2500);
     }
-    $.fn.setCustomValidity = function(error) {
-        $(this).parent('form').attr("novalidate", "novalidate");
+    $.fn.setCustomValidity = function(error, isTooltipCustom) {
+        if (isTooltipCustom) {
+            $(this).parent('form').attr("novalidate", "novalidate");
+        }
         this.each(function() {
+            if (typeof $(this).get(0).setCustomValidity === 'function') {
+                $(this).get(0).setCustomValidity(error);
+            }
             $(this).data('customvalidity', error);
         });
     }

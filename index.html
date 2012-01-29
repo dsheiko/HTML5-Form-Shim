@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>HTML5 Form Shim</title>
+    <title>Simple HTML5 Form Shim</title>
     <link href="./assets/default.css" rel="stylesheet" media="all" />
     <script src="./js/jquery.min.js" type="text/javascript"></script>
     <!-- http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js -->
@@ -11,6 +11,11 @@
 <body>
     <div class="content">
         <h1>HTML5 Form Shim</h1>
+        <article>
+            <p>HTML5 form JavaScript shim for old-browser. </p>
+            <p>That is a jquery plugin, which emulates <a href="http://www.w3.org/TR/html5/forms.html">HTML5 Form</a> behavior on old browsers. </p>
+            <p>The plugin allows to customize form validation message tooltips and custom validation callback (e.g. via XMLHttpRequest)</p>
+        </article>
         <h2>Example 1:</h2>
         <form class="example1" >
             <label for="name">Name:</label>
@@ -27,21 +32,27 @@
 
         <h2>Example 2:</h2>
         <form class="example2" >
-            <label for="name">Name:</label>
-            <input type="text" placeholder="Name" required="true" name="name"  />
             <label for="email">Email:</label>
             <input type="email" placeholder="Email" required="true" name="email" />
             <label for="password">Password:</label>
             <input type="password" required="true" name="password" />
+            <label for="confirm">Password confirmation:</label>
+            <input type="confirm" required="true" name="confirm" oninput="check($(this))" />
             <button type="submit">Submit</button>
         </form>
 
         <div class="log"></div>
     </div>
-    <script>
-        //$('input').setCustomValidity('Custom text');
-        $('input[name=email]').setCustomValidity('Custom text');
-        
+    <script>        
+        $('form.example1 input[name=email]').setCustomValidity('Email rejected', true);
+        function check(input) {
+          if (input.val() != $('form.example2 input[name=password]').val()) {
+            input.setCustomValidity('The two passwords must match.');
+          } else {
+            // input is valid -- reset the error message
+            input.setCustomValidity('');
+          }
+        }
     </script>
 </body>
 </html>
