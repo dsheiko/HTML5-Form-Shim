@@ -55,15 +55,24 @@ input.placeholder, textarea.placeholder {
     color: #CCC;
 }
 
-input[required], textarea[required], /* for none-HTML5 browsers */
+/* for none-HTML5 browsers */
+input.required, textarea.required {
+    background: url("./asterisk.png") no-repeat scroll 280px 7px transparent;
+}
 input:required, textarea:required {
     background: url("./asterisk.png") no-repeat scroll 280px 7px transparent;
 }
-input.valid, textarea.valid, /* for none-HTML5 browsers */
+/* for none-HTML5 browsers */
+input.valid, textarea.valid {
+    background: url("./ok.png") no-repeat scroll 280px 7px transparent;
+}
 input:valid, textarea:valid {
     background: url("./ok.png") no-repeat scroll 280px 7px transparent;
 }
-input.invalid, textarea.invalid, /* for none-HTML5 browsers */
+/* for none-HTML5 browsers */
+input.invalid, textarea.invalid {
+    background: url("./fail.png") no-repeat scroll 280px 7px transparent;
+}
 input:focus:invalid, textarea:focus:invalid {
     background: url("./fail.png") no-repeat scroll 280px 7px transparent;
 }
