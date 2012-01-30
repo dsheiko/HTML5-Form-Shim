@@ -54,7 +54,7 @@
                     <p>To make the form showing your custom tooltip on submission validation, define <var>custom-validation</var> property on the form element.</p>
                     <p>The plugin will use <var>$.setCustomValidityCallback</var> to disaply validation messages. You can override this callback with your own function:</p>
                     <div>
-                        <textarea class="code">
+                        <textarea class="code" rows="12">
  $.setCustomValidityCallback = function(error) {
        var pos = this.position(),
        tooltip = $('<span class="custom-validity-tooltip">' + error
@@ -94,7 +94,7 @@ $('form.example1 input[name=email]').setCustomValidity('Email rejected');
                         <label for="password">Password:</label>
                         <input type="password" required="true" name="password" />
                         <label for="confirm">Password confirmation:</label>
-                        <input type="password" required="true" name="confirm" oninput="check(this)" />
+                        <input type="password" required="true" name="confirm" />
                         <button type="submit">Submit</button>
                     </form>
                   </td>
@@ -105,16 +105,16 @@ $('form.example1 input[name=email]').setCustomValidity('Email rejected');
                           a cross-browser oninput handler:
                       </p>
                       <div>
-                        <textarea class="code">
-   function check(input) {
-      input = $(input);
+                          <textarea class="code" rows="12">
+  $('form.example2 input[name=confirm]').bind("oninput", function () {
+      var input = $(this);
       if (input.val() != $('form.example2 input[name=password]').val()) {
         input.setCustomValidity('The two passwords must match.');
       } else {
         // input is valid -- reset the error message
         input.setCustomValidity('');
       }
-    }
+    });
                         </textarea>
                     </div>
                   </td>
@@ -133,16 +133,15 @@ $('form.example1 input[name=email]').setCustomValidity('Email rejected');
         </footer>
     </div>
     <script type="text/javascript">
-        
-        function check(input) {
-          input = $(input);
+        $('form.example2 input[name=confirm]').bind("oninput", function () {
+          var input = $(this);
           if (input.val() != $('form.example2 input[name=password]').val()) {
-            input.setCustomValidity('The two passwords must match.');            
+            input.setCustomValidity('The two passwords must match.');
           } else {
             // input is valid -- reset the error message
             input.setCustomValidity('');
           }
-        }
+        });
     </script>
 </body>
 </html>

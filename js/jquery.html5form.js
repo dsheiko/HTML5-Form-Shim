@@ -84,7 +84,7 @@
                            element.showTooltip("Please fill out this field");
                            return;
                        }
-                       if (!element.validity.valid()) {
+                       if (!element.isValid()) {
                            element.showTooltip();
                            return;
                        }
@@ -139,16 +139,15 @@
                 patternMismatch : "The pattern is mismatched",
                 rangeUnderflow: "The value is too low",
                 rangeOverflow: "The value is too high",
-                customError: "",
-                get : function(parent) {
-                    var message = "";
-                    this.customError = parent.element.data('customvalidity') || "";
-                    for (var i in parent._validityProps) {
-                        message = parent.validity[parent._validityProps[i]]
-                            ? message : this[parent._validityProps[i]];
-                    }
-                    return message;
+                customError: ""
+            },
+            getValidationMessage : function() {
+                var message = "";
+                for (var i in this._validityProps) {
+                    message = this.validity[this._validityProps[i]]
+                        ? message : this.validationMessage[this._validityProps[i]];
                 }
+                return message;
             },
             validity : {
                 valueMissing : true,
@@ -156,15 +155,17 @@
                 patternMismatch : true,
                 rangeUnderflow: true,
                 rangeOverflow: true,
-                customError: true,
-                valid : function() {
-                    return this.valueMissing &&
-                    this.typeMismatch &&
-                    this.patternMismatch &&
-                    this.rangeUnderflow &&
-                    this.rangeOverflow &&
-                    this.customError;
-                }
+                customError: true                
+            },
+            isValid : function() {
+                this.validity.customError = !(this.element.data('customvalidity')
+                    && this.element.data('customvalidity').length);
+                return this.validity.valueMissing &&
+                this.validity.typeMismatch &&
+                this.validity.patternMismatch &&
+                this.validity.rangeUnderflow &&
+                this.validity.rangeOverflow &&
+                this.validity.customError;
             },
             handleOnInput: function(e) {
                 var context = e.data;
@@ -174,6 +175,7 @@
                 this._delayedRequest = window.setTimeout(function(){
                     this._delayedRequest = null;
                     context.processOninput();
+                    context.element.trigger("oninput", context);
                     context.checkValidity();
                     context.checkPatternValidity();
                     context.updateStatus();
@@ -221,6 +223,8 @@
                 if (!Browser.supportedInputTypes[this.element.attr('type')]) {
                     this.syncElementUI();
                 }
+                // When customError message is specified while intitialization
+                this.processSetCustomValidity();
             },
             syncElementUI: function() {
                 this.element.bind('change', this, this.handleOnInput);
@@ -228,6 +232,15 @@
                 this.element.bind('keydown', this, this.handleOnInput);
                 // @TODO: Context menu handling: this.element.get().oncontextmenu =  _private.handleOnInput;
 
+            },
+            processSetCustomValidity: function() {
+                if (typeof this.element.data('customvalidity') !== "undefined"
+                    && this.element.data('customvalidity').length) {
+                    this.validationMessage.typeMismatch 
+                        = this.validationMessage.patternMismatch
+                        = this.element.data('customvalidity');
+                    this.element.data('customvalidity', ''); // by default valid
+                }
             },
             processRequired: function() {
                 if (typeof this.element.attr('required') !== 'undefined') {
@@ -252,9 +265,7 @@
                     var callbackKey = this.element.attr("oninput"), pos = callbackKey.indexOf("(");
                     callbackKey = pos ? callbackKey.substr(0, pos) : callbackKey;
                     if (typeof window[callbackKey]) {                        
-                        window[callbackKey](this.element);                                                
-                        this.validity.customError = !(this.element.data('customvalidity')
-                            && this.element.data('customvalidity').length);
+                        window[callbackKey](this.element);                        
                     }
                 }
             },
@@ -270,11 +281,11 @@
             },
             updateStatus: function() {
                 this.element.removeClass('valid').removeClass('invalid');
-                this.element.addClass(this.validity.valid() ? 'valid' : 'invalid');
+                this.element.addClass(this.isValid() ? 'valid' : 'invalid');
             },
             showTooltip : function(error) {
                if (!error) {
-                    error = this.validationMessage.get(this);
+                    error = this.getValidationMessage(this);
                }
                $.setCustomValidityCallback.apply(this.element, [error]);
             }
@@ -348,7 +359,7 @@
     /**
      * Shim for setCustomValidity DOM element method
      */
-    $.fn.setCustomValidity = function(error) {        
+    $.fn.setCustomValidity = function(error) {
         this.each(function() {
             if (typeof $(this).get(0).setCustomValidity === 'function') {
                 $(this).get(0).setCustomValidity(error);
