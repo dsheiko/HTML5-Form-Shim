@@ -176,7 +176,7 @@
                     context.processOninput();
                     context.checkValidity();
                     context.checkPatternValidity();
-                    context.updateStatus();                    
+                    context.updateStatus();
                 }, ONINPUT_DELAY);
             },
             handleOnFocus : function(e) {
@@ -218,7 +218,7 @@
                 if (!Browser.supportedInputProps.autofocus) {
                     this.processAutofocus();
                 }
-                if (!Browser.supportedInputProps[this.element.attr('type')]) {
+                if (!Browser.supportedInputTypes[this.element.attr('type')]) {
                     this.syncElementUI();
                 }
             },
