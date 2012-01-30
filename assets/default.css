@@ -4,6 +4,25 @@ body {
     font: 14px Arial;
     margin: 0;
     padding: 0;
+    line-height: 150%;
+}
+
+table {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+table td {
+    vertical-align: top;
+    width: 50%;
+    padding-right: 10px;
+    color: #222222;
+    font: 14px Arial;
+    line-height: 150%;
+}
+
+a, a:visited {
+    color: black;
 }
 
 div.content {
@@ -136,4 +155,54 @@ button {
     background: url("./down.png") no-repeat center center transparent;
     width: 18px;
     height: 9px;
+}
+
+var {
+    font-weight: bold;
+}
+textarea.code {
+    border: 0;
+    background-color: #EEE;
+    background-image: none;
+    color: #222222;
+    font: 14px Arial;
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 10px;
+}
+
+h2 {
+    margin-top: 30px;
+}
+footer > h2 {
+    font: 16px Arial;
+}
+a#download {
+    border:1px solid #bbb;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    -khtml-border-radius:3px;
+    background: -moz-linear-gradient(100% 100% 90deg, #eee, #d5d5d5);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eee), to(#d5d5d5));
+    background: -webkit-linear-gradient(#eee, #d5d5d5);
+    background: -o-linear-gradient(#eee, #d5d5d5);
+    color:#232d3d;
+    font-size:12px;
+    font-weight:bold;
+    text-shadow:0px 1px 0px #fff;
+    cursor:pointer;
+    box-shadow:0px 1px 2px #ccc;
+    -moz-box-shadow:0px 1px 2px #ccc;
+    -webkit-box-shadow:0px 1px 2px #ccc;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 30px auto;
+    padding: 10px 0;
+    display: block;
+    max-width: 500px;
+    text-decoration: none;
+    
 }
