@@ -1,0 +1,16 @@
+{
+  "name": "html5formshim",
+  "version": "1.0",
+  "author": "Dmitry Sheiko",
+  "description": "That is a jquery plugin, which emulates HTML5 Form behavior on old browsers. ",
+  "homepage": "https://github.com/dsheiko/HTML5-Form-Shim",
+  "repository": {
+    "type": "git",
+    "url": "https://dsheiko@github.com/dsheiko/HTML5-Form-Shim.git"
+  },
+  "main": "./js/jquery.html5form.js",
+  "dependencies": {
+  },
+  "engines": {
+  }
+}
