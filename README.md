@@ -63,7 +63,7 @@ form element.
 The plugin will use $.setCustomValidityCallback to disaply validation messages. You can override this callback with
 your own function:
 
-    ```$.setCustomValidityCallback = function(error) {
+    $.setCustomValidityCallback = function(error) {
        var pos = this.position(),
        tooltip = $('<span class="custom-validity-tooltip">' + error
                    + '<div><div><!-- --></div></div></span>').appendTo('body');
@@ -73,7 +73,7 @@ your own function:
             tooltip.remove();
        }, 2500);
     }
-    ```
+    
 
 If you need your custom text for validation message, please use $(input).setCustomValidity
 instead of input.setCustomValidity:
@@ -97,7 +97,7 @@ HTML5 introduces a new event oninput, which can be handled to perform additional
 For example, making registration form you can define a handler which checks by XMLHttpRequest if the given email
 already exists in DB. Here an example for a cross-browser oninput handler:
 
-    ```$('form.example2 input[name=confirm]').bind("oninput", function () {
+    $('form.example2 input[name=confirm]').bind("oninput", function () {
           var input = $(this);
           if (input.val() != $('form.example2 input[name=password]').val()) {
             input.setCustomValidity('The two passwords must match.');
@@ -106,4 +106,4 @@ already exists in DB. Here an example for a cross-browser oninput handler:
             input.setCustomValidity('');
           }
         });
-    ```
+    
