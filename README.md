@@ -9,20 +9,20 @@ The plugin also allows to customize form submission validation tooltips and fiel
 (e.g. via XMLHttpRequest)
 
 Currently the plugins serves following input types: 
- * text
- * email
- * url
- * number
- * tel
+* text
+* email
+* url
+* number
+* tel
 
 and following input properties:
- * novalidate
- * placeholder
- * required
- * autofocus
- * pattern
- * min
- * max
+* novalidate
+* placeholder
+* required
+* autofocus
+* pattern
+* min
+* max
 
 ### How to use
 To enable the shim you simply have to include jQuery and this plugin.
