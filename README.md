@@ -8,7 +8,9 @@ That is a jquery plugin, which emulates HTML5 Form behavior on old browsers.
 The plugin also allows to customize form submission validation tooltips and field validation callbacks
 (e.g. via XMLHttpRequest)
 
-Currently the plugins serves following input types: 
+Currently the plugins serves following input types:
+
+* text
 * text
 * email
 * url
@@ -16,6 +18,7 @@ Currently the plugins serves following input types:
 * tel
 
 and following input properties:
+
 * novalidate
 * placeholder
 * required
@@ -26,14 +29,16 @@ and following input properties:
 
 ### How to use
 To enable the shim you simply have to include jQuery and this plugin.
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript"></script>
+
+```<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript"></script>
 <script src="./js/jquery.html5form.js" type="text/javascript"></script>
+```
 
 See details on how top use HTML5 form at http://www.html5rocks.com/en/tutorials/forms/html5forms/
 
 Example 1: Custom form submission validation
 
-<form class="example1" custom-validation="true">
+```<form class="example1" custom-validation="true">
     <label for="name">Name:</label>
     <input type="text" placeholder="Name" required="true" name="name"  />
     <label for="email">Email:</label>
@@ -48,6 +53,7 @@ title="Promo code consist of 3 uppercase letters followed by 4 digits." />
 title="Please enter valid tel." />
     <button type="submit">Submit</button>
 </form>
+```
 
 This form shows custom tooltips as on old browsers as well as on those supporting HTML5.
 
@@ -57,7 +63,7 @@ form element.
 The plugin will use $.setCustomValidityCallback to disaply validation messages. You can override this callback with
 your own function:
 
-$.setCustomValidityCallback = function(error) {
+```$.setCustomValidityCallback = function(error) {
    var pos = this.position(),
    tooltip = $('<span class="custom-validity-tooltip">' + error
                + '<div><div><!-- --></div></div></span>').appendTo('body');
@@ -67,6 +73,7 @@ $.setCustomValidityCallback = function(error) {
         tooltip.remove();
    }, 2500);
 }
+```
 
 If you need your custom text for validation message, please use $(input).setCustomValidity
 instead of input.setCustomValidity:
@@ -74,7 +81,7 @@ $('form.example1 input[name=email]').setCustomValidity('Email rejected');
 
 Example 2: With custom oninput callback
 
- <form class="example2" >
+ ```<form class="example2" >
     <label for="email">Email:</label>
     <input type="email" placeholder="Email" required="true" name="email" />
     <label for="password">Password:</label>
@@ -83,12 +90,13 @@ Example 2: With custom oninput callback
     <input type="password" required="true" name="confirm" />
     <button type="submit">Submit</button>
 </form>
+```
 
 HTML5 introduces a new event oninput, which can be handled to perform additional validation tests on a field.
 For example, making registration form you can define a handler which checks by XMLHttpRequest if the given email
 already exists in DB. Here an example for a cross-browser oninput handler:
 
-$('form.example2 input[name=confirm]').bind("oninput", function () {
+```$('form.example2 input[name=confirm]').bind("oninput", function () {
       var input = $(this);
       if (input.val() != $('form.example2 input[name=password]').val()) {
         input.setCustomValidity('The two passwords must match.');
@@ -97,3 +105,4 @@ $('form.example2 input[name=confirm]').bind("oninput", function () {
         input.setCustomValidity('');
       }
     });
+```
