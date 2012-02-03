@@ -61,6 +61,8 @@
     },
     App = {
         init: function() {
+            // The scope extends with custom validators
+            $.extend(true, App, $.setCustomInputTypeValidator);
             $("form").each(function(){
                 var _form = new App.Form($(this));
                 _form.init();
@@ -293,7 +295,7 @@
         Email: function() {
             return {
                 init: function() {
-                    this.validationMessage.typeMismatch = "Please enter an email address";
+                    this.validationMessage.typeMismatch = "Please enter a valid email address";
                 },
                 checkValidity: function() {
                     var pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g;
@@ -341,6 +343,11 @@
             }
         }
     };
+
+    /**
+     * Object containing custom validators like zipcode, username and so on
+     */
+    $.setCustomInputTypeValidator = {};
 
     /**
      * Renders tooltip when validation error happens on form submition

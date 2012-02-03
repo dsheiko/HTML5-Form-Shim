@@ -14,7 +14,7 @@
         <h1>HTML5 Form Shim</h1>
         <article>
             <p>HTML5 form JavaScript shim for old-browser. </p>
-            <p>That is a jquery plugin, which emulates <a href="http://www.w3.org/TR/html5/forms.html">HTML5 Form</a> behavior on old browsers. </p>
+            <p>That is a jquery plugin, which emulates <a href="http://www.w3.org/TR/html5/forms.html">HTML5 Form</a> behavior on the legacy browsers. </p>
             <p>The plugin also allows to customize form submission validation tooltips and field validation callbacks (e.g. via XMLHttpRequest)</p>
             <p>Currently the plugins serves following input types: <var>text, email, url, number, tel</var> and following input properties: <var>novalidate, placeholder, required, autofocus, pattern, min, max</var></p>
             <p>To enable the shim you simply have to include jQuery and this plugin.</p>
@@ -26,6 +26,9 @@
             
             </div>
             <p>See details on how top use HTML5 form at <a href="http://www.html5rocks.com/en/tutorials/forms/html5forms/">html5rocks.com</a></p>
+            <h2>Styling</h2>
+            <p>Take in the account that legacy browsers ignore CSS pseudo-classes <var>:focus, :invalid, :valid</var>, so use instead classes <var>focus, invalid, valid</var>.</p>
+            <p>NOTE: The examples below use CSS3 styles. If you want your forms not only behave, but look the same in all browsers, use simple styles</p>
         </article>
         <h2>Example 1: Custom form submission validation</h2>
         <table>
@@ -80,15 +83,47 @@ $('form.example1 input[name=email]').setCustomValidity('Email rejected');
         </table>
 
 
+    <h2>Example 2: Custom input type validation</h2>
+        <table>
+            <tbody>
+            <tr>
+                <td>
+                    <form class="example2">
+                        <label for="name">Zipcode (custom input type):</label>
+                        <input type="zipcode" placeholder="Zipcode" required="true" name="zipcode"  />                        
+                        <button type="submit">Submit</button>
+                    </form>
+                </td>
+                <td>
+                    <p>Using the plugin you can define your own input validator:
+                      </p>
+                      <div>
+                          <textarea class="code" rows="12">
+    $.setCustomInputTypeValidator.Zipcode = function() {
+        return {
+            init: function() {
+                this.validationMessage.typeMismatch = "Please enter a valid zip code";
+            },
+            checkValidity: function() {
+                var pattern = /^[0-9]{6,8}$/g;
+                this.validity.typeMismatch = pattern.test(this.element.val());
+            }
+        }
+    };
+                        </textarea>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-
-        <h2>Example 2: With custom oninput callback</h2>
+        <h2>Example 3: With custom oninput callback</h2>
 
                 <table>
             <tbody>
             <tr>
                 <td>
-                    <form class="example2" >
+                    <form class="example3" >
                         <label for="email">Email:</label>
                         <input type="email" placeholder="Email" required="true" name="email" />
                         <label for="password">Password:</label>
@@ -106,9 +141,9 @@ $('form.example1 input[name=email]').setCustomValidity('Email rejected');
                       </p>
                       <div>
                           <textarea class="code" rows="12">
-  $('form.example2 input[name=confirm]').bind("oninput", function () {
+  $('form.example3 input[name=confirm]').bind("oninput", function () {
       var input = $(this);
-      if (input.val() != $('form.example2 input[name=password]').val()) {
+      if (input.val() != $('form.example3 input[name=password]').val()) {
         input.setCustomValidity('The two passwords must match.');
       } else {
         // input is valid -- reset the error message
@@ -133,15 +168,30 @@ $('form.example1 input[name=email]').setCustomValidity('Email rejected');
         </footer>
     </div>
     <script type="text/javascript">
-        $('form.example2 input[name=confirm]').bind("oninput", function () {
+        // Custom form submission validation example
+        $('form.example3 input[name=confirm]').bind("oninput", function () {
           var input = $(this);
-          if (input.val() != $('form.example2 input[name=password]').val()) {
+          if (input.val() != $('form.example3 input[name=password]').val()) {
             input.setCustomValidity('The two passwords must match.');
           } else {
             // input is valid -- reset the error message
             input.setCustomValidity('');
           }
         });
+
+        // Custom input type validator example
+        $.setCustomInputTypeValidator.Zipcode = function() {
+            return {
+                init: function() {
+                    this.validationMessage.typeMismatch = "Please enter a valid zip code";
+                },
+                checkValidity: function() {
+                    var pattern = /^[0-9]{6,8}$/g;
+                    this.validity.typeMismatch = pattern.test(this.element.val());
+                }
+            }
+        };
+        
     </script>
 </body>
 </html>

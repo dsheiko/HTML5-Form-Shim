@@ -36,6 +36,12 @@ To enable the shim you simply have to include jQuery and this plugin.
 
 See details on how top use HTML5 form at http://www.html5rocks.com/en/tutorials/forms/html5forms/
 
+### Styling
+
+Take in the account that legacy browsers ignore CSS pseudo-classes :focus, :invalid, :valid, so use instead classes focus, invalid, valid.
+
+NOTE: The examples below use CSS3 styles. If you want your forms not only behave, but look the same in all browsers, use simple styles
+
 Example 1: Custom form submission validation
 
     <form class="example1" custom-validation="true">
@@ -80,9 +86,35 @@ instead of input.setCustomValidity:
 
     $('form.example1 input[name=email]').setCustomValidity('Email rejected');
 
-Example 2: With custom oninput callback
 
-    <form class="example2" >
+Example 2: Custom input type validation
+
+   <form class="example2">
+        <label for="name">Zipcode (custom input type):</label>
+        <input type="zipcode" placeholder="Zipcode" required="true" name="zipcode"  />
+        <button type="submit">Submit</button>
+    </form>
+
+
+Using the plugin you can define your own input validator:
+
+    Custom input type validator example
+        $.setCustomInputTypeValidator.Zipcode = function() {
+            return {
+                init: function() {
+                    this.validationMessage.typeMismatch = "Please enter a valid zip code";
+                },
+                checkValidity: function() {
+                    var pattern = /^[0-9]{6,8}$/g;
+                    this.validity.typeMismatch = pattern.test(this.element.val());
+                }
+            }
+        };
+
+
+Example 3: With custom oninput callback
+
+    <form class="example3" >
         <label for="email">Email:</label>
         <input type="email" placeholder="Email" required="true" name="email" />
         <label for="password">Password:</label>
@@ -97,9 +129,9 @@ HTML5 introduces a new event oninput, which can be handled to perform additional
 For example, making registration form you can define a handler which checks by XMLHttpRequest if the given email
 already exists in DB. Here an example for a cross-browser oninput handler:
 
-    $('form.example2 input[name=confirm]').bind("oninput", function () {
+    $('form.example3 input[name=confirm]').bind("oninput", function () {
           var input = $(this);
-          if (input.val() != $('form.example2 input[name=password]').val()) {
+          if (input.val() != $('form.example3 input[name=password]').val()) {
             input.setCustomValidity('The two passwords must match.');
           } else {
             // input is valid -- reset the error message

@@ -36,7 +36,7 @@ div.content {
     padding: 20px 40px 40px 40px;
 }
 
-input, textarea {
+form input, form textarea {
     -webkit-transition: all 0.5s ease-in-out 0s;
      -moz-transition: all 0.5s ease-in-out 0s;
        -o-transition: all 0.5s ease-in-out 0s;
@@ -59,7 +59,7 @@ input, textarea {
     outline: medium none;
 }
 
-input:focus, textarea:focus {
+form input:focus, form textarea:focus {
     -webkit-transform: scale(1.05);
      -moz-transform: scale(1.05);
       -o-transform: scale(1.05);
@@ -70,7 +70,7 @@ input:focus, textarea:focus {
        box-shadow: 0 0 25px #CCCCCC;
 }
 
-input.placeholder, textarea.placeholder {
+form input.placeholder, form textarea.placeholder {
     color: #CCC;
 }
 
