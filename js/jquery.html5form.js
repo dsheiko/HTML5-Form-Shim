@@ -80,17 +80,22 @@
                    }
                    for(var i in _private.elements) {
                        var element = _private.elements[i];
+                       element.recheckSetCustomValidity(); // If a custom validation message defined (via AJAX) before form submitted
+                       console.log(element.element.attr('name'));
                        if ((typeof element.element.attr('required') !== 'undefined') &&
                            (element.element.val() === element.element.attr('placeholder')
                            || !element.element.val())) {
                            element.showTooltip("Please fill out this field");
+                           context.setInvalid();
                            return;
                        }
                        if (!element.isValid()) {
                            element.showTooltip();
+                           context.setInvalid();
                            return;
                        }
                    }
+                   context.setValid();
                },
                normalizeName : function(str) {
                    str += '';
@@ -100,7 +105,12 @@
             return {
                isCustomValidation: function() { return (typeof _private.form.attr('custom-validation') !== "undefined"); },
                isNoValidate: function() { return (typeof _private.form.attr('novalidate') !== "undefined"); },
-
+               setValid: function() {
+                   _private.form.addClass('valid').removeClass('invalid');
+               },
+               setInvalid: function() {
+                   _private.form.addClass('invalid').removeClass('valid');
+               },
                init : function() {
                    var context = this;
                    if (this.isCustomValidation()) {
@@ -146,8 +156,8 @@
             getValidationMessage : function() {
                 var message = "";
                 for (var i in this._validityProps) {
-                    message = this.validity[this._validityProps[i]]
-                        ? message : this.validationMessage[this._validityProps[i]];
+                  message = (!this.validity[this._validityProps[i]] && this.validationMessage[this._validityProps[i]].length)
+                        ? this.validationMessage[this._validityProps[i]] : message;
                 }
                 return message;
             },
@@ -238,6 +248,12 @@
                 this.element.bind('keydown', this, this.handleOnInput);
                 // @TODO: Context menu handling: this.element.get().oncontextmenu =  _private.handleOnInput;
 
+            },
+            recheckSetCustomValidity: function() {
+                if (typeof this.element.data('customvalidity') !== "undefined"
+                    && this.element.data('customvalidity').length) {
+                    this.validationMessage.customError = this.element.data('customvalidity');
+                }
             },
             processSetCustomValidity: function() {
                 if (typeof this.element.data('customvalidity') !== "undefined"
