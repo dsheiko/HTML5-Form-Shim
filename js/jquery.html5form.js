@@ -222,7 +222,11 @@
                 if (!Browser.supportedInputProps.autofocus) {
                     this.processAutofocus();
                 }
-                if (!Browser.supportedInputTypes[this.element.attr('type')]) {
+                if (this.element.attr('custom-validation')) {
+                    this.element.attr('novalidate', 'novalidate');
+                }
+                if (!Browser.supportedInputTypes[this.element.attr('type')]
+                    || this.element.attr('custom-validation')) {
                     this.syncElementUI();
                 }
                 // When customError message is specified while intitialization
