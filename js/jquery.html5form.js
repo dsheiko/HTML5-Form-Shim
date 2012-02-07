@@ -372,12 +372,14 @@
      * Renders tooltip when validation error happens on form submition
      * Can be overriden 
      */
-    $.setCustomValidityCallback = function(error) {
+     $.setCustomValidityCallback = function(error) {
        var pos = this.position(),
-       tooltip = $('<span class="custom-validity-tooltip">' + error
-                   + '<div><div><!-- --></div></div></span>').appendTo('body');
-       tooltip.css('top', pos.top - tooltip.height() - 22);
-       tooltip.css('left', pos.left - 10);
+       tooltip = $('<div class="tooltip tooltip-e">'
+           + '<div class="tooltip-arrow tooltip-arrow-e"></div>'
+           + '<div class="tooltip-inner">' + error + '</div>'
+       + '</div>').appendTo(this.parent());
+       tooltip.css('top', pos.top - (tooltip.height() / 2) + 8 );
+       tooltip.css('left', pos.left - tooltip.width() - 12);
        window.setTimeout(function(){
             tooltip.remove();
        }, 2500);
