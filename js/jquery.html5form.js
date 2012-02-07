@@ -81,7 +81,6 @@
                    for(var i in _private.elements) {
                        var element = _private.elements[i];
                        element.recheckSetCustomValidity(); // If a custom validation message defined (via AJAX) before form submitted
-                       console.log(element.element.attr('name'));
                        if ((typeof element.element.attr('required') !== 'undefined') &&
                            (element.element.val() === element.element.attr('placeholder')
                            || !element.element.val())) {
