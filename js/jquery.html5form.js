@@ -166,7 +166,7 @@
                 patternMismatch : true,
                 rangeUnderflow: true,
                 rangeOverflow: true,
-                customError: true                
+                customError: true
             },
             isValid : function() {
                 this.validity.customError = !(this.element.data('customvalidity')
@@ -257,7 +257,7 @@
             processSetCustomValidity: function() {
                 if (typeof this.element.data('customvalidity') !== "undefined"
                     && this.element.data('customvalidity').length) {
-                    this.validationMessage.typeMismatch 
+                    this.validationMessage.typeMismatch
                         = this.validationMessage.patternMismatch
                         = this.element.data('customvalidity');
                     this.element.data('customvalidity', ''); // by default valid
@@ -285,8 +285,8 @@
                 if (this.issetAttr("oninput")) {
                     var callbackKey = this.element.attr("oninput"), pos = callbackKey.indexOf("(");
                     callbackKey = pos ? callbackKey.substr(0, pos) : callbackKey;
-                    if (typeof window[callbackKey]) {                        
-                        window[callbackKey](this.element);                        
+                    if (typeof window[callbackKey]) {
+                        window[callbackKey](this.element);
                     }
                 }
             },
@@ -357,7 +357,7 @@
         },
         Text: function() {
             return {
-                checkValidity: function() {                    
+                checkValidity: function() {
                 }
             }
         }
@@ -370,7 +370,7 @@
 
     /**
      * Renders tooltip when validation error happens on form submition
-     * Can be overriden 
+     * Can be overriden
      */
      $.setCustomValidityCallback = function(error) {
        var pos = this.position(),
@@ -378,7 +378,7 @@
            + '<div class="tooltip-arrow tooltip-arrow-e"></div>'
            + '<div class="tooltip-inner">' + error + '</div>'
        + '</div>').appendTo(this.parent());
-       tooltip.css('top', pos.top - (tooltip.height() / 2) + 8 );
+       tooltip.css('top', pos.top - (tooltip.height() / 2) + 20 );
        tooltip.css('left', pos.left - tooltip.width() - 12);
        window.setTimeout(function(){
             tooltip.remove();
@@ -391,8 +391,8 @@
         this.each(function() {
             if (typeof $(this).get(0).setCustomValidity === 'function') {
                 $(this).get(0).setCustomValidity(error);
-            }            
-            $(this).data('customvalidity', error);            
+            }
+            $(this).data('customvalidity', error);
         });
     }
 // Document is ready
