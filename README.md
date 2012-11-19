@@ -11,7 +11,6 @@ The plugin also allows to customize form submission validation tooltips and fiel
 Currently the plugins serves following input types:
 
 * text
-* text
 * email
 * url
 * number
@@ -34,7 +33,7 @@ To enable the shim you simply have to include jQuery and this plugin.
     <script src="./js/jquery.html5form.js" type="text/javascript"></script>
 
 
-See details on how top use HTML5 form at http://www.html5rocks.com/en/tutorials/forms/html5forms/
+See details on how to use HTML5 form at http://www.html5rocks.com/en/tutorials/forms/html5forms/
 
 ### Styling
 
@@ -66,7 +65,7 @@ This form shows custom tooltips as on old browsers as well as on those supportin
 To make the form showing your custom tooltip on submission validation, define data-custom-validation property on the
 form element.
 
-The plugin will use $.setCustomValidityCallback to disaply validation messages. You can override this callback with
+The plugin will use $.setCustomValidityCallback to display validation messages. You can override this callback with
 your own function:
 
     $.setCustomValidityCallback = function(error) {
