@@ -1,403 +1,697 @@
 /*
-* HTML5 Form Shim
-*
-* @package HTML5 Form Shim
-* @author $Author: sheiko $
-* @version $Id: jquery.html5form.js, v 0.9 $
-* @license GNU
-* @copyright (c) Dmitry Sheiko http://www.dsheiko.com
-*/
-(function( $ ) {
+ * @package HTML5 Form Shim
+ * @author sheiko
+ * @license MIT
+ * @copyright (c) Dmitry Sheiko http://www.dsheiko.com
+ * @jscs standard:Jquery
+ * Code style: http://docs.jquery.com/JQuery_Core_Style_Guidelines
+ */
 
-    var ONINPUT_DELAY = 500,
-    Util = {
-        isString :  function(value) {
-            return typeof(value)=='string' && isNaN(value);
-        },
-        isNumber :  function(value) {
-            return !isNaN(parseFloat(value)) && isFinite(value);
-        },
-        log : function(val) {
-            var placeholder = $('.log');
-            if (placeholder.length) {
-                placeholder.html(placeholder.html() + val + '<br />');
-            }
-        }
-    },
-    Browser = {
-        /**
-         *  List of supported types of input element
-         *  Run through HTML5's new input types to see if the UA understands any.
-         *  Implementation adopted from http://www.modernizr.com
-         */
-        supportedInputTypes: (function() {
-            var inputElem = document.createElement('input'),
-            types = (function(props) {
-            for ( var i = 0, types =[], len = props.length; i < len; i++ ) {
-                inputElem.setAttribute('type', props[i]);
-                types[props[i]] = !!(inputElem.type !== 'text');
-            }
-            return types;
-            })('search tel url email datetime date month week time datetime-local number range color'.split(' '));
-          return types;
-        }()),
-        /*
-         * List of supported properties of input element
-         * Run through HTML5's new input attributes to see if the UA understands any.
-         * Implementation adopted from http://www.modernizr.com
-         *  spec: http://www.whatwg.org/specs/web-apps/current-work/multipage/the-input-element.html#input-type-attr-summary
-         */
-        supportedInputProps: (function() {
-            var inputElem = document.createElement('input'),
-                attrs = (function( props ) {
-                    for ( var i = 0, attrs = [], len = props.length; i < len; i++ ) {
-                        attrs[ props[i] ] = !!(props[i] in inputElem);
-                    }
-                    return attrs;
-                })('autocomplete autofocus list placeholder max min multiple pattern required step'
-                    .split(' '));
-            return attrs;
-        }())
-    },
-    App = {
-        init: function() {
-            // The scope extends with custom validators
-            $.extend(true, App, $.setCustomInputTypeValidator);
-            $("form").each(function(){
-                var _form = new App.Form($(this));
-                _form.init();
-            });
-        },
-        Form : function(form) {
-            var _private = {
-                form : form,
-                elements: [],
-                handleOnSubmit : function(e) {
-                   e.preventDefault();
-                   var context = e.data;
-                   if (!context.isCustomValidation() && context.isNoValidate()) {
-                       return;
+/*global define:false, exports:true, require: false, window:true */
+
+var htmlFiveFormShim = (function( global, factory ) {
+    'use strict';
+    // Universal Module Definition (UMD) to support AMD, CommonJS/Node.js,
+    // Rhino, and plain browser loading.
+    if ( typeof define === 'function' && define.amd ) {
+        define(function( require, exports, module ) {
+            return factory( exports );
+        });
+    } else if ( typeof exports !== 'undefined' ) {
+        return factory( exports );
+    } else {
+        return factory({});
+    }
+}( this, function( exports ) {
+    'use strict';
+     exports.version = '2.0.0-dev';
+
+     // Additional lambda-function to get original undefined
+     return (function( global, undefined ) {
+            // Get reference to jQuery
+        var $ = (function( global ) {
+                if ( global.jQuery === undefined ) {
+                    throw new ReferenceError("jQuery is required");
+                }
+                return global.jQuery;
+            }( global )),
+            document = global.document,
+            ONINPUT_DELAY = 500,
+
+            util = {
+
+               /**
+                * Object.create replica for pseudo-classes of module design
+                * createInstance implements C-like inheritance
+                * in JavaScript. When a pseudo-class is intended to extend
+                * other one, it's enough just put base class object in __extends__
+                * properry.
+                * Module-like object context isn't available within constructor
+                * function scope (being created only on its return). createInstance
+                * calls automaticale __init__ method, if one provided,
+                * right after instance creation. So it can be used as constructor
+                * for modules
+                * @see http://dsheiko.com/weblog/prototypal-inheritance-in-javascript-for-modules/
+                *
+                * @param Function module - object constructor
+                * @param array args - array of arguments
+                * @return Object
+                */
+               createInstance: function( module, args ) {
+                   var key,
+                       members = module.apply( module, args ),
+                       Fn = function () {},
+                       instance = null;
+
+                   if ( members.hasOwnProperty( "__extends__" ) && members[ "__extends__" ] ) {
+                       module.prototype = util.createInstance( members[ "__extends__" ], args );
                    }
-                   for(var i in _private.elements) {
-                       var element = _private.elements[i];
-                       element.recheckSetCustomValidity(); // If a custom validation message defined (via AJAX) before form submitted
-                       if ((typeof element.element.attr('required') !== 'undefined') &&
-                           (element.element.val() === element.element.attr('placeholder')
-                           || !element.element.val())) {
-                           element.showTooltip("Please fill out this field");
-                           context.setInvalid();
-                           return;
-                       }
-                       if (!element.isValid()) {
-                           element.showTooltip();
-                           context.setInvalid();
-                           return;
+                   Fn.prototype = module.prototype; // Link to the supertype
+                   for ( key in members ) { // Mix in members
+                       if ( members.hasOwnProperty( key ) ) {
+                           Fn.prototype[ key ] = members[ key ];
                        }
                    }
-                   context.setValid();
-               },
-               normalizeName : function(str) {
-                   str += '';
-                   return str.charAt(0).toUpperCase() + (str.substr(1).toLowerCase());
-               }
-            };
-            return {
-               isCustomValidation: function() { return (typeof _private.form.attr('custom-validation') !== "undefined"); },
-               isNoValidate: function() { return (typeof _private.form.attr('novalidate') !== "undefined"); },
-               setValid: function() {
-                   _private.form.addClass('valid').removeClass('invalid');
-               },
-               setInvalid: function() {
-                   _private.form.addClass('invalid').removeClass('valid');
-               },
-               init : function() {
-                   var context = this;
-                   if (this.isCustomValidation()) {
-                       _private.form.attr("novalidate", "novalidate");
+                   instance = new Fn();
+                   if ( members.hasOwnProperty( "__init__" ) && members[ "__init__" ] ) {
+                       instance[ "__init__" ].apply( instance, args );
                    }
-                    _private.form.find("input, textarea").each(function(){
-                        var instance = context.makeElementInstance($(this));
-                        if (instance !== false) {
-                            _private.elements.push(instance);
-                        }
-                    });
-                    _private.form.bind('submit', this, _private.handleOnSubmit);
-               },
-               makeElementInstance : function(element) {
-                   var instance = {}, textAliases = {
-                       "Password": true, "Tel": true, "Search": true
-                   },
-                   type = _private.normalizeName(element.attr('type'));
-                   type = (typeof textAliases[type] !== "undefined" ? "Text" : type);
-                   if (typeof App[type] === "undefined") {
-                       return false;
-                   }
-                   $.extend(true, instance, new App[type]);
-                   $.extend(true, instance, App.Element_Abstract);
-                   instance.process(element);
                    return instance;
-               }
-            }
-        },
-        Element_Abstract: {
-            element : null,
-            hasPlaceholder: false,
-            _delayedRequest: null,
-            _validityProps: "valueMissing typeMismatch patternMismatch rangeUnderflow rangeOverflow customError".split(" "),
-            validationMessage : {
-                valueMissing : "Please fill out this field",
-                typeMismatch : "",
-                patternMismatch : "The pattern is mismatched",
-                rangeUnderflow: "The value is too low",
-                rangeOverflow: "The value is too high",
-                customError: ""
-            },
-            getValidationMessage : function() {
-                var message = "";
-                for (var i in this._validityProps) {
-                  message = (!this.validity[this._validityProps[i]] && this.validationMessage[this._validityProps[i]].length)
-                        ? this.validationMessage[this._validityProps[i]] : message;
-                }
-                return message;
-            },
-            validity : {
-                valueMissing : true,
-                typeMismatch : true,
-                patternMismatch : true,
-                rangeUnderflow: true,
-                rangeOverflow: true,
-                customError: true
-            },
-            isValid : function() {
-                this.validity.customError = !(this.element.data('customvalidity')
-                    && this.element.data('customvalidity').length);
-                return this.validity.valueMissing &&
-                this.validity.typeMismatch &&
-                this.validity.patternMismatch &&
-                this.validity.rangeUnderflow &&
-                this.validity.rangeOverflow &&
-                this.validity.customError;
-            },
-            handleOnInput: function(e) {
-                var context = e.data;
-                if (null !== this._delayedRequest) {
-                    window.clearTimeout(this._delayedRequest);
-                }
-                this._delayedRequest = window.setTimeout(function(){
-                    this._delayedRequest = null;
-                    context.processOninput();
-                    context.element.trigger("oninput", context);
-                    context.checkValidity();
-                    context.checkPatternValidity();
-                    context.updateStatus();
-                }, ONINPUT_DELAY);
-            },
-            handleOnFocus : function(e) {
-                var context = (typeof e === 'undefined' ? this : e.data);
-                context.element.addClass('focus');
-                if (context.element.val() === context.element.attr('placeholder')) {
-                    context.element.val('');
-                    context.element.removeClass('placeholder');
-                }
-
-            },
-            handleOnBlur : function(e) {
-                var context = (typeof e === 'undefined' ? this : e.data);
-                context.element.removeClass('focus');
-                if (!context.element.val()) {
-                    context.element.val(context.element.attr('placeholder'));
-                    context.element.addClass('placeholder');
-                }
-            },
-            isset : function(prop) {
-                return (typeof this[prop] !== 'undefined');
-            },
-            issetAttr : function(attr) {
-                return (typeof this.element.attr(attr) !== 'undefined');
-            },
-            process: function(element) {
-                this.element = element;
-                if (this.isset("init")) {
-                    this.init();
-                }
-                if (!Browser.supportedInputProps.placeholder) {
-                    this.processPlaceholder();
-                    this.element.bind('focusin', this, this.handleOnFocus);
-                    this.element.bind('focusout', this, this.handleOnBlur);
-                }
-                if (!Browser.supportedInputProps.required) {
-                    this.processRequired();
-                }
-                if (!Browser.supportedInputProps.autofocus) {
-                    this.processAutofocus();
-                }
-                if (this.element.attr('custom-validation')) {
-                    this.element.attr('novalidate', 'novalidate');
-                }
-                if (!Browser.supportedInputTypes[this.element.attr('type')]
-                    || this.element.attr('custom-validation')) {
-                    this.syncElementUI();
-                }
-                // When customError message is specified while intitialization
-                this.processSetCustomValidity();
-            },
-            syncElementUI: function() {
-                this.element.bind('change', this, this.handleOnInput);
-                this.element.bind('mouseup', this, this.handleOnInput);
-                this.element.bind('keydown', this, this.handleOnInput);
-                // @TODO: Context menu handling: this.element.get().oncontextmenu =  _private.handleOnInput;
-
-            },
-            recheckSetCustomValidity: function() {
-                if (typeof this.element.data('customvalidity') !== "undefined"
-                    && this.element.data('customvalidity').length) {
-                    this.validationMessage.customError = this.element.data('customvalidity');
-                }
-            },
-            processSetCustomValidity: function() {
-                if (typeof this.element.data('customvalidity') !== "undefined"
-                    && this.element.data('customvalidity').length) {
-                    this.validationMessage.typeMismatch
-                        = this.validationMessage.patternMismatch
-                        = this.element.data('customvalidity');
-                    this.element.data('customvalidity', ''); // by default valid
-                }
-            },
-            processRequired: function() {
-                if (typeof this.element.attr('required') !== 'undefined') {
-                    this.element.addClass('required');
-                }
-            },
-            processAutofocus: function() {
-                if (this.issetAttr("autofocus")) {
-                    this.element.focus();
-                    this.handleOnFocus();
-                }
-            },
-            processPlaceholder: function() {
-                if (this.issetAttr("placeholder")) {
-                    this.element.attr("autocomplete", "false");
-                    this.hasPlaceholder = true;
-                    this.handleOnBlur();
-                }
-            },
-            processOninput: function() {
-                if (this.issetAttr("oninput")) {
-                    var callbackKey = this.element.attr("oninput"), pos = callbackKey.indexOf("(");
-                    callbackKey = pos ? callbackKey.substr(0, pos) : callbackKey;
-                    if (typeof window[callbackKey]) {
-                        window[callbackKey](this.element);
+               },
+               /**
+                * Wrapper for DOMContentLoaded event listener to support AMD
+                * @param callable fn
+                */
+                onDomReady: function( fn ) {
+                    if ( typeof define === 'function' && define.amd ) {
+                        require( [ 'domReady' ], function ( domReady ) {
+                            domReady( fn );
+                        });
+                    } else {
+                        $( document ).ready( fn );
                     }
+                },
+                /**
+                 * PHP replica of is_string
+                 * @param mixed value
+                 * @return boolean
+                 */
+                isString :  function( value ) {
+                    return typeof( value ) === 'string' && isNaN( value );
+                },
+                /**
+                 * PHP replica of is_numeric
+                 * @param mixed value
+                 * @return boolean
+                 */
+                isNumber :  function( value ) {
+                    return !isNaN( parseFloat( value ) ) && isFinite( value );
                 }
+           },
+
+           modernizr = {
+                /**
+                 *  List of supported types of input element
+                 *  Run through HTML5's new input types to see if the UA understands any.
+                 *  Implementation adopted from http://www.modernizr.com
+                 */
+                supportedInputTypes: (function() {
+                    var inputElem = document.createElement('input'),
+                    types = (function(props) {
+                    for ( var i = 0, types = [], len = props.length; i < len; i++ ) {
+                        inputElem.setAttribute( 'type', props[i] );
+                        types[ props[ i ] ] = !!( inputElem.type !== 'text' );
+                    }
+                    return types;
+                    })( 'search tel url email datetime date month week time datetime-local number range color' . split(' ') );
+                  return types;
+                }()),
+                /*
+                 * List of supported properties of input element
+                 * Run through HTML5's new input attributes to see if the UA understands any.
+                 * Implementation adopted from http://www.modernizr.com
+                 *  spec: http://www.whatwg.org/specs/web-apps/current-work/multipage/the-input-element.html#input-type-attr-summary
+                 */
+                supportedInputProps: (function() {
+                    var inputElem = document.createElement('input'),
+                        attrs = (function( props ) {
+                            for ( var i = 0, attrs = [], len = props.length; i < len; i++ ) {
+                                attrs[ props[i] ] = !!(props[i] in inputElem);
+                            }
+                            return attrs;
+                        })('autocomplete autofocus list placeholder max min multiple pattern required step'
+                            .split(' '));
+                    return attrs;
+                }())
             },
-            checkPatternValidity: function() {
-                if (!this.element.attr('pattern')) {
-                    return true;
-                }
-                if (this.element.attr('title')) {
-                    this.validationMessage.patternMismatch = this.element.attr('title');
-                }
-                var pattern = new RegExp(this.element.attr('pattern'), 'g');
-                this.validity.patternMismatch = pattern.test(this.element.val());
-            },
-            updateStatus: function() {
-                this.element.removeClass('valid').removeClass('invalid');
-                this.element.addClass(this.isValid() ? 'valid' : 'invalid');
-            },
-            showTooltip : function(error) {
-               if (!error) {
-                    error = this.getValidationMessage(this);
+
+           Page = function() {
+               var forms = [];
+               return {
+                   "__init__": function() {
+                       $("form").each(function(){
+                           forms.push( util.createInstance( Form, [ $( this ) ] ) );
+                       });
+                   }
+               };
+           },
+           Form = function( ) {
+               var normalizeName = function( str ) {
+                    str += '';
+                    return str.charAt( 0 ).toUpperCase() + ( str.substr( 1 ).toLowerCase() );
+                };
+               return {
+                   boundingBox: null,
+                   controls: null,
+                   "__init__" : function( boundingBox ) {
+                       var that = this;
+                       this.boundingBox = boundingBox;
+                       // Untie object reference
+                       this.controls = [];
+                       if (this.isCustomValidation()) {
+                           this.boundingBox.attr( "novalidate", "novalidate" );
+                       }
+                       this.initControls();
+                       this.boundingBox.on( 'submit', function( e ){
+                           that.handleOnSubmit( e );
+                       });
+                   },
+                   initControls: function() {
+                       var that = this;
+                       this.boundingBox.find("input, textarea").each(function(){
+                            var instance = that.controlFactory( $( this ) );
+                            if ( instance !== false ) {
+                                that.controls.push( instance );
+                            }
+                        });
+                   },
+                   isCustomValidation: function() {
+                       return ( this.boundingBox.data('custom-validation') !== undefined );
+                   },
+                   isNoValidate: function() {
+                       return ( this.boundingBox.attr('novalidate') !== undefined );
+                   },
+                   setValid: function() {
+                       this.boundingBox.addClass('valid').removeClass('invalid');
+                   },
+                   setInvalid: function() {
+                       this.boundingBox.addClass('invalid').removeClass('valid');
+                   },
+                   controlFactory : function( element ) {
+                       var type = normalizeName( element.attr('type') );
+                       return util.createInstance(
+                        Control[ type ] || Control.Text, [ element, this.isCustomValidation() ] );
+                   },
+                   handleOnSubmit : function( e ) {
+                       var isValid = true;
+                       if (!this.isCustomValidation() && !this.isNoValidate()) {
+                           return;
+                       }
+                       if ( !this.controls.length ) {
+                           return;
+                       }
+                       for( var i in this.controls ) {
+                           var control = this.controls[ i ];
+                           // Here check for required
+                           control.validateRequired();
+                           control.updateState();
+                           // Here check for validity
+                           if ( !control.isValid() ) {
+                               if ( control.validationMessageNode ) {
+                                   control.showValidationMessage();
+                               } else {
+                                   // Show tooltip and stop propagation
+                                   isValid && control.showTooltip();
+                               }
+                               isValid = false;
+                           }
+                       }
+                       if ( isValid ) {
+                           this.setValid();
+                       } else {
+                           this.setInvalid();
+                           e.preventDefault();
+                       }
+                   }
+               };
+           },
+           /**
+            * Handle validation messages per control
+            */
+           ValidationLogger = function() {
+               var messages = [],
+                   // { message code : default message }
+                   codeXmsgMap = {
+                       valueMissing : "Please fill out this field",
+                       typeMismatch : null,
+                       patternMismatch : "The pattern is mismatched",
+                       rangeUnderflow: "The value is too low",
+                       rangeOverflow: "The value is too high",
+                       tooLong: "The value is too long",
+                       stepMismatch: "Invalid step for the range",
+                       badInput: "The user agent is unable to convert to a value",
+                       customError: null
+                   };
+               return {
+                   /**
+                    * Reset logger state
+                    */
+                   reset: function() {
+                       messages = [];
+                   },
+                   /**
+                    * Set message by code and msg for writtable properties
+                    * ( typeMismatch, customError )
+                    * Set message by only code for others
+                    *
+                    * @param string code
+                    * @param string msg OPTIONAL
+                    */
+                   setMessage: function( code, msg ) {
+                       if ( codeXmsgMap[ code ] === undefined ) {
+                           throw new SyntaxError(
+                           "Invalid validation message code '" +
+                           code + "'" );
+                       }
+                       messages.push({
+                           code: code,
+                           message: msg || codeXmsgMap[ code ]
+                        });
+                   },
+                   /**
+                    * Take the first validation message text from the stack
+                    *
+                    * @return string
+                    */
+                   getMessage: function() {
+                       return this.isEmpty() ? null : messages[ 0 ].message;
+                   },
+                   /**
+                    * Take the first validation message code from the stack
+                    *
+                    * @return string
+                    */
+                   getCode: function() {
+                       return this.isEmpty() ? null : messages[ 0 ].code;
+                   },
+                   /**
+                    * Expose all messages for API response emulation
+                    */
+                   getMessages: function() {
+                       return messages;
+                   },
+                   /**
+                    * Check if the object represent an empty array
+                    *
+                    * @return boolean
+                    */
+                   isEmpty: function() {
+                       return !messages.length;
+                   }
+               };
+           },
+           /**
+            * Abstract control (input of a given type or textarea)
+            */
+           AbstractControl = function() {
+               return {
+                   boundingBox: null,
+                   logger: null,
+                   validationMessageNode: null,
+                   deferredRequest: null,
+                   forceShim: false,
+                   /**
+                    * Control constructor
+                    * @param jQuery boundingBox                    *
+                    */
+                   "__init__": function( boundingBox, forceShim ) {
+                       var that = this;
+                       this.logger = new ValidationLogger();
+                       this.boundingBox = boundingBox;
+                       this.forceShim = !!forceShim;
+                       this.boundingBox.removeClass('valid invalid');
+
+                       // Support checkValidity element method
+                       this.boundingBox.checkValidity = function() {
+                           return that.checkValidity();
+                       };
+                       // Support setCustomValidity element method
+                       this.boundingBox.get( 0 ).setCustomValidity =
+                           $.fn.setCustomValidity;
+
+                       this.lookForValidationMessageNode();
+
+                       if ( this.forceShim ||
+                           !modernizr.supportedInputProps.placeholder) {
+                           this.shimPlaceholder();
+                       }
+                       // If required attr. is not supported,
+                       // mark the field with "required" class
+                       if ( this.forceShim ||
+                           !modernizr.supportedInputProps.required) {
+                           this.shimRequired();
+                       }
+                       if ( this.forceShim ||
+                           !modernizr.supportedInputProps.autofocus) {
+                           this.shimAutofocus();
+                       }
+                       // If custom-validation attr declared,
+                       // it disables default H5 form handler
+                       if (this.boundingBox.data('custom-validation')) {
+                           this.boundingBox.attr( 'novalidate', 'novalidate' );
+                       }
+                       if ( this.isShimRequired() ) {
+                           this.shimOnInput();
+                       }
+                   },
+                   // alias for jQuery().val()
+                   val : function( val ) {
+                       return val !== undefined ? ( this.boundingBox = val ) :
+                           this.boundingBox;
+                   },
+                   // Set attribute text to avoid collisions with browser
+                   // embedded control handlers
+                   degrade : function() {
+                       this.boundingBox.get( 0 ).type = "text";
+                       return this;
+                   },
+                   isShimRequired : function() {
+                        return this.forceShim ||
+                           !modernizr.supportedInputTypes[ this.boundingBox.attr('type') ] ||
+                           this.boundingBox.data('custom-validation');
+                   },
+                   // Emulate API (http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api)
+                   // response
+                   shimApi: function() {
+                       var $node = this.boundingBox;
+
+                       $node.validity = $node.validity || {};
+                       $.each( this.logger.getMessages(), function( inx, msg ){
+                           // element.validity object properties are read-only
+                           // so no way to overrride them
+                           $node.validity[ msg.code ] = true;
+                       });
+                       $node.validationMessage = this.logger.getMessage();
+                       $node.validity.valid = this.isValid();
+
+                   },
+                   // Emulate API method checkValidity
+                   checkValidity: function() {
+                        this.validateRequired();
+                        this.validateValue && this.validateValue();
+                        this.validateByPattern();
+                        return this.isValid();
+                   },
+                   // If validation message node assigned for this control found
+                   // It will be used instead of tooltip
+                   lookForValidationMessageNode: function() {
+                       var id, $hint;
+
+                       if ((id = this.boundingBox.attr("id"))) {
+                           $hint = $( "form *[data-validation-message-for=" + id + "]" );
+                           this.validationMessageNode = $hint.length ? $hint : null;
+                       }
+                   },
+                   // Show message in validation message placeholder node
+                   showValidationMessage: function() {
+                       var msg = this.boundingBox.validationMessage;
+                       this.validationMessageNode.html( msg );
+                       this.validationMessageNode[ msg ? "show" : "hide" ]();
+                   },
+
+                   // Subscribe for oninput events
+                   shimOnInput: function() {
+                       var that = this;
+                       this.boundingBox
+                        .on( 'change mouseup keydown', function() {
+                            that.handleOnInput();
+                        });
+                       // @TODO: Context menu handling: this.boundingBox.get().oncontextmenu =  _private.handleOnInput;
+
+                   },
+                   // Check if there is no validation exceptions so far
+                   isValid : function() {
+                       return this.logger.isEmpty() && this.checkCustomValidity();
+                   },
+                   // Emulates oninput event
+                   handleOnInput: function() {
+                       var that = this;
+                       if ( null !== this.deferredRequest ) {
+                           global.clearTimeout( this.deferredRequest );
+                       }
+                       this.deferredRequest = global.setTimeout( function(){
+                           that.logger.reset();
+                           that.shimApi();
+                           that.deferredRequest = null;
+                           that.invokeOnInputCallBack();
+                           that.boundingBox.trigger( "oninput", that );
+                           that.validateValue && that.validateValue();
+                           that.validateByPattern();
+                           that.updateState();
+                           if ( that.validationMessageNode ) {
+                                that.validationMessageNode.html( that.boundingBox.validationMessage );
+                            }
+                       }, ONINPUT_DELAY );
+                   },
+                   // Calls a global handler specified in oninput attribute
+                   invokeOnInputCallBack: function() {
+                       var callbackKey, pos;
+                       if (this.boundingBox.attr("oninput") !== undefined) {
+                           callbackKey = this.boundingBox.attr("oninput");
+                           pos = callbackKey.indexOf("(");
+                           callbackKey = pos ? callbackKey.substr( 0, pos ) : callbackKey;
+                           if (typeof global[callbackKey]) {
+                               global[callbackKey](this.boundingBox);
+                           }
+                       }
+                   },
+                   // Remove placeholder on focus
+                   handleOnFocus : function() {
+                       this.boundingBox.addClass('focus');
+                       if (this.boundingBox.val() === this.boundingBox.attr('placeholder')) {
+                           this.boundingBox.val('');
+                           this.boundingBox.removeClass('placeholder');
+                       }
+
+                   },
+                   // Restore placeholder on blur
+                   handleOnBlur : function() {
+                       this.boundingBox.removeClass('focus');
+                       if (!this.boundingBox.val()) {
+                           this.boundingBox.val( this.boundingBox.attr('placeholder') );
+                           this.boundingBox.addClass('placeholder');
+                       }
+                   },
+                    // Is used on form submittion to check if
+                    // data-customvalidity attr. was not changed externally (e.g. AJAX)
+                   checkCustomValidity: function() {
+                       if ( this.boundingBox.data('customvalidity') ) {
+                           this.boundingBox.validationMessage = this.boundingBox.data('customvalidity');
+                           return false;
+                       }
+                       return true;
+                   },
+                   // Add required class to element. That goes for
+                   // CSS as well as for further checking
+                   shimRequired: function() {
+                       this.boundingBox.attr('required') === undefined ||
+                           this.boundingBox.addClass('required');
+                   },
+                   // Force focus
+                   // and remove placeholder
+                   shimAutofocus: function() {
+                       if (this.boundingBox.attr('autofocus') !== undefined) {
+                           this.boundingBox.focus();
+                           this.handleOnFocus();
+                       }
+                   },
+                   // Fallback placeholder handler
+                   shimPlaceholder: function() {
+                       var that = this;
+                       if ( this.boundingBox.attr("placeholder") !== undefined ) {
+                           this.boundingBox.attr( "autocomplete", "false" );
+                           // Display placeholder
+                           this.handleOnBlur();
+                           // Sync UI
+                           this.boundingBox.on( 'focusin', function() {
+                               that.handleOnFocus();
+                           }).on( 'focusout', function() {
+                               that.handleOnBlur();
+                           });
+                       }
+                   },
+                   // Is invoked after every validation
+                   throwValidationException: function( code, msg ) {
+                       this.logger.setMessage( code, msg );
+                       this.shimApi();
+                   },
+                   // Fallback for pattern hanlder
+                   validateByPattern: function() {
+                       if (!this.boundingBox.attr('pattern')) {
+                           return true;
+                       }
+                       var pattern = new RegExp( this.boundingBox.attr('pattern'), 'g' );
+                       pattern.test( this.boundingBox.val() ) ||
+                            this.throwValidationException( "patternMismatch",
+                                this.boundingBox.attr('title') || null );
+                       return this.logger;
+                   },
+                   validateRequired: function() {
+                       if ( this.boundingBox.hasClass('required')  &&
+                            ( this.boundingBox.val() === this.boundingBox.attr('placeholder') ||
+                            !this.boundingBox.val())) {
+                            this.throwValidationException("valueMissing");
+                        }
+                        return this.logger;
+                   },
+                   // Update status of control
+                   updateState: function() {
+                       var state = this.isValid() ? 'valid' : 'invalid';
+                       this.boundingBox
+                        .removeClass('valid invalid')
+                        .addClass( state );
+                        return state;
+                   },
+                   // Show tooltip with validation message on the control
+                   showTooltip : function( msg ) {
+                      $.setCustomValidityCallback.apply( this.boundingBox,
+                            [ msg || this.boundingBox.validationMessage ]);
+                   }
+               };
+           },
+           // control type
+           Control = {
+               Text: function() {
+                   return {
+                       "__extends__" : AbstractControl
+                   };
+               },
+               Tel: function() {
+                    return {
+                        "__extends__" : AbstractControl,
+                        validateValue: function() {
+                            var pattern = /^\+(?:[0-9] ?){6,14}[0-9]$/;
+                            pattern.test( this.boundingBox.val() ) ||
+                                this.throwValidationException( "typeMismatch",
+                                "Please enter a valid tel. number +1 11 11 11");
+                            return this.logger;
+                        }
+                    };
+                },
+               Email: function() {
+                    return {
+                        "__extends__" : AbstractControl,
+                        validateValue: function() {
+                            var pattern = /^[a-zA-Z0-9._\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$/g;
+                            pattern.test( this.boundingBox.val() ) ||
+                                this.throwValidationException( "typeMismatch",
+                                    "Please enter a valid email address");
+                            return this.logger;
+                        }
+                    };
+                },
+               Number: function() {
+                    return {
+                        "__extends__" : AbstractControl,
+                        validateValue: function() {
+                            util.isNumber( parseInt( this.boundingBox.val(), 10 ) ) ||
+                                this.throwValidationException( "typeMismatch",
+                                    "Please enter a valid number");
+                            (this.boundingBox.attr('min') &&
+                                parseInt(this.boundingBox.val(), 10) < parseInt(this.boundingBox.attr('min'), 10)) &&
+                                this.throwValidationException("rangeUnderflow");
+
+                            (this.boundingBox.attr('max') &&
+                                parseInt(this.boundingBox.val(), 10) > parseInt(this.boundingBox.attr('max'), 10)) &&
+                                this.throwValidationException("rangeOverflow");
+
+                            return this.logger;
+                        }
+                    };
+               },
+               Url: function() {
+                   return {
+                       "__extends__" : AbstractControl,
+                       validateValue: function() {
+                           // The pattern is taken from http://stackoverflow.com/questions/2838404/javascript-regex-url-matching
+                           // pattern fragments: protocol, domain name OR ip (v4) address, port and path, query string, fragment locater
+                           var pattern = /^(https?:\/\/)?((([a-z\d]([a-z\d\-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[\-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=\-]*)?(\#[\-a-z\d_]*)?$/i;
+                            pattern.test( this.boundingBox.val() ) ||
+                                this.throwValidationException( "typeMismatch",
+                                    "Please enter a valid URL");
+                            return this.logger;
+                       }
+                   };
                }
-               $.setCustomValidityCallback.apply(this.element, [error]);
-            }
-        },
-        Email: function() {
-            return {
-                init: function() {
-                    this.validationMessage.typeMismatch = "Please enter a valid email address";
-                },
-                checkValidity: function() {
-                    var pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g;
-                    this.validity.typeMismatch = pattern.test(this.element.val());
-                }
-            }
-        },
-       Number: function() {
-            return {
-                init: function() {
-                    this.validationMessage.typeMismatch = "Please enter a valid number";
-                },
-                checkValidity: function() {
-                    this.validity.typeMismatch = Util.isNumber(this.element.val());
-                    this.validity.rangeUnderflow = !(this.issetAttr('min')
-                        && parseInt(this.element.val()) < parseInt(this.element.attr('min')));
-                    this.validity.rangeOverflow = !(this.issetAttr('max')
-                        && parseInt(this.element.val()) > parseInt(this.element.attr('max')));
+           };
 
-                    return true;
-                }
-            }
-       },
-       Url: function() {
-            return {
-                init: function() {
-                    this.validationMessage.typeMismatch = "Please enter a valid URL";
-                },
-                checkValidity: function() {
-                    //The pattern is taken from http://stackoverflow.com/questions/2838404/javascript-regex-url-matching
-                    var pattern = new RegExp('^(https?:\/\/)?'+ // protocol
-                        '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|'+ // domain name
-                        '((\d{1,3}\.){3}\d{1,3}))'+ // OR ip (v4) address
-                        '(\:\d+)?(\/[-a-z\d%_.~+]*)*'+ // port and path
-                        '(\?[;&a-z\d%_.~+=-]*)?'+ // query string
-                        '(\#[-a-z\d_]*)?$','i'); // fragment locater
-                    this.validity.typeMismatch = pattern.test(this.element.val());
-                }
-            }
-        },
-        Text: function() {
-            return {
-                checkValidity: function() {
-                }
-            }
-        }
-    };
+     /**
+      * Set custom validator
+      *
+      * @param string type e.g. Zip
+      * @param stting msg validation message
+      * @param callable fn( node: jQuery, logger: ValidationLogger ): boolean
+      *
+      */
+     $.setCustomInputTypeValidator = function( type, msg, validatorCb, initCb ) {
+         Control[ type ] = function() {
+                return {
+                    "__extends__" : AbstractControl,
+                    "__init__": function() {
+                        initCb && initCb.apply( this.boundingBox, [ this ] );
+                    },
+                    validateValue: function() {
+                        validatorCb.apply( this.boundingBox, [ this ] ) ||
+                            this.throwValidationException( "customError", msg );
+                        return this.logger;
+                    }
+                };
+            };
+     };
 
     /**
-     * Object containing custom validators like zipcode, username and so on
-     */
-    $.setCustomInputTypeValidator = {};
-
-    /**
-     * Renders tooltip when validation error happens on form submition
+     * Render tooltip when validation error happens on form submition
      * Can be overriden
      */
-     $.setCustomValidityCallback = function(error) {
+     $.setCustomValidityCallback = function( error ) {
        var pos = this.position(),
-       tooltip = $('<div class="tooltip tooltip-e">'
-           + '<div class="tooltip-arrow tooltip-arrow-e"></div>'
-           + '<div class="tooltip-inner">' + error + '</div>'
-       + '</div>').appendTo(this.parent());
-       tooltip.css('top', pos.top - (tooltip.height() / 2) + 20 );
-       tooltip.css('left', pos.left - tooltip.width() - 12);
-       window.setTimeout(function(){
-            tooltip.remove();
-       }, 2500);
-    }
+            tooltip = $( '<div class="tooltip tooltip-e">' +
+                '<div class="tooltip-arrow tooltip-arrow-e"></div>' +
+                 '<div class="tooltip-inner">' + error + '</div>' +
+            '</div>' ).appendTo( this.parent() );
+            tooltip.css( 'top', pos.top - ( tooltip.height() / 2 ) + 20 );
+            tooltip.css( 'left', pos.left - tooltip.width() - 12 );
+            global.setTimeout( function(){
+                 tooltip.remove();
+            }, 2500 );
+    };
     /**
      * Shim for setCustomValidity DOM element method
+     * Sets a custom error, so that the element would fail to validate.
+     * The given message is the message to be shown to the user when
+     * reporting the problem to the user.
+     * If the argument is the empty string, clears the custom error.
+     * @see http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api
      */
-    $.fn.setCustomValidity = function(error) {
-        this.each(function() {
-            if (typeof $(this).get(0).setCustomValidity === 'function') {
-                $(this).get(0).setCustomValidity(error);
-            }
-            $(this).data('customvalidity', error);
+    $.fn.setCustomValidity = function( message ) {
+        $( this ).each(function( inx, el ) {
+            $( el ).data( 'customvalidity', message );
         });
-    }
-// Document is ready
-$(document).bind('ready.html5formshim', App.init);
+    };
 
 
-})( jQuery );
+       util.onDomReady(function(){
+           util.createInstance( Page );
+       });
 
+       return {
+           getTestable: function() {
+               return {
+                   util: util,
+                   ValidationLogger: ValidationLogger,
+                   Control: Control
+               };
+           }
+       };
+    }( window ));
+}));

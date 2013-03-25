@@ -191,7 +191,7 @@ textarea.code {
     -o-box-sizing:border-box;
     -ms-box-sizing:border-box;
 }
-dfn, var {
+dfn {
     font-weight: bold;
 }
 
@@ -276,7 +276,7 @@ form input, form textarea {
      -moz-border-radius:  5px 5px 5px 5px;
       -o-border-radius: 5px 5px 5px 5px;
        border-radius: 5px 5px 5px 5px;
-    display: block;
+
     font-size: 20px;
     margin-bottom: 16px;
     margin-top: 8px;
@@ -324,7 +324,17 @@ input:focus:invalid {
     background: url("./fail.png") no-repeat scroll 280px 7px transparent;
 }
 
-
+div.help-inline {
+    height: 12px;
+    color: red;
+    position: relative;
+}
+div.help-inline > div {
+    width: 300px;
+    position: absolute;
+    height: 12px;
+    top: -16px;
+}
 
 .tooltip { font-size: 10px; position: absolute; padding: 5px; z-index: 100000;  opacity: 0.8; filter:alpha(opacity:80); }
 
@@ -479,4 +489,62 @@ input:focus:invalid {
 }
 .btn-inverse:active {
     background-color: #080808 \9;
+}
+
+
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="color"] {
+/*  border: none;*/
+}
+input[type="datetime"]:required,
+input[type="datetime-local"]:required,
+input[type="date"]:required,
+input[type="month"]:required,
+input[type="time"]:required,
+input[type="week"]:required,
+input[type="color"]:required {
+    background: none;
+}
+input[type="datetime"]:valid,
+input[type="datetime-local"]:valid,
+input[type="date"]:valid,
+input[type="month"]:valid,
+input[type="time"]:valid,
+input[type="week"]:valid,
+input[type="color"]:valid {
+    background: none;
+}
+
+input[type="datetime"]:focus:invalid,
+input[type="datetime-local"]:focus:invalid,
+input[type="date"]:focus:invalid,
+input[type="month"]:focus:invalid,
+input[type="time"]:focus:invalid,
+input[type="week"]:focus:invalid,
+input[type="color"]:focus:invalid {
+    background: none;
+}
+
+var {
+    font-style: inherit;
+    color: white;
+    background:#F72;
+    padding: 0px 5px;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.3);
+
+    -webkit-border-radius:5px;
+            border-radius:5px;
+
+    -webkit-box-shadow: 0 2px 2px -1px rgba(0, 0, 0, .4), 0 .9em .5em -0.2em rgba(255, 255, 255, .2) inset;
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, .4), 0 .9em .5em -0.2em rgba(255, 255, 255, .2) inset;
+}
+
+article > ul {
+    list-style:  square;
 }

@@ -1,22 +1,31 @@
 {
-  "name": "html5formshim",
-  "title": "Simple HTML5 Form Shim",
-  "version": "1.0",
-  "author": "Dmitry Sheiko",
-  "description": "That is a jquery plugin, which emulates HTML5 Form behavior on old browsers. ",
-  "homepage": "https://github.com/dsheiko/HTML5-Form-Shim",
-  "licenses": [
-   {
-       "type": "GPLv2",
-       "url": "http://www.example.com/licenses/gpl.html"
-   }],
-  "repository": {
-    "type": "git",
-    "url": "https://dsheiko@github.com/dsheiko/HTML5-Form-Shim.git"
-  },
-  "main": "./js/jquery.html5form.js",
-  "dependencies": {
-  },
-  "engines": {
-  }
+    "name": "html5formshim",
+    "title": "Simple HTML5 Form Shim",
+    "description": "Query plugin to emulate HTML5 Form on legacy browsers + benefits",
+    "version": "2.0.0",
+    "author": "Dmitry Sheiko <me@dsheiko.com>",
+    "homepage": "http://demo.dsheiko.com/html5formshim/",
+     "main": "./js/jquery.html5form.js",
+    "dependencies": {
+        "jQuery": ">= 1.7.1"
+    },
+    "licenses": [
+    	{
+    		"type": "MIT",
+    		"url": "http://github.com/fawek/codepainter/raw/master/LICENSE"
+    	}
+    ],
+    "maintainers": [
+    	{
+    		"name": "Dmitry Sheiko",
+    		"email": "me@dsheiko.com",
+    		"web": "http://dsheiko.com"
+    	}
+    ],
+    "repositories": [
+    	{
+            "type": "git",
+            "url": "https://dsheiko@github.com/dsheiko/HTML5-Form-Shim.git"
+    	}
+    ]
 }

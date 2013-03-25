@@ -1,0 +1,9 @@
+2.0.0
+    The constraint validation API exposed on jQuery HTMLElement wrapper
+    Covered with tests
+    Allow to specify custom validation message placeholder element
+    Implemented as UMD (can be used as AMD or CommonJS module)
+    Simple API to attach 3rd-party-made widgets (datepicker, colorpicker, slider as so on)
+
+1.0.0	
+	First release
