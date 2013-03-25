@@ -22,7 +22,7 @@ NOTE: The examples below use CSS3 styles. If you want your forms not only behave
 
 #### Example 1: Custom form submission validation
 
-    ```
+```
 <form class="example1" data-custom-validation="true">
     <label for="name">Name:</label>
     <input type="text" placeholder="Name" required="true" name="name"  />
