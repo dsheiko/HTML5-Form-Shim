@@ -338,10 +338,8 @@ input:valid {
 input.invalid {
     background-position: 280px -64px;
 }
-input:focus:-moz-ui-invalid,
 input:focus:invalid {
     background-position: 280px -64px;
-    box-shadow: none;
 }
 /* Get rid of Firefox red glow */
 :-moz-ui-invalid,
@@ -349,6 +347,17 @@ input:focus:invalid {
 :-moz-submit-invalid {
     box-shadow: none;
 }
+
+:focus:-moz-ui-invalid,
+:focus:invalid,
+:focus:-moz-submit-invalid {
+    -moz-box-shadow: 0 0 25px #CCCCCC;
+     -webkit-box-shadow: 0 0 25px #CCCCCC;
+      -ms-box-shadow: 0 0 25px #CCCCCC;
+      -o-box-shadow: 0 0 25px #CCCCCC;
+       box-shadow: 0 0 25px #CCCCCC;
+}
+
 
 div.help-inline {
     height: 12px;
