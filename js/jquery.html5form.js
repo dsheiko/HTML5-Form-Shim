@@ -713,6 +713,20 @@ var htmlFiveFormShim = (function( global, factory ) {
        });
 
        return {
+           /**
+            * Repeat initialization on a given form or all the forms in DOM
+            * if no argument given
+            * @param jQuery $form  OPTIONAL
+            */
+           init: function( $form ) {
+               if ( $form && $form.length ) {
+                   return util.createInstance( Form, [ $form ] );
+               }
+               $("form").each(function(){
+                    util.createInstance( Form, [ $form ] );
+                });
+           },
+           // Access to objects from unit-tests
            getTestable: function() {
                return {
                    util: util,
