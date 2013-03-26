@@ -18,7 +18,7 @@ var fixture = {
         Text: function() {
             return {
                 "__extends__" : fixture.AbstractControl,
-                "__init__" : function() {
+                "__constructor__" : function() {
                     this.isConstructorCalled = true;
                 },
                 isConstructorCalled: false

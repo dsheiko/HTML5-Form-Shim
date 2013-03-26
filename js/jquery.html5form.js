@@ -48,7 +48,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                 * properry.
                 * Module-like object context isn't available within constructor
                 * function scope (being created only on its return). createInstance
-                * calls automaticale __init__ method, if one provided,
+                * calls automaticale __constructor__ method, if one provided,
                 * right after instance creation. So it can be used as constructor
                 * for modules
                 * @see http://dsheiko.com/weblog/prototypal-inheritance-in-javascript-for-modules/
@@ -59,24 +59,25 @@ var htmlFiveFormShim = (function( global, factory ) {
                 */
                createInstance: function( module, args ) {
                    var key,
-                       members = module.apply( module.prototype, args || [] ),
-                       Fn = function () {},
-                       instance = null;
+                        instance,
+                        members = module.apply( module.prototype, args || [] ) || {},
+                        Fn = function () {};
 
-                   if ( members.hasOwnProperty( "__extends__" ) && members[ "__extends__" ] ) {
-                       module.prototype = util.createInstance( members[ "__extends__" ], args );
-                   }
-                   Fn.prototype = module.prototype; // Link to the supertype
-                   for ( key in members ) { // Mix in members
-                       if ( members.hasOwnProperty( key ) ) {
-                           Fn.prototype[ key ] = members[ key ];
-                       }
-                   }
-                   instance = new Fn();
-                   if ( members.hasOwnProperty( "__init__" ) && members[ "__init__" ] ) {
-                       instance[ "__init__" ].apply( instance, args || [] );
-                   }
-                   return instance;
+                    if ( members.hasOwnProperty( "__extends__" ) &&
+                        members[ "__extends__" ] ) {
+                        module.prototype =
+                            util.createInstance( members[ "__extends__" ], args );
+                    }
+                    Fn.prototype = module.prototype; // Link to the supertype
+                    for ( key in members ) { // Mix in members
+                        if ( members.hasOwnProperty( key ) ) {
+                            Fn.prototype[ key ] = members[ key ];
+                        }
+                    }
+                    instance = new Fn();
+                    members.hasOwnProperty("__constructor__") &&
+                        members[ "__constructor__" ].apply(instance, args || [] );
+                    return instance;
                },
                /**
                 * Wrapper for DOMContentLoaded event listener to support AMD
@@ -148,7 +149,7 @@ var htmlFiveFormShim = (function( global, factory ) {
            Page = function() {
                var forms = [];
                return {
-                   "__init__": function() {
+                   "__constructor__": function() {
                        $("form").each(function(){
                            forms.push( util.createInstance( Form, [ $( this ) ] ) );
                        });
@@ -163,7 +164,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                return {
                    boundingBox: null,
                    controls: null,
-                   "__init__" : function( boundingBox ) {
+                   "__constructor__" : function( boundingBox ) {
                        var that = this;
                        this.boundingBox = boundingBox;
                        // Untie object reference
@@ -351,7 +352,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * Control constructor
                     * @param jQuery boundingBox                    *
                     */
-                   "__init__": function( boundingBox, forceShim ) {
+                   "__constructor__": function( boundingBox, forceShim ) {
                        var that = this;
                        this.logger = new ValidationLogger();
                        this.boundingBox = boundingBox;
@@ -664,7 +665,7 @@ var htmlFiveFormShim = (function( global, factory ) {
          Control[ type ] = function() {
                 return {
                     "__extends__" : AbstractControl,
-                    "__init__": function() {
+                    "__constructor__": function() {
                         initCb && initCb.apply( this.boundingBox, [ this ] );
                     },
                     validateValue: function() {

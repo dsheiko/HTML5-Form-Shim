@@ -19,7 +19,7 @@
             var control = testable.util.createInstance( fixture.Control.Text );
             ok( control instanceof fixture.Control.Text, "Inherits from pseoudo-class" );
             ok( control instanceof fixture.AbstractControl, "Inherits from base-class" );
-            ok( control.isConstructorCalled, "__init__ pseudo-method was processed" );
+            ok( control.isConstructorCalled, "__constructor__ pseudo-method was processed" );
         });
 
         test("ValidationLogger", function() {
