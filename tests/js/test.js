@@ -162,4 +162,44 @@
         });
 
 
+
+        test("Test formaction shim", function() {
+            var $form = $("form#test2"),
+                $btn = $form.find('#btn1');
+            $form.on( "submit", function( e ) {
+                e.preventDefault();
+                ok( $( this ).attr("action") === "newAction" );
+            });
+            $btn.trigger("click");
+        });
+
+        test("Test formmethod shim", function() {
+            var $form = $("form#test2"),
+                $btn = $form.find('#btn2');
+            $form.on( "submit", function( e ) {
+                e.preventDefault();
+                ok( $( this ).attr("method") === "POST" );
+            });
+            $btn.trigger("click");
+
+        });
+        test("Test formtarget shim", function() {
+            var $form = $("form#test2"),
+                $btn = $form.find('#btn3');
+            $form.on( "submit", function( e ) {
+                e.preventDefault();
+                ok( $( this ).attr("target") === "_blank" );
+            });
+            $btn.trigger("click");
+        });
+        test("Test formenctype shim", function() {
+            var $form = $("form#test2"),
+                $btn = $form.find('#btn4');
+            $form.on( "submit", function( e ) {
+                e.preventDefault();
+                ok( $( this ).attr("enctype") === "application/x-www-form-urlencoded" );
+            });
+            $btn.trigger("click");
+        });
+
 }( window ));

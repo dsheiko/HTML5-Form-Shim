@@ -171,6 +171,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                        if (this.isCustomValidation()) {
                            this.boundingBox.attr( "novalidate", "novalidate" );
                        }
+                       this.shimFormAttrMutators();
                        this.initControls();
                        this.boundingBox.on( 'submit', function( e ){
                            that.handleOnSubmit( e );
@@ -183,6 +184,32 @@ var htmlFiveFormShim = (function( global, factory ) {
                             if ( instance !== false ) {
                                 that.controls.push( instance );
                             }
+                        });
+                   },
+                   // Shim formaction, formenctype, formmethod, and formtarget
+                   shimFormAttrMutators: function() {
+                       var that = this;
+                       this.boundingBox.find("input, button").each(function(){
+                            $( this ).attr('formaction')  &&
+                                $( this ).on( "click", function() {
+                                    that.boundingBox.attr( 'action',
+                                        $( this ).attr('formaction') );
+                                });
+                            $( this ).attr('formenctype') &&
+                                $( this ).on( "click", function() {
+                                    that.boundingBox.attr( 'enctype',
+                                        $( this ).attr('formenctype') );
+                                });
+                            $( this ).attr('formmethod') &&
+                                $( this ).on( "click", function() {
+                                    that.boundingBox.attr( 'method',
+                                        $( this ).attr('formmethod') );
+                                });
+                            $( this ).attr('formtarget') &&
+                                $( this ).on( "click", function() {
+                                    that.boundingBox.attr( 'target',
+                                        $( this ).attr('formtarget') );
+                                });
                         });
                    },
                    isCustomValidation: function() {
