@@ -265,15 +265,17 @@ dd {
 }
 
 form input, form textarea {
-    -webkit-transition: all 0.5s ease-in-out 0s;
-     -moz-transition: all 0.5s ease-in-out 0s;
-       -o-transition: all 0.5s ease-in-out 0s;
-          transition: all 0.5s ease-in-out 0s;
+    -webkit-transition: -webkit-transform 0.2s ease-in-out 0s;
+     -moz-transition: -moz-transform 0.2s ease-in-out 0s;
+      -ms-transition: -ms-transform 0.2s ease-in-out 0s;
+       -o-transition: -o-transform 0.2s ease-in-out 0s;
+          transition: transform 0.2s ease-in-out 0s;
     background-color: #FFFFFF;
     border: 2px solid #CCC;
 
     -webkit-border-radius:  5px 5px 5px 5px;
      -moz-border-radius:  5px 5px 5px 5px;
+      -ms-border-radius: 5px 5px 5px 5px;
       -o-border-radius: 5px 5px 5px 5px;
        border-radius: 5px 5px 5px 5px;
 
@@ -283,6 +285,10 @@ form input, form textarea {
     min-height: 30px;
     width: 300px;
 }
+form input {
+    width: 275px;
+    padding-right: 25px;
+}
 :focus {
     outline: medium none;
 }
@@ -290,38 +296,58 @@ form input, form textarea {
 form input:focus, form textarea:focus {
     -webkit-transform: scale(1.05);
      -moz-transform: scale(1.05);
+      -ms-transform: scale(1.05);
       -o-transform: scale(1.05);
        transform: scale(1.05);
     -moz-box-shadow: 0 0 25px #CCCCCC;
      -webkit-box-shadow: 0 0 25px #CCCCCC;
+      -ms-box-shadow: 0 0 25px #CCCCCC;
       -o-box-shadow: 0 0 25px #CCCCCC;
        box-shadow: 0 0 25px #CCCCCC;
 }
 
-form input.placeholder, form textarea.placeholder {
+::-webkit-input-placeholder,
+:-moz-placeholder,
+form input.placeholder,
+form textarea.placeholder {
     color: #CCC;
 }
 
-/* for none-HTML5 browsers */
-input.required {
-    background: url("./asterisk.png") no-repeat scroll 280px 7px transparent;
-}
-input:required {
-    background: url("./asterisk.png") no-repeat scroll 280px 7px transparent;
-}
-/* for none-HTML5 browsers */
-input.valid {
-    background: url("./ok.png") no-repeat scroll 280px 7px transparent;
-}
-input:valid {
-    background: url("./ok.png") no-repeat scroll 280px 7px transparent;
-}
-/* for none-HTML5 browsers */
-input.invalid {
-    background: url("./fail.png") no-repeat scroll 280px 7px transparent;
-}
+input.required,
+input:required,
+input.valid,
+input:valid,
+input.invalid,
 input:focus:invalid {
-    background: url("./fail.png") no-repeat scroll 280px 7px transparent;
+    background-image: url("./field-marks.png");
+    background-repeat: no-repeat;
+    background-position: 280px 7px;
+    background-color: transparent;
+}
+
+input.required,
+input:required {
+    background-position: 280px 0px;
+}
+
+input.valid,
+input:valid {
+    background-position: 280px -32px;
+}
+
+input.invalid {
+    background-position: 280px -64px;
+}
+input:focus:-moz-ui-invalid,
+input:focus:invalid {
+    background-position: 280px -64px;
+    box-shadow: none;
+}
+/* Get rid of Firefox red glow */
+:-moz-ui-invalid,
+:invalid,
+:-moz-submit-invalid {
+    box-shadow: none;
 }
 
 div.help-inline {
@@ -336,7 +362,17 @@ div.help-inline > div {
     top: -16px;
 }
 
-.tooltip { font-size: 10px; position: absolute; padding: 5px; z-index: 100000;  opacity: 0.8; filter:alpha(opacity:80); }
+.tooltip {
+    font-size: 10px;
+    position: absolute;
+    padding: 5px;
+    z-index: 100000;
+    -khtml-opacity: 0.8;
+      -moz-opacity: 0.8;
+           opacity: 0.8;
+           filter: alpha(opacity=80);
+       -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+}
 
 .tooltip-inner { background-color: #333; color: #FFF; max-width: 200px; padding: 5px 8px 4px 8px; text-align: center; }
 
