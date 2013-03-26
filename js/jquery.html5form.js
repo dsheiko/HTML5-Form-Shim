@@ -59,7 +59,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                 */
                createInstance: function( module, args ) {
                    var key,
-                       members = module.apply( module, args ),
+                       members = module.apply( module.prototype, args || [] ),
                        Fn = function () {},
                        instance = null;
 
@@ -74,7 +74,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    }
                    instance = new Fn();
                    if ( members.hasOwnProperty( "__init__" ) && members[ "__init__" ] ) {
-                       instance[ "__init__" ].apply( instance, args );
+                       instance[ "__init__" ].apply( instance, args || [] );
                    }
                    return instance;
                },
