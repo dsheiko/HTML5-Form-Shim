@@ -24,7 +24,7 @@ var htmlFiveFormShim = (function( global, factory ) {
     }
 }( this, function( exports ) {
     'use strict';
-     exports.version = '2.0.0-dev';
+     exports.version = '2.0.1-dev';
 
      // Additional lambda-function to get original undefined
      return (function( global, undefined ) {
@@ -232,26 +232,25 @@ var htmlFiveFormShim = (function( global, factory ) {
                    },
                    handleOnSubmit : function( e ) {
                        var isValid = true;
-                       if (!this.isCustomValidation() && !this.isNoValidate()) {
-                           return;
-                       }
                        if ( !this.controls.length ) {
                            return;
                        }
                        for( var i in this.controls ) {
                            var control = this.controls[ i ];
-                           // Here check for required
-                           control.validateRequired();
-                           control.updateState();
-                           // Here check for validity
-                           if ( !control.isValid() ) {
-                               if ( control.validationMessageNode ) {
-                                   control.showValidationMessage();
-                               } else {
-                                   // Show tooltip and stop propagation
-                                   isValid && control.showTooltip();
-                               }
-                               isValid = false;
+                           if ( control.isShimRequired() ) {
+                                // Here check for required
+                                control.validateRequired();
+                                control.updateState();
+                                // Here check for validity
+                                if ( !control.isValid() ) {
+                                    if ( control.validationMessageNode ) {
+                                        control.showValidationMessage();
+                                    } else {
+                                        // Show tooltip and stop propagation
+                                        isValid && control.showTooltip();
+                                    }
+                                    isValid = false;
+                                }
                            }
                        }
                        if ( isValid ) {
@@ -523,7 +522,8 @@ var htmlFiveFormShim = (function( global, factory ) {
                    // CSS as well as for further checking
                    shimRequired: function() {
                        this.boundingBox.attr('required') === undefined ||
-                           this.boundingBox.addClass('required');
+                           this.boundingBox.addClass('required')
+                               .data("custom-validation" , "true");
                    },
                    // Force focus
                    // and remove placeholder

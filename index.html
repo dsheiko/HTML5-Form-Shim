@@ -11,14 +11,15 @@
         <link href='http://fonts.googleapis.com/css?family=Berkshire+Swash' rel='stylesheet' type='text/css'>
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,700' rel='stylesheet' type='text/css'>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
         <script src="./js/jquery.html5form.js" type="text/javascript"></script>
-        <!-- Custom control widget example -->
+        <!-- Custom input[type=color] widget example -->
         <link rel="stylesheet" media="screen" type="text/css" href="http://demo.dsheiko.com/html5formshim/vendors/colorpicker/css/colorpicker.css" />
         <script type="text/javascript" src="http://demo.dsheiko.com/html5formshim/vendors/colorpicker/js/colorpicker.js"></script>
-        <!-- Custom control widget example -->
-        <link rel="stylesheet" media="screen" type="text/css" href="http://demo.dsheiko.com/html5formshim/vendors/datepicker/datePicker.css" />
-        <script type="text/javascript" src="http://demo.dsheiko.com/html5formshim/vendors/datepicker/date.js"></script>
-        <script type="text/javascript" src="http://demo.dsheiko.com/html5formshim/vendors/datepicker/jquery.datePicker.js"></script>
+
+        <!-- Custom input[type=date] widget example -->
+        <script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+        <link rel="stylesheet" media="screen" type="text/css" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
 
         <link rel="demo" href="http://demo.dsheiko.com/html5formshim" title="Social Media ShareBar with Fisheye Effect" />
         <script src="http://demo.dsheiko.com/share/js/sharebar.js" type="text/javascript"></script>
@@ -151,7 +152,7 @@ $.setCustomValidityCallback = function(error) {
                         <div class="td example">
                             <form class="example3">
                                 <label for="name">Zipcode (custom input type):</label>
-                                <input type="zipcode" placeholder="Zipcode" required="required" name="zipcode"  />
+                                <input type="zip" placeholder="Zipcode" required="required" name="zip"  />
                                 <button class="btn btn-inverse btn-large" type="submit">Submit</button>
                             </form>
                         </div>
@@ -196,7 +197,7 @@ $.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function(
                                 Thus you can enrich inputs of such types as color, date, datetime, week, moth, time, range with corresponding widgets (e.g. how it's implemented in latest Chrome/Opera releases).
                             </p>
                             <p>In the example below you can find color input using <a href="http://www.eyecon.ro/colorpicker/#implement">colorPicker jQuery-plugin</a> and
-                                date input using <a href="http://www.kelvinluck.com/assets/jquery/datePicker/v2/demo/">datePicker jQuery-plugin</a></p>
+                                date input using <a href="http://jqueryui.com/datepicker/">jQueryUI datePicker</a></p>
 
                             <textarea rows="10" class="code">
 // Custom color input handler example
@@ -287,7 +288,7 @@ $('form.example3 input[name=confirm]').on("oninput", function () {
         </section>
         <footer>
             <article>
-                <p><var>jquery.html5form.js</var> is created by <a href="http://dsheiko.com">Dmitry Sheiko</a>.
+                <p>jquery.html5form.js is created by <a href="http://dsheiko.com">Dmitry Sheiko</a>.
                     It's released under the GPLv2 license. </p>
                 <p>It's released under the GPLv2 license. If you have any questions or feedback you can use the <a href="https://github.com/dsheiko/HTML5-Form-Shim">github project page.</a>
                 </p>
@@ -337,14 +338,7 @@ $('form.example3 input[name=confirm]').on("oninput", function () {
             return !$( this ).val() || pattern.test( $( this ).val() );
         }, function( control ) {
             control.isShimRequired() &&
-            control.degrade().boundingBox.datePicker({
-                createButton: false,
-                clickInput: true,
-                startDate: '01/01/1970'
-            })
-		.bind( 'dateSelected', function() {
-                    control.validateValue();
-                });
+            control.degrade().boundingBox.datepicker();
         });
 
 

@@ -124,7 +124,7 @@ Mark that the input element is available within the callback as the context (thi
 ```
 You can attach to any input element a custom handler. Thus you can enrich inputs of such types as color, date, datetime, week, moth, time, range with corresponding widgets (e.g. how it's implemented in latest Chrome/Opera releases).
 
-In the example below you can find color input using colorPicker jQuery-plugin and date input using datePicker jQuery-plugin
+In the example below you can find color input using colorPicker jQuery-plugin and date input using jQueryUI datePicker
 
 ```
 // Custom color input handler example
