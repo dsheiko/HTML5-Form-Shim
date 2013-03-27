@@ -162,7 +162,7 @@ $.setCustomValidityCallback = function(error) {
                             <ul>
                                 <li>(string) Input type (here Zip for &lt;input type="zip"&gt;)</li>
                                 <li>(string) Input value validation message</li>
-                                <li>(string) Validation callback (returns boolean)</li>
+                                <li>(function) Validation callback (returns boolean)</li>
                             </ul>
                             <textarea class="code" rows="4">
 $.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function() {
@@ -200,7 +200,14 @@ $.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function(
                                 date input using <a href="http://jqueryui.com/datepicker/">jQueryUI datePicker</a></p>
 
                             <textarea rows="10" class="code">
-// Custom color input handler example
+/**
+ *  Custom date picker for color[type="color"]
+ *
+ *  @param string Input type (here Color for <input type="color">)
+ *  @param string Input value validation message
+ *  @param function Validation callback (returns boolean)
+ *  @param function Initialization callback
+ */
 $.setCustomInputTypeValidator( "Color", "Please enter a valid hex color", function() {
     var pattern = /^#(?:[0-9a-f]{3}){1,2}$/i;
     return pattern.test( $( this ).val() );
@@ -216,20 +223,20 @@ $.setCustomInputTypeValidator( "Color", "Please enter a valid hex color", functi
     });
 });
 
-// Custom date input handler example
+/**
+ *  Custom date picker for input[type="date"]
+ *
+ *  @param string Input type (here Date for <input type="date">)
+ *  @param string Input value validation message
+ *  @param function Validation callback (returns boolean)
+ *  @param function Initialization callback
+ */
 $.setCustomInputTypeValidator( "Date", "Please enter a valid date", function() {
     var pattern = /^\d{2,4}(-|\/)\d{2,4}(-|\/)\d{2,4}$/i;
     return !$( this ).val() || pattern.test( $( this ).val() );
 }, function( control ) {
     control.isShimRequired() &&
-    control.degrade().boundingBox.datePicker({
-        createButton: false,
-        clickInput: true,
-        startDate: '01/01/1970'
-    })
-        .bind( 'dateSelected', function() {
-            control.validateValue();
-        });
+    control.degrade().boundingBox.datepicker();
 });
                             </textarea>
 
