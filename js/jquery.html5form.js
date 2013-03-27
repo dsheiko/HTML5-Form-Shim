@@ -107,7 +107,14 @@ var htmlFiveFormShim = (function( global, factory ) {
                  */
                 isNumber :  function( value ) {
                     return !isNaN( parseFloat( value ) ) && isFinite( value );
-                }
+                },
+                /**
+                 * @param (String) str
+                 */
+                 normalizeMethodName: function( str ) {
+                      str += '';
+                      return str.charAt( 0 ).toUpperCase() + ( str.substr( 1 ).toLowerCase() );
+                 }
            },
 
            modernizr = {
@@ -145,10 +152,13 @@ var htmlFiveFormShim = (function( global, factory ) {
                     return attrs;
                 }())
             },
-
+           /**
+            * @class
+            */
            Page = function() {
                var forms = [];
                return {
+                   /** @constructs */
                    "__constructor__": function() {
                        $("form").each(function(){
                            forms.push( util.createInstance( Form, [ $( this ) ] ) );
@@ -156,11 +166,10 @@ var htmlFiveFormShim = (function( global, factory ) {
                    }
                };
            },
+           /**
+            * @class
+            */
            Form = function( ) {
-               var normalizeName = function( str ) {
-                    str += '';
-                    return str.charAt( 0 ).toUpperCase() + ( str.substr( 1 ).toLowerCase() );
-                };
                return {
                    boundingBox: null,
                    controls: null,
@@ -226,7 +235,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                        this.boundingBox.addClass('invalid').removeClass('valid');
                    },
                    controlFactory : function( element ) {
-                       var type = normalizeName( element.attr('type') );
+                       var type = util.normalizeMethodName( element.attr('type') );
                        return util.createInstance(
                         Control[ type ] || Control.Text, [ element, this.isCustomValidation() ] );
                    },
@@ -674,7 +683,7 @@ var htmlFiveFormShim = (function( global, factory ) {
       *
       */
      $.setCustomInputTypeValidator = function( type, msg, validatorCb, initCb ) {
-         Control[ type ] = function() {
+         Control[ util.normalizeMethodName( type ) ] = function() {
                 return {
                     "__extends__" : AbstractControl,
                     "__constructor__": function() {
