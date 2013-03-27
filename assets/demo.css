@@ -331,26 +331,28 @@ input:focus:invalid {
     background-color: transparent;
 }
 
-input.required {
+input:required {
     background-position: 280px 0px;
 }
-input:required {
+input:valid {
+    background-position: 280px -32px;
+}
+input:focus:invalid {
+    background-position: 280px -64px;
+}
+
+input.required {
     background-position: 280px 0px;
 }
 
 input.valid {
     background-position: 280px -32px;
 }
-input:valid {
-    background-position: 280px -32px;
-}
 
 input.focus.invalid {
     background-position: 280px -64px;
 }
-input:focus:invalid {
-    background-position: 280px -64px;
-}
+
 /* Get rid of Firefox red glow */
 :-moz-ui-invalid,
 :invalid,
