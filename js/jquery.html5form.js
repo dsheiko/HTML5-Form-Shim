@@ -597,6 +597,9 @@ var htmlFiveFormShim = (function( global, factory ) {
                Tel: function() {
                     return {
                         "__extends__" : AbstractControl,
+                        "__constructor__": function() {
+                           this.degrade();
+                        },
                         validateValue: function() {
                             var pattern = /^\+(?:[0-9] ?){6,14}[0-9]$/;
                             pattern.test( this.boundingBox.val() ) ||
@@ -609,6 +612,9 @@ var htmlFiveFormShim = (function( global, factory ) {
                Email: function() {
                     return {
                         "__extends__" : AbstractControl,
+                        "__constructor__": function() {
+                           this.degrade();
+                        },
                         validateValue: function() {
                             var pattern = /^[a-zA-Z0-9._\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$/g;
                             pattern.test( this.boundingBox.val() ) ||
@@ -621,6 +627,9 @@ var htmlFiveFormShim = (function( global, factory ) {
                Number: function() {
                     return {
                         "__extends__" : AbstractControl,
+                        "__constructor__": function() {
+                           this.degrade();
+                        },
                         validateValue: function() {
                             util.isNumber( parseInt( this.boundingBox.val(), 10 ) ) ||
                                 this.throwValidationException( "typeMismatch",
@@ -640,6 +649,9 @@ var htmlFiveFormShim = (function( global, factory ) {
                Url: function() {
                    return {
                        "__extends__" : AbstractControl,
+                       "__constructor__": function() {
+                           this.degrade();
+                       },
                        validateValue: function() {
                            // The pattern is taken from http://stackoverflow.com/questions/2838404/javascript-regex-url-matching
                            // pattern fragments: protocol, domain name OR ip (v4) address, port and path, query string, fragment locater
