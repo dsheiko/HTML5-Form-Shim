@@ -307,7 +307,10 @@ form input:focus, form textarea:focus {
 }
 
 ::-webkit-input-placeholder,
-:-moz-placeholder,
+:-moz-placeholder {
+    color: #CCC;
+}
+
 form input.placeholder,
 form textarea.placeholder {
     color: #CCC;
