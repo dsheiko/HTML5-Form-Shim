@@ -314,10 +314,16 @@ form textarea.placeholder {
 }
 
 input.required,
-input:required,
 input.valid,
+input.invalid {
+    background-image: url("./field-marks.png");
+    background-repeat: no-repeat;
+    background-position: 280px 7px;
+    background-color: transparent;
+}
+
 input:valid,
-input.invalid,
+input:required,
 input:focus:invalid {
     background-image: url("./field-marks.png");
     background-repeat: no-repeat;
@@ -325,17 +331,21 @@ input:focus:invalid {
     background-color: transparent;
 }
 
-input.required,
+input.required {
+    background-position: 280px 0px;
+}
 input:required {
     background-position: 280px 0px;
 }
 
-input.valid,
+input.valid {
+    background-position: 280px -32px;
+}
 input:valid {
     background-position: 280px -32px;
 }
 
-input.invalid {
+input.focus.invalid {
     background-position: 280px -64px;
 }
 input:focus:invalid {
