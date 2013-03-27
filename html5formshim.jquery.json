@@ -8,9 +8,9 @@
         "url": "http://dsheiko.com"
     },
     "homepage": "http://demo.dsheiko.com/html5formshim/",
-     "main": "./js/jquery.html5form.js",
+    "main": "./js/jquery.html5form.js",
     "dependencies": {
-        "jQuery": ">= 1.7.1"
+        "jquery": ">= 1.7.1"
     },
     "licenses": [
     	{
