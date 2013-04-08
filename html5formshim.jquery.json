@@ -2,7 +2,7 @@
     "name": "html5formshim",
     "title": "HTML5 Form Shim",
     "description": "Query plugin to emulate HTML5 Form on legacy browsers + benefits",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "author": {
         "name": "Dmitry Sheiko",
         "url": "http://dsheiko.com"
