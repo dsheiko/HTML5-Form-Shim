@@ -196,6 +196,7 @@ var htmlFiveFormShim = (function( global, factory ) {
             * @class
             */
            Form = function( ) {
+               var increment = 0;
                return {
                    /**
                     * Reference to the form element
@@ -208,7 +209,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @memberof Form
                     * @type {array}
                     */
-                   inputs: null,
+                   inputs: {},
                    /**
                     * @name __constructor__
                     * @memberof Form
@@ -234,10 +235,21 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @memberof Form
                     * @return (number)
                     */
-                   getLocalId: function() {
-                        var localId = this.boundingBox.data("local-id") || Form.increment++;
-                        this.boundingBox.data("local-id", localId );
+                   getLocalId: function( $node ) {
+                        var localId = $node.data("local-id") || increment++;
+                        $node.data("local-id", localId );
                         return localId;
+                   },
+                   /**
+                    * Get AbstractInput by node
+                    * @memberof Form
+                    * @return (object) AbstractInput
+                    */
+                   getInput: function( node ) {
+                       // HTMLElement given
+                       var $node = $( node ),
+                           localId = this.getLocalId( $node );
+                        return this.inputs[ localId ];
                    },
                    /**
                     * Collect child inputs to monitor
@@ -247,9 +259,12 @@ var htmlFiveFormShim = (function( global, factory ) {
                    initInputs: function() {
                        var that = this;
                        this.boundingBox.find("input, textarea").each(function(){
-                            var instance = that.inputFactory( $( this ) );
+                            var $node = $( this ),
+                                localId = that.getLocalId( $node ),
+                                instance = that.inputFactory( $node );
+
                             if ( instance !== false ) {
-                                that.inputs.push( instance );
+                                that.inputs[ localId ] = instance;
                             }
                         });
                    },
@@ -334,24 +349,26 @@ var htmlFiveFormShim = (function( global, factory ) {
                     */
                    handleOnSubmit : function( e ) {
                        var isValid = true;
-                       if ( !this.inputs.length ) {
+                       if ( !this.inputs ) {
                            return;
                        }
                        for( var i in this.inputs ) {
-                           var input = this.inputs[ i ];
-                           if ( input.isShimRequired() ) {
-                                // Here check for required
-                                input.validateRequired();
-                                input.updateState();
-                                // Here check for validity
-                                if ( !input.isValid() ) {
-                                    if ( input.validationMessageNode ) {
-                                        input.showValidationMessage();
-                                    } else {
-                                        // Show tooltip and stop propagation
-                                        isValid && input.showTooltip();
-                                    }
-                                    isValid = false;
+                           if ( this.inputs.hasOwnProperty( i ) ) {
+                                var input = this.inputs[ i ];
+                                if ( input.isShimRequired() ) {
+                                     // Here check for required
+                                     input.validateRequired();
+                                     input.updateState();
+                                     // Here check for validity
+                                     if ( !input.isValid() ) {
+                                         if ( input.validationMessageNode ) {
+                                             input.showValidationMessage();
+                                         } else {
+                                             // Show tooltip and stop propagation
+                                             isValid && input.showTooltip();
+                                         }
+                                         isValid = false;
+                                     }
                                 }
                            }
                        }
