@@ -16,9 +16,9 @@
         testable = window.htmlFiveFormShim.getTestable();
 
         test("util.createInstance", function() {
-            var control = testable.util.createInstance( fixture.Control.Text );
-            ok( control instanceof fixture.Control.Text, "Inherits from pseoudo-class" );
-            ok( control instanceof fixture.AbstractControl, "Inherits from base-class" );
+            var control = testable.util.createInstance( fixture.Input.Text );
+            ok( control instanceof fixture.Input.Text, "Inherits from pseoudo-class" );
+            ok( control instanceof fixture.AbstractInput, "Inherits from base-class" );
             ok( control.isConstructorCalled, "__constructor__ pseudo-method was processed" );
         });
 
@@ -39,44 +39,44 @@
 
 
             $email.val("invalid-email");
-            instance = testable.util.createInstance( testable.Control.Email, [ $email ] );
+            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
             ok( instance.validateValue().getCode() === "typeMismatch", "validate invalid email" );
             ok( instance.isValid() === false );
 
             $email.val("valid.email@email.com");
-            instance = testable.util.createInstance( testable.Control.Email, [ $email ] );
+            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
             instance.validateValue();
             ok( instance.isValid(), "validate valid email" );
 
             $number.val("invalid-number");
-            instance = testable.util.createInstance( testable.Control.Number, [ $number ] );
+            instance = testable.util.createInstance( testable.Input.Number, [ $number ] );
             ok( instance.validateValue().getCode() === "typeMismatch", "validate invalid number" );
             ok( instance.isValid() === false );
 
             $number.val("100");
-            instance = testable.util.createInstance( testable.Control.Number, [ $number ] );
+            instance = testable.util.createInstance( testable.Input.Number, [ $number ] );
             instance.validateValue();
             ok( instance.isValid(), "validate valid number" );
 
             $number.val("1");
             $number.attr("min", "10");
-            instance = testable.util.createInstance( testable.Control.Number, [ $number ] );
+            instance = testable.util.createInstance( testable.Input.Number, [ $number ] );
             ok(instance.validateValue().getCode() === "rangeUnderflow", "validate number underflow");
             ok( instance.isValid() === false );
 
             $number.val("100");
             $number.attr("max", "10");
-            instance = testable.util.createInstance( testable.Control.Number, [ $number ] );
+            instance = testable.util.createInstance( testable.Input.Number, [ $number ] );
             ok(instance.validateValue().getCode() === "rangeOverflow", "validate number overflow");
             ok( instance.isValid() === false );
 
             $url.val("invalid-url");
-            instance = testable.util.createInstance( testable.Control.Url, [ $url ] );
+            instance = testable.util.createInstance( testable.Input.Url, [ $url ] );
             ok( instance.validateValue().getCode() === "typeMismatch", "validate invalid url" );
             ok( instance.isValid() === false );
 
             $url.val("http://valid-url.site.com");
-            instance = testable.util.createInstance( testable.Control.Url, [ $url ] );
+            instance = testable.util.createInstance( testable.Input.Url, [ $url ] );
             instance.validateValue();
             ok( instance.isValid(), "validate valid url" );
 
@@ -86,7 +86,7 @@
             var $email = $("form#test1 #email"), instance = null;
             $email.attr( "required", "required" );
             $email.val("");
-            instance = testable.util.createInstance( testable.Control.Email, [ $email ] );
+            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
             instance.shimRequired();
             instance.validateRequired();
             ok( instance.isValid() === false );
@@ -95,19 +95,19 @@
         test("Test validateByPattern on form controls", function() {
             var $tel = $("form#test1 #tel"),
                 customMsg = "Please enter valid tel.",
-                instance = testable.util.createInstance( testable.Control.Text, [ $tel ] );
+                instance = testable.util.createInstance( testable.Input.Text, [ $tel ] );
             ok( instance.validateByPattern().getCode() === "patternMismatch", "Give correct error code" );
             ok( instance.isValid() === false );
 
             $tel.attr("title", customMsg);
-            instance = testable.util.createInstance( testable.Control.Text, [ $tel ] );
+            instance = testable.util.createInstance( testable.Input.Text, [ $tel ] );
             ok( instance.validateByPattern().getMessage() === customMsg, "Show custom message" );
         });
 
         test("Test updateState methods on form controls", function() {
             var $email = $("form#test1 #email"), instance = null;
             $email.val("invalid-email");
-            instance = testable.util.createInstance( testable.Control.Email, [ $email ] );
+            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
             instance.validateValue();
             ok( instance.updateState() === "invalid" );
         });
@@ -116,7 +116,7 @@
             var $email = $("form#test1 #email"),
                 instance = null;
             $email.val("invalid-email");
-            instance = testable.util.createInstance( testable.Control.Email, [ $email ] );
+            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
             instance.validateValue();
             ok( $email.checkValidity() === false );
             ok( $email.validationMessage.length );
@@ -132,7 +132,7 @@
                 var pattern = /^[0-9]{6,8}$/g;
                 return pattern.test( $( this ).val() );
             });
-            instance = testable.util.createInstance( testable.Control.Zip, [ $zip ] );
+            instance = testable.util.createInstance( testable.Input.Zip, [ $zip ] );
             ok( instance.validateValue().getCode() === "customError", "Give correct error code" );
             ok( instance.isValid() === false );
 
@@ -142,7 +142,7 @@
                 isValid || control.throwValidationException( "typeMismatch", "Please enter a valid zip code" );
                 return isValid;
             });
-            instance = testable.util.createInstance( testable.Control.Zip, [ $zip ] );
+            instance = testable.util.createInstance( testable.Input.Zip, [ $zip ] );
             logger = instance.validateValue();
             ok( $zip.validity.customError && $zip.validity. typeMismatch, "Both validation messages available");
             ok( $zip.validity.valid === false );
@@ -154,7 +154,7 @@
                 instance = null,
                 customMsg = "Custom message";
             $email.val("invalid-email");
-            instance = testable.util.createInstance( testable.Control.Email, [ $email ] );
+            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
             // The control was set externally to error state
             $email.setCustomValidity( customMsg );
             ok( instance.isValid() === false );

@@ -208,7 +208,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @memberof Form
                     * @type {array}
                     */
-                   controls: null,
+                   inputs: null,
                    /**
                     * @name __constructor__
                     * @memberof Form
@@ -217,27 +217,39 @@ var htmlFiveFormShim = (function( global, factory ) {
                        var that = this;
                        this.boundingBox = boundingBox;
                        // Untie object reference
-                       this.controls = [];
+                       this.inputs = [];
                        if (this.isCustomValidation()) {
                            this.boundingBox.attr( "novalidate", "novalidate" );
                        }
                        this.shimFormAttrMutators();
-                       this.initControls();
+                       this.initInputs();
                        this.boundingBox.on( 'submit', function( e ){
                            that.handleOnSubmit( e );
                        });
+                   },
+                   /**
+                    * Obtain input local id (in-form unique hash)
+                    * If it is not defined, the function generates a new id and
+                    * bind it to the input
+                    * @memberof Form
+                    * @return (number)
+                    */
+                   getLocalId: function() {
+                        var localId = this.boundingBox.data("local-id") || Form.increment++;
+                        this.boundingBox.data("local-id", localId );
+                        return localId;
                    },
                    /**
                     * Collect child inputs to monitor
                     * @private
                     * @memberof Form
                     */
-                   initControls: function() {
+                   initInputs: function() {
                        var that = this;
                        this.boundingBox.find("input, textarea").each(function(){
-                            var instance = that.controlFactory( $( this ) );
+                            var instance = that.inputFactory( $( this ) );
                             if ( instance !== false ) {
-                                that.controls.push( instance );
+                                that.inputs.push( instance );
                             }
                         });
                    },
@@ -306,13 +318,13 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Make an instance of custom validator for a given input type
                     * @public
-                    * @constructs AbstractControl instances
+                    * @constructs AbstractInput instances
                     * @memberof Form
                     */
-                   controlFactory : function( element ) {
+                   inputFactory : function( element ) {
                        var type = util.ucfirst( element.attr('type') );
                        return util.createInstance(
-                        Control[ type ] || Control.Text, [ element, this.isCustomValidation() ] );
+                        Input[ type ] || Input.Text, [ element, this.isCustomValidation() ] );
                    },
                    /**
                     * Handle on-submit event
@@ -322,22 +334,22 @@ var htmlFiveFormShim = (function( global, factory ) {
                     */
                    handleOnSubmit : function( e ) {
                        var isValid = true;
-                       if ( !this.controls.length ) {
+                       if ( !this.inputs.length ) {
                            return;
                        }
-                       for( var i in this.controls ) {
-                           var control = this.controls[ i ];
-                           if ( control.isShimRequired() ) {
+                       for( var i in this.inputs ) {
+                           var input = this.inputs[ i ];
+                           if ( input.isShimRequired() ) {
                                 // Here check for required
-                                control.validateRequired();
-                                control.updateState();
+                                input.validateRequired();
+                                input.updateState();
                                 // Here check for validity
-                                if ( !control.isValid() ) {
-                                    if ( control.validationMessageNode ) {
-                                        control.showValidationMessage();
+                                if ( !input.isValid() ) {
+                                    if ( input.validationMessageNode ) {
+                                        input.showValidationMessage();
                                     } else {
                                         // Show tooltip and stop propagation
-                                        isValid && control.showTooltip();
+                                        isValid && input.showTooltip();
                                     }
                                     isValid = false;
                                 }
@@ -353,7 +365,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                };
            },
            /**
-            * Handle validation messages per control
+            * Handle validation messages per input
             * @class
             */
            ValidationLogger = function() {
@@ -442,44 +454,44 @@ var htmlFiveFormShim = (function( global, factory ) {
                };
            },
            /**
-            * Abstract control (input of a given type or textarea)
+            * Abstract input (input of a given type or textarea)
             * @class
             */
-           AbstractControl = function() {
+           AbstractInput = function() {
                return {
                    /**
                     * Reference to the input element
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     * @type {object}
                     */
                    boundingBox: null,
                    /**
                     * Instance of ValidationLogger
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     * @type {object}
                     */
                    logger: null,
                    /**
                     * reference to the bound validation message container
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     * @type {object}
                     */
                    validationMessageNode: null,
                    /**
                     * Timeout id
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     * @type {number}
                     */
                    deferredRequest: null,
                    /**
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     * @type {boolean}
                     */
                    forceShim: false,
                    /**
-                    * Control constructor
+                    * Input constructor
                     * @name __constructor__
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     * @param {object} boundingBox
                     * @param {boolean} forceShim
                     */
@@ -527,7 +539,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * alias for jQuery().val()
                     * @public
                     * @return (String)
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    val : function( val ) {
                        return val !== undefined ? ( this.boundingBox = val ) :
@@ -535,9 +547,9 @@ var htmlFiveFormShim = (function( global, factory ) {
                    },
                    /**
                     * Set attribute text to avoid collisions with browser
-                    * embedded control handlers
+                    * embedded input handlers
                     * @public
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    degrade : function() {
                        this.boundingBox.get( 0 ).type = "text";
@@ -548,7 +560,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * or custom validation requsted
                     * @public
                     * @return (Boolean)
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    isShimRequired : function() {
                         return this.forceShim ||
@@ -559,7 +571,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * Emulate API (http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api)
                     * response
                     * @protected
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    shimApi: function() {
                        var $node = this.boundingBox;
@@ -577,7 +589,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Emulate API method checkValidity
                     * @public
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    checkValidity: function() {
                         this.validateRequired();
@@ -586,9 +598,9 @@ var htmlFiveFormShim = (function( global, factory ) {
                         return this.isValid();
                    },
                    /**
-                    * If validation message node assigned for this control found
+                    * If validation message node assigned for this input found
                     * It will be used instead of tooltip
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    lookForValidationMessageNode: function() {
                        var id, $hint;
@@ -600,7 +612,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Show message in validation message placeholder node
                     * @public
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    showValidationMessage: function() {
                        var msg = this.boundingBox.validationMessage;
@@ -610,7 +622,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Subscribe for oninput events
                     * @protected
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    shimOnInput: function() {
                        var that = this;
@@ -625,7 +637,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Check if there is no validation exceptions so far
                     * @public
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    isValid : function() {
                        return this.logger.isEmpty() && this.checkCustomValidity();
@@ -633,7 +645,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Emulates oninput event
                     * @protecteds
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    handleOnInput: function() {
                        var that = this;
@@ -657,7 +669,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Calls a global handler specified in oninput attribute
                     * @protected
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    invokeOnInputCallBack: function() {
                        var callbackKey, pos;
@@ -673,7 +685,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Remove placeholder on focus
                     * @protected
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    handleOnFocus : function() {
                        this.boundingBox.addClass('focus');
@@ -686,7 +698,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Restore placeholder on blur
                     * @protected
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    handleOnBlur : function() {
                        this.boundingBox.removeClass('focus');
@@ -699,7 +711,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                      * Is used on form submittion to check if
                      * data-customvalidity attr. was not changed externally (e.g. AJAX)
                      * @protected
-                     * @memberof AbstractControl
+                     * @memberof AbstractInput
                      */
                    checkCustomValidity: function() {
                        if ( this.boundingBox.data('customvalidity') ) {
@@ -712,7 +724,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * Add required class to element. That goes for
                     * CSS as well as for further checking
                     * @protected
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    shimRequired: function() {
                        this.boundingBox.attr('required') === undefined ||
@@ -723,7 +735,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * Force focus
                     * and remove placeholder
                     * @protected
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    shimAutofocus: function() {
                        if (this.boundingBox.attr('autofocus') !== undefined) {
@@ -734,7 +746,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Fallback placeholder handler
                     * @protected
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    shimPlaceholder: function() {
                        var that = this;
@@ -753,7 +765,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Is invoked after every validation
                     * @protected
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    throwValidationException: function( code, msg ) {
                        this.logger.setMessage( code, msg );
@@ -762,7 +774,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Fallback for pattern validator
                     * @public
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     * @return {object} ValidationLogger
                     */
                    validateByPattern: function() {
@@ -778,7 +790,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                    /**
                     * Fallback for isRequired validator
                     * @public
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     * @return {object} ValidationLogger
                     */
                    validateRequired: function() {
@@ -790,9 +802,9 @@ var htmlFiveFormShim = (function( global, factory ) {
                         return this.logger;
                    },
                    /**
-                    * Update status of control
+                    * Update status of input
                     * @public
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     * @return (String) state
                     */
                    updateState: function() {
@@ -803,9 +815,9 @@ var htmlFiveFormShim = (function( global, factory ) {
                         return state;
                    },
                    /**
-                    * Show tooltip with validation message on the control
+                    * Show tooltip with validation message on the input
                     * @public
-                    * @memberof AbstractControl
+                    * @memberof AbstractInput
                     */
                    showTooltip : function( msg ) {
                       $.setCustomValidityCallback.apply( this.boundingBox,
@@ -817,20 +829,20 @@ var htmlFiveFormShim = (function( global, factory ) {
             * Input type custom validators
             * @namespace
             */
-           Control = {
+           Input = {
                /** @class */
                Text: function() {
                    return {
-                       "__extends__" : AbstractControl
+                       "__extends__" : AbstractInput
                    };
                },
                /** @class */
                Tel: function() {
                     return {
-                        "__extends__" : AbstractControl,
+                        "__extends__" : AbstractInput,
                         /**
                          * @name __constructor__
-                         * @memberof Control.Tel
+                         * @memberof Input.Tel
                          */
                         "__constructor__": function() {
                            this.degrade();
@@ -839,7 +851,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                          * Validate input value
                          *
                          * @public
-                         * @memberof Control.Tel
+                         * @memberof Input.Tel
                          * @return {object} ValidationLogger
                          */
                         validateValue: function() {
@@ -854,10 +866,10 @@ var htmlFiveFormShim = (function( global, factory ) {
                /** @class */
                Email: function() {
                     return {
-                        "__extends__" : AbstractControl,
+                        "__extends__" : AbstractInput,
                         /**
                          * @name __constructor__
-                         * @memberof Control.Email
+                         * @memberof Input.Email
                          */
                         "__constructor__": function() {
                            this.degrade();
@@ -866,7 +878,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                          * Validate input value
                          *
                          * @public
-                         * @memberof Control.Email
+                         * @memberof Input.Email
                          * @return {object} ValidationLogger
                          */
                         validateValue: function() {
@@ -881,10 +893,10 @@ var htmlFiveFormShim = (function( global, factory ) {
                /** @class */
                Number: function() {
                     return {
-                        "__extends__" : AbstractControl,
+                        "__extends__" : AbstractInput,
                         /**
                          * @name __constructor__
-                         * @memberof Control.Number
+                         * @memberof Input.Number
                          */
                         "__constructor__": function() {
                            this.degrade();
@@ -893,7 +905,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                          * Validate input value
                          *
                          * @public
-                         * @memberof Control.Number
+                         * @memberof Input.Number
                          * @return {object} ValidationLogger
                          */
                         validateValue: function() {
@@ -915,10 +927,10 @@ var htmlFiveFormShim = (function( global, factory ) {
                /** @class */
                Url: function() {
                    return {
-                       "__extends__" : AbstractControl,
+                       "__extends__" : AbstractInput,
                         /**
                          * @name __constructor__
-                         * @memberof Control.Url
+                         * @memberof Input.Url
                          */
                        "__constructor__": function() {
                            this.degrade();
@@ -927,7 +939,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                          * Validate input value
                          *
                          * @public
-                         * @memberof Control.Url
+                         * @memberof Input.Url
                          * @return {object} ValidationLogger
                          */
                        validateValue: function() {
@@ -953,14 +965,14 @@ var htmlFiveFormShim = (function( global, factory ) {
      $.setCustomInputTypeValidator = function( type, msg, validatorCb, initCb ) {
          /**
           * @class
-          * @name Control.AbstractType
+          * @name Input.AbstractType
           */
-         Control[ util.ucfirst( type ) ] = function() {
+         Input[ util.ucfirst( type ) ] = function() {
                 return {
-                    "__extends__" : AbstractControl,
+                    "__extends__" : AbstractInput,
                    /**
                     * @name __constructor__
-                    * @memberof Control.AbstractType
+                    * @memberof Input.AbstractType
                     */
                     "__constructor__": function() {
                         initCb && initCb.apply( this.boundingBox, [ this ] );
@@ -969,7 +981,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * Validate input value
                     *
                     * @public
-                    * @memberof Control.AbstractType
+                    * @memberof Input.AbstractType
                     * @return {object} ValidationLogger
                     */
                     validateValue: function() {
@@ -1043,7 +1055,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                return {
                    util: util,
                    ValidationLogger: ValidationLogger,
-                   Control: Control
+                   Input: Input
                };
            }
        };

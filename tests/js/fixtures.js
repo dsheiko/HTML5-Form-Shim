@@ -9,15 +9,15 @@
 * Code style: http://docs.jquery.com/JQuery_Core_Style_Guidelines
 */
 var fixture = {
-    AbstractControl: function() {
+    AbstractInput: function() {
         return {
 
         }
     },
-    Control: {
+    Input: {
         Text: function() {
             return {
-                "__extends__" : fixture.AbstractControl,
+                "__extends__" : fixture.AbstractInput,
                 "__constructor__" : function() {
                     this.isConstructorCalled = true;
                 },
