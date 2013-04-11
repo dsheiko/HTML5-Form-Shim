@@ -170,7 +170,6 @@ body > header a.fork:hover {
 ol, ul {
     list-style: none outside none;
 }
-
 textarea.code {
     border: 0;
     background-color: #ddd;
@@ -316,18 +315,20 @@ form textarea.placeholder {
     color: #CCC;
 }
 
-input.required,
-input.valid,
-input.invalid {
+
+
+input:valid,
+input:required,
+input:focus:invalid {
     background-image: url("./field-marks.png");
     background-repeat: no-repeat;
     background-position: 280px 7px;
     background-color: transparent;
 }
 
-input:valid,
-input:required,
-input:focus:invalid {
+input.required,
+input.valid,
+input.invalid {
     background-image: url("./field-marks.png");
     background-repeat: no-repeat;
     background-position: 280px 7px;
@@ -351,7 +352,6 @@ input.required {
 input.valid {
     background-position: 280px -32px;
 }
-
 input.focus.invalid {
     background-position: 280px -64px;
 }
@@ -607,4 +607,9 @@ var {
 
 article > ul {
     list-style:  square;
+}
+button.btn {
+    outline : 0;
+    -moz-outline : 0;
+    border : 0
 }

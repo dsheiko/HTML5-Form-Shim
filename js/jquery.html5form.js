@@ -211,6 +211,12 @@ var htmlFiveFormShim = (function( global, factory ) {
                     */
                    inputs: {},
                    /**
+                    * Returns true if the form has no validity problems; false otherwise.
+                    * @memberof Form
+                    * @type {boolean}
+                    */
+                   valid: true,
+                   /**
                     * @name __constructor__
                     * @memberof Form
                     */
@@ -320,6 +326,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @memberof Form
                     */
                    setValid: function() {
+                       this.valid = true;
                        this.boundingBox.addClass('valid').removeClass('invalid');
                    },
                    /**
@@ -328,6 +335,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @memberof Form
                     */
                    setInvalid: function() {
+                       this.valid = false;
                        this.boundingBox.addClass('invalid').removeClass('valid');
                    },
                    /**
@@ -352,15 +360,20 @@ var htmlFiveFormShim = (function( global, factory ) {
                        if ( !this.inputs ) {
                            return;
                        }
+                       e.preventDefault();
                        for( var i in this.inputs ) {
                            if ( this.inputs.hasOwnProperty( i ) ) {
                                 var input = this.inputs[ i ];
+                                // Reset input validity info before validation
+                                input.resetValidationState();
                                 if ( input.isShimRequired() ) {
                                      // Here check for required
                                      input.validateRequired();
+                                     // Check if input state is changed externally
+                                     input.validateCustomValidity();
                                      input.updateState();
                                      // Here check for validity
-                                     if ( !input.isValid() ) {
+                                     if ( !input.validity.valid ) {
                                          if ( input.validationMessageNode ) {
                                              input.showValidationMessage();
                                          } else {
@@ -381,95 +394,36 @@ var htmlFiveFormShim = (function( global, factory ) {
                    }
                };
            },
+
            /**
-            * Handle validation messages per input
+            * Value Object representing constraint validation API validity default state
             * @class
             */
-           ValidationLogger = function() {
-               var messages = [],
-                   // { message code : default message }
-                   codeXmsgMap = {
-                       valueMissing : "Please fill out this field",
-                       typeMismatch : null,
-                       patternMismatch : "The pattern is mismatched",
-                       rangeUnderflow: "The value is too low",
-                       rangeOverflow: "The value is too high",
-                       tooLong: "The value is too long",
-                       stepMismatch: "Invalid step for the range",
-                       badInput: "The user agent is unable to convert to a value",
-                       customError: null
-                   };
+           ValidityDefaultStateVo = function() {
                return {
-                   /**
-                    * Reset logger state
-                    * @public
-                    * @memberof ValidationLogger
-                    */
-                   reset: function() {
-                       messages = [];
-                   },
-                   /**
-                    * Set message by code and msg for writtable properties
-                    * ( typeMismatch, customError )
-                    * Set message by only code for others
-                    *
-                    * @public
-                    * @param {string} code
-                    * @param {string} msg OPTIONAL
-                    * @memberof ValidationLogger
-                    */
-                   setMessage: function( code, msg ) {
-                       if ( codeXmsgMap[ code ] === undefined ) {
-                           throw new SyntaxError(
-                           "Invalid validation message code '" +
-                           code + "'" );
-                       }
-                       messages.push({
-                           code: code,
-                           message: msg || codeXmsgMap[ code ]
-                        });
-                   },
-                   /**
-                    * Take the first validation message text from the stack
-                    *
-                    * @public
-                    * @return {string}
-                    * @memberof ValidationLogger
-                    */
-                   getMessage: function() {
-                       return this.isEmpty() ? null : messages[ 0 ].message;
-                   },
-                   /**
-                    * Take the first validation message code from the stack
-                    *
-                    * @public
-                    * @return {string}
-                    * @memberof ValidationLogger
-                    */
-                   getCode: function() {
-                       return this.isEmpty() ? null : messages[ 0 ].code;
-                   },
-                   /**
-                    * Expose all messages for API response emulation
-                    *
-                    * @public
-                    * @return {array}
-                    * @memberof ValidationLogger
-                    */
-                   getMessages: function() {
-                       return messages;
-                   },
-                   /**
-                    * Check if the object represent an empty array
-                    *
-                    * @return {boolean}
-                    * @memberof ValidationLogger
-                    */
-                   isEmpty: function() {
-                       return !messages.length;
-                   }
-               };
+                    // Returns true if the element has no value but is a required field; false otherwise.
+                    valueMissing: false,
+                    // Returns true if the element's value is not in the correct syntax; false otherwise.
+                    typeMismatch: false,
+                    // Returns true if the element's value doesn't match the provided pattern; false otherwise.
+                    patternMismatch: false,
+                    // Returns true if the element's value is longer than the provided maximum length; false otherwise.
+                    tooLong: false,
+                    // Returns true if the element's value is lower than the provided minimum; false otherwise.
+                    rangeUnderflow: false,
+                    // Returns true if the element's value is higher than the provided maximum; false otherwise.
+                    rangeOverflow: false,
+                    // Returns true if the element's value doesn't fit the rules given by the step attribute; false otherwise.
+                    stepMismatch: false,
+                    // Returns true if the user has provided input in the user interface that the user agent is unable to convert to a value; false otherwise.
+                    badInput: false,
+                    // Returns true if the element has a custom error; false otherwise.
+                    customError: false,
+                    // Returns true if the element's value has no validity problems; false otherwise.
+                    valid: true
+               }
            },
+
            /**
             * Abstract input (input of a given type or textarea)
             * @class
@@ -482,6 +436,35 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @type {object}
                     */
                    boundingBox: null,
+
+                   /**
+                    * @memberof AbstractInput
+                    * @type (object)
+                    */
+                   defaultValidationMessages: {
+                       valueMissing : "Please fill out this field",
+                       typeMismatch : "",
+                       patternMismatch : "The pattern is mismatched",
+                       rangeUnderflow: "The value is too low",
+                       rangeOverflow: "The value is too high",
+                       tooLong: "The value is too long",
+                       stepMismatch: "Invalid step for the range",
+                       badInput: "The user agent is unable to convert to a value",
+                       customError: ""
+                   },
+                   /**
+                    * Constraint validation API
+                    * @namespace
+                    * @memberof AbstractInput
+                    */
+                   validity: new ValidityDefaultStateVo(),
+                   /**
+                    * Returns the error message that would be shown to the user if the element was to be checked for validity.
+                    * @memberof AbstractInput
+                    * @type (string)
+                    */
+                   validationMessage: "",
+
                    /**
                     * Instance of ValidationLogger
                     * @memberof AbstractInput
@@ -514,7 +497,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                     */
                    "__constructor__": function( boundingBox, forceShim ) {
                        var that = this;
-                       this.logger = new ValidationLogger();
                        this.boundingBox = boundingBox;
                        this.forceShim = !!forceShim;
                        this.boundingBox.removeClass('valid invalid');
@@ -541,6 +523,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                        }
                        if ( this.forceShim ||
                            !modernizr.supportedInputProps.autofocus) {
+                           this.shimFocusPseudoClass();
                            this.shimAutofocus();
                        }
                        // If custom-validation attr declared,
@@ -585,25 +568,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                            this.boundingBox.data('custom-validation');
                    },
                    /**
-                    * Emulate API (http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api)
-                    * response
-                    * @protected
-                    * @memberof AbstractInput
-                    */
-                   shimApi: function() {
-                       var $node = this.boundingBox;
-
-                       $node.validity = $node.validity || {};
-                       $.each( this.logger.getMessages(), function( inx, msg ){
-                           // element.validity object properties are read-only
-                           // so no way to overrride them
-                           $node.validity[ msg.code ] = true;
-                       });
-                       $node.validationMessage = this.logger.getMessage();
-                       $node.validity.valid = this.isValid();
-
-                   },
-                   /**
                     * Emulate API method checkValidity
                     * @public
                     * @memberof AbstractInput
@@ -612,7 +576,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                         this.validateRequired();
                         this.validateValue && this.validateValue();
                         this.validateByPattern();
-                        return this.isValid();
+                        return this.validity.valid;
                    },
                    /**
                     * If validation message node assigned for this input found
@@ -632,7 +596,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @memberof AbstractInput
                     */
                    showValidationMessage: function() {
-                       var msg = this.boundingBox.validationMessage;
+                       var msg = this.validationMessage;
                        this.validationMessageNode.html( msg );
                        this.validationMessageNode[ msg ? "show" : "hide" ]();
                    },
@@ -652,13 +616,17 @@ var htmlFiveFormShim = (function( global, factory ) {
 
                    },
                    /**
-                    * Check if there is no validation exceptions so far
+                    * Reset to default input validation state
                     * @public
                     * @memberof AbstractInput
                     */
-                   isValid : function() {
-                       return this.logger.isEmpty() && this.checkCustomValidity();
+                   resetValidationState: function()
+                   {
+                       this.validity = new ValidityDefaultStateVo();
+                       this.validationMessage = "";
+                       this.validationMessageNode && this.showValidationMessage();
                    },
+
                    /**
                     * Emulates oninput event
                     * @protecteds
@@ -670,17 +638,16 @@ var htmlFiveFormShim = (function( global, factory ) {
                            global.clearTimeout( this.deferredRequest );
                        }
                        this.deferredRequest = global.setTimeout( function(){
-                           that.logger.reset();
-                           that.shimApi();
+                           // Reset input validity info before validation
+                           that.resetValidationState();
                            that.deferredRequest = null;
                            that.invokeOnInputCallBack();
                            that.boundingBox.trigger( "oninput", that );
                            that.validateValue && that.validateValue();
+                           that.validateCustomValidity();
                            that.validateByPattern();
                            that.updateState();
-                           if ( that.validationMessageNode ) {
-                                that.validationMessageNode.html( that.boundingBox.validationMessage );
-                            }
+                           that.validationMessageNode && that.showValidationMessage();
                        }, ONINPUT_DELAY );
                    },
                    /**
@@ -705,7 +672,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @memberof AbstractInput
                     */
                    handleOnFocus : function() {
-                       this.boundingBox.addClass('focus');
                        if (this.boundingBox.val() === this.boundingBox.attr('placeholder')) {
                            this.boundingBox.val('');
                            this.boundingBox.removeClass('placeholder');
@@ -718,7 +684,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @memberof AbstractInput
                     */
                    handleOnBlur : function() {
-                       this.boundingBox.removeClass('focus');
                        if (!this.boundingBox.val()) {
                            this.boundingBox.val( this.boundingBox.attr('placeholder') );
                            this.boundingBox.addClass('placeholder');
@@ -727,12 +692,12 @@ var htmlFiveFormShim = (function( global, factory ) {
                     /**
                      * Is used on form submittion to check if
                      * data-customvalidity attr. was not changed externally (e.g. AJAX)
-                     * @protected
+                     * @public
                      * @memberof AbstractInput
                      */
-                   checkCustomValidity: function() {
+                   validateCustomValidity: function() {
                        if ( this.boundingBox.data('customvalidity') ) {
-                           this.boundingBox.validationMessage = this.boundingBox.data('customvalidity');
+                           this.throwValidationException("customError", this.boundingBox.data('customvalidity'))
                            return false;
                        }
                        return true;
@@ -747,6 +712,15 @@ var htmlFiveFormShim = (function( global, factory ) {
                        this.boundingBox.attr('required') === undefined ||
                            this.boundingBox.addClass('required')
                                .data("custom-validation" , "true");
+                   },
+
+                   shimFocusPseudoClass: function() {
+                       var that = this;
+                       this.boundingBox.on( "focus", function(){
+                           that.boundingBox.addClass('focus');
+                       }).on( "blur", function(){
+                           that.boundingBox.removeClass('focus');
+                       });
                    },
                    /**
                     * Force focus
@@ -781,13 +755,38 @@ var htmlFiveFormShim = (function( global, factory ) {
                    },
                    /**
                     * Is invoked after every validation
-                    * @protected
+                    * @public
                     * @memberof AbstractInput
+                    * @param (string) prop
+                    * @param (string) validationMessage
                     */
-                   throwValidationException: function( code, msg ) {
-                       this.logger.setMessage( code, msg );
-                       this.shimApi();
+                   throwValidationException: function( prop, validationMessage ) {
+                       if ( this.validity[ prop ] === undefined ) {
+                           throw new SyntaxError(
+                            "Invalid validity property '" +
+                           prop + "'" );
+                       }
+                       this.validity[ prop ] = true;
+                       this.validity.valid = false;
+                       this.validationMessage = validationMessage ||
+                           this.defaultValidationMessages[ prop ];
+                       this.shimConstraintValidationApi();
                    },
+                   /**
+                    * Try to emulate Constraint Validation Api
+                    * http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api
+                    * on legacy browsers
+                    */
+                   shimConstraintValidationApi: function() {
+                       var node = this.boundingBox.get( 0 );
+                       try {
+                           node.validity = this.validity;
+                       } catch ( err ) {
+                           // If the element has only getter (new browsers)
+                           // just ignore it
+                       }
+                   },
+
                    /**
                     * Fallback for pattern validator
                     * @public
@@ -802,7 +801,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                        pattern.test( this.boundingBox.val() ) ||
                             this.throwValidationException( "patternMismatch",
                                 this.boundingBox.attr('title') || null );
-                       return this.logger;
                    },
                    /**
                     * Fallback for isRequired validator
@@ -816,7 +814,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                             !this.boundingBox.val())) {
                             this.throwValidationException("valueMissing");
                         }
-                        return this.logger;
                    },
                    /**
                     * Update status of input
@@ -825,7 +822,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @return (String) state
                     */
                    updateState: function() {
-                       var state = this.isValid() ? 'valid' : 'invalid';
+                       var state = this.validity.valid ? 'valid' : 'invalid';
                        this.boundingBox
                         .removeClass('valid invalid')
                         .addClass( state );
@@ -838,7 +835,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                     */
                    showTooltip : function( msg ) {
                       $.setCustomValidityCallback.apply( this.boundingBox,
-                            [ msg || this.boundingBox.validationMessage ]);
+                            [ msg || this.validationMessage ]);
                    }
                };
            },
@@ -876,7 +873,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                             pattern.test( this.boundingBox.val() ) ||
                                 this.throwValidationException( "typeMismatch",
                                 "Please enter a valid tel. number +1 11 11 11");
-                            return this.logger;
                         }
                     };
                 },
@@ -903,7 +899,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                             pattern.test( this.boundingBox.val() ) ||
                                 this.throwValidationException( "typeMismatch",
                                     "Please enter a valid email address");
-                            return this.logger;
                         }
                     };
                 },
@@ -936,8 +931,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                             (this.boundingBox.attr('max') &&
                                 parseInt(this.boundingBox.val(), 10) > parseInt(this.boundingBox.attr('max'), 10)) &&
                                 this.throwValidationException("rangeOverflow");
-
-                            return this.logger;
                         }
                     };
                },
@@ -966,7 +959,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                             pattern.test( this.boundingBox.val() ) ||
                                 this.throwValidationException( "typeMismatch",
                                     "Please enter a valid URL");
-                            return this.logger;
                        }
                    };
                }
@@ -1004,7 +996,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                     validateValue: function() {
                         validatorCb.apply( this.boundingBox, [ this ] ) ||
                             this.throwValidationException( "customError", msg );
-                        return this.logger;
                     }
                 };
             };
@@ -1071,7 +1062,6 @@ var htmlFiveFormShim = (function( global, factory ) {
            getTestable: function() {
                return {
                    util: util,
-                   ValidationLogger: ValidationLogger,
                    Input: Input
                };
            }

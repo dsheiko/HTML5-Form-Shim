@@ -15,6 +15,7 @@
         // Import testable members of htmlFiveFormShim scope
         testable = window.htmlFiveFormShim.getTestable();
 
+    $( document ).ready(function(){
         test("util.createInstance", function() {
             var control = testable.util.createInstance( fixture.Input.Text );
             ok( control instanceof fixture.Input.Text, "Inherits from pseoudo-class" );
@@ -22,119 +23,120 @@
             ok( control.isConstructorCalled, "__constructor__ pseudo-method was processed" );
         });
 
-        test("ValidationLogger", function() {
-            var log = new testable.ValidationLogger();
-            ok( log.isEmpty() === true, "isEmpty() is true right after initialization" );
-            log.setMessage("valueMissing");
-            log.setMessage("rangeOverflow");
-            ok( log.getMessage() === "Please fill out this field", "getMessage() returns the first message of the stack" );
-            ok( log.isEmpty() === false, "isEmpty() is false after some messages were set" );
-        });
 
-        test("Test validateValue methods on form controls", function() {
+        (function(){
             var $email = $("form#test1 #email"),
                 $number = $("form#test1 #number"),
                 $url = $("form#test1 #url"),
-                instance = null;
+                input = null;
+            module("Test validateValue methods on form controls");
 
+            test("email's value is not in the correct syntax", function() {
+                $email.val("invalid-email");
+                input = testable.util.createInstance( testable.Input.Email, [ $email ] );
+                input.validateValue();
+                ok( input.validity.typeMismatch );
+                ok( !input.validity.valid );
+            });
+            test("email's value is in the correct syntax", function() {
+                $email.val("valid.email@email.com");
+                input = testable.util.createInstance( testable.Input.Email, [ $email ] );
+                input.validateValue();
+                ok( input.validity.valid );
+            });
+            test("number's value is not in the correct syntax", function() {
+                $number.val("invalid-number");
+                input = testable.util.createInstance( testable.Input.Number, [ $number ] );
+                input.validateValue();
+                ok( input.validity.typeMismatch );
+                ok( !input.validity.valid );
+            });
+            test("number's value is in the correct syntax", function() {
+                $number.val("100");
+                input = testable.util.createInstance( testable.Input.Number, [ $number ] );
+                input.validateValue();
+                ok( input.validity.valid );
+            });
 
-            $email.val("invalid-email");
-            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
-            ok( instance.validateValue().getCode() === "typeMismatch", "validate invalid email" );
-            ok( instance.isValid() === false );
+            test("number's value value is lower than the provided minimum", function() {
+                $number.val("1");
+                $number.attr("min", "10");
+                input = testable.util.createInstance( testable.Input.Number, [ $number ] );
+                input.validateValue();
+                ok( input.validity.rangeUnderflow );
+                ok( !input.validity.valid );
+            });
+            test("number's value doesn't fit the rules given by the step attribute", function() {
+                $number.val("100");
+                $number.attr("max", "10");
+                input = testable.util.createInstance( testable.Input.Number, [ $number ] );
+                input.validateValue();
+                ok( input.validity.rangeOverflow );
+                ok( !input.validity.valid );
+            });
+            test("url's value is not in the correct syntax", function() {
+                $url.val("invalid-url");
+                input = testable.util.createInstance( testable.Input.Url, [ $url ] );
+                input.validateValue();
+                ok( input.validity.typeMismatch );
+                ok( !input.validity.valid );
+            });
+            test("url's value is in the correct syntax", function() {
+                $url.val("http://valid-url.site.com");
+                input = testable.util.createInstance( testable.Input.Url, [ $url ] );
+                input.validateValue();
+                ok( input.validity.valid );
+            });
 
-            $email.val("valid.email@email.com");
-            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
-            instance.validateValue();
-            ok( instance.isValid(), "validate valid email" );
+        }());
 
-            $number.val("invalid-number");
-            instance = testable.util.createInstance( testable.Input.Number, [ $number ] );
-            ok( instance.validateValue().getCode() === "typeMismatch", "validate invalid number" );
-            ok( instance.isValid() === false );
-
-            $number.val("100");
-            instance = testable.util.createInstance( testable.Input.Number, [ $number ] );
-            instance.validateValue();
-            ok( instance.isValid(), "validate valid number" );
-
-            $number.val("1");
-            $number.attr("min", "10");
-            instance = testable.util.createInstance( testable.Input.Number, [ $number ] );
-            ok(instance.validateValue().getCode() === "rangeUnderflow", "validate number underflow");
-            ok( instance.isValid() === false );
-
-            $number.val("100");
-            $number.attr("max", "10");
-            instance = testable.util.createInstance( testable.Input.Number, [ $number ] );
-            ok(instance.validateValue().getCode() === "rangeOverflow", "validate number overflow");
-            ok( instance.isValid() === false );
-
-            $url.val("invalid-url");
-            instance = testable.util.createInstance( testable.Input.Url, [ $url ] );
-            ok( instance.validateValue().getCode() === "typeMismatch", "validate invalid url" );
-            ok( instance.isValid() === false );
-
-            $url.val("http://valid-url.site.com");
-            instance = testable.util.createInstance( testable.Input.Url, [ $url ] );
-            instance.validateValue();
-            ok( instance.isValid(), "validate valid url" );
-
-        });
-
-        test("Test validateRequired methods on form controls", function() {
-            var $email = $("form#test1 #email"), instance = null;
+        module("Test validateRequired methods on form controls");
+        test("element has no value but is a required field", function() {
+            var $email = $("form#test1 #email"),
+                input = null;
             $email.attr( "required", "required" );
             $email.val("");
-            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
-            instance.shimRequired();
-            instance.validateRequired();
-            ok( instance.isValid() === false );
+            input = testable.util.createInstance( testable.Input.Email, [ $email ] );
+            input.shimRequired();
+            input.validateRequired();
+            ok( !input.validity.valid );
         });
 
-        test("Test validateByPattern on form controls", function() {
+        module("Test validateByPattern on form controls");
+        test("element's value doesn't match the provided pattern", function() {
             var $tel = $("form#test1 #tel"),
                 customMsg = "Please enter valid tel.",
-                instance = testable.util.createInstance( testable.Input.Text, [ $tel ] );
-            ok( instance.validateByPattern().getCode() === "patternMismatch", "Give correct error code" );
-            ok( instance.isValid() === false );
-
+                input;
             $tel.attr("title", customMsg);
-            instance = testable.util.createInstance( testable.Input.Text, [ $tel ] );
-            ok( instance.validateByPattern().getMessage() === customMsg, "Show custom message" );
+            input = testable.util.createInstance( testable.Input.Text, [ $tel ] );
+            input.validateByPattern();
+            ok( input.validity.patternMismatch );
+            ok( input.validationMessage === customMsg, "Show custom message" );
         });
 
-        test("Test updateState methods on form controls", function() {
-            var $email = $("form#test1 #email"), instance = null;
-            $email.val("invalid-email");
-            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
-            instance.validateValue();
-            ok( instance.updateState() === "invalid" );
-        });
-
-        test("Test h5API constraint members (validity, validationMessage, checkValidity()) on form controls", function() {
+        module("Test input state");
+        test("on validation error the state updates", function() {
             var $email = $("form#test1 #email"),
-                instance = null;
+                input = null;
             $email.val("invalid-email");
-            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
-            instance.validateValue();
-            ok( $email.checkValidity() === false );
-            ok( $email.validationMessage.length );
-            ok( $email.validity.typeMismatch );
+            input = testable.util.createInstance( testable.Input.Email, [ $email ] );
+            input.validateValue();
+            ok( input.updateState() === "invalid" );
         });
 
-        test("Test $.setCustomInputTypeValidator helper", function() {
+        module("Test $.setCustomInputTypeValidator helper");
+        test("input[type=zip] validator watches for value", function() {
             var $zip = $("form#test1 #zip"),
-                instance = null,
-                logger = null;
+                input = null;
             // Using context to reach control
             $.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function() {
                 var pattern = /^[0-9]{6,8}$/g;
                 return pattern.test( $( this ).val() );
             });
-            instance = testable.util.createInstance( testable.Input.Zip, [ $zip ] );
-            ok( instance.validateValue().getCode() === "customError", "Give correct error code" );
-            ok( instance.isValid() === false );
+            input = testable.util.createInstance( testable.Input.Zip, [ $zip ] );
+            input.validateValue();
+            ok( input.validity[ "customError" ], "Give correct error code" );
+            ok( !input.validity.valid );
 
             // Using argument to reach control
             $.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function( control ) {
@@ -142,28 +144,29 @@
                 isValid || control.throwValidationException( "typeMismatch", "Please enter a valid zip code" );
                 return isValid;
             });
-            instance = testable.util.createInstance( testable.Input.Zip, [ $zip ] );
-            logger = instance.validateValue();
-            ok( $zip.validity.customError && $zip.validity. typeMismatch, "Both validation messages available");
-            ok( $zip.validity.valid === false );
-            ok( instance.isValid() === false );
+            input = testable.util.createInstance( testable.Input.Zip, [ $zip ] );
+            input.validateValue();
+
+            ok( input.validity.customError && input.validity.typeMismatch, "Both validation glags triggered" );
+            ok( !input.validity.valid );
         });
 
-        test("Test setCustomValidity constraint on form controls", function() {
+        module("Test setCustomValidity constraint on form controls");
+        test("When manually defined, input throws validation error", function() {
             var $email = $("form#test1 #email"),
-                instance = null,
+                input = null,
                 customMsg = "Custom message";
             $email.val("invalid-email");
-            instance = testable.util.createInstance( testable.Input.Email, [ $email ] );
+            input = testable.util.createInstance( testable.Input.Email, [ $email ] );
             // The control was set externally to error state
             $email.setCustomValidity( customMsg );
-            ok( instance.isValid() === false );
-            ok( $email.validationMessage === customMsg );
+            input.validateCustomValidity();
+            ok( !input.validity.valid );
+            ok( input.validationMessage === customMsg );
         });
 
-
-
-        test("Test formaction shim", function() {
+        module("Test form attributes shim");
+        test("input[formaction]", function() {
             var $form = $("form#test2"),
                 $btn = $form.find('#btn1');
             $form.on( "submit", function( e ) {
@@ -173,7 +176,7 @@
             $btn.trigger("click");
         });
 
-        test("Test formmethod shim", function() {
+        test("input[formmethod]", function() {
             var $form = $("form#test2"),
                 $btn = $form.find('#btn2');
             $form.on( "submit", function( e ) {
@@ -183,7 +186,7 @@
             $btn.trigger("click");
 
         });
-        test("Test formtarget shim", function() {
+        test("input[formtarget]", function() {
             var $form = $("form#test2"),
                 $btn = $form.find('#btn3');
             $form.on( "submit", function( e ) {
@@ -192,7 +195,7 @@
             });
             $btn.trigger("click");
         });
-        test("Test formenctype shim", function() {
+        test("input[formenctype]", function() {
             var $form = $("form#test2"),
                 $btn = $form.find('#btn4');
             $form.on( "submit", function( e ) {
@@ -201,5 +204,5 @@
             });
             $btn.trigger("click");
         });
-
+    });
 }( window ));
