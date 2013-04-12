@@ -3,7 +3,8 @@
 * The project site: https://github.com/dsheiko/HTML5-Form-Shim
 * The demo site: http://demo.dsheiko.com/html5formshim/
 
-That is a jQuery plugin, which emulates HTML5 Form behavior on the legacy browsers. So it claims to solve both weaknesses of HTML5 Form: support on legacy browsers and attached-widget implementations heterogeneity among layout engines (browsers). If you care about design consistency of your application, you will make sure that UI components look more or less alike on different browsers. However you would hardly able to re-style built-in on-submit tooltips, date-picker, color-picker and others. With this plugin you may just force it to substitute browser native HTML5 Form API and, therefore, have all the attached UI components always in the same style.
+That is a jQuery plugin, which brings [HTML5 Form](http://www.w3.org/TR/html5/forms.html) support on legacy browsers and allow to extend HTML5 Form on new ones.
+Different browsers provide different look&feel for the form elements. However you would hardly able to re-style bubble validation messages , date-picker, color-picker and others. With this plugin you may intercept browser native HTML5 Form API control and, therefore, have all the attached UI components always in the same style. Besides, you can have own validation messaging (e.g. showing messages next to the field instead using tooltips).
 
 ### How to use
 To enable the shim you simply have to include jQuery and this plugin.
