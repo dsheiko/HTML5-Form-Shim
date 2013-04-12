@@ -54,12 +54,12 @@
                     <p>See details on how top use HTML5 form at <a href="http://www.html5rocks.com/en/tutorials/forms/html5forms/">html5rocks.com</a></p>
 
                     <h2>Styling</h2>
-                    <p>Take in the account that legacy browsers ignore CSS pseudo-classes <var>:focus</var>, <var>:invalid</var>, <var>:valid</var>, so use instead classes <var>focus</var>, <ar>invalid</ar>, <var>valid</var>.</p>
+                    <p>Take in the account that legacy browsers ignore CSS pseudo-classes <var>:focus</var>, <var>:invalid</var>, <var>:valid</var>, so use instead classes <var>focus</var>, <var>invalid</var>, <var>valid</var>.</p>
                     <p>NOTE: The examples below use CSS3 styles. If you want your forms not only behave, but look the same in all browsers, use simple styles</p>
 
                     <h2>Features</h2>
                     <ul>
-                        <li><a href="http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api">The constraint validation API</a> exposed on jQuery HTMLElement wrapper (e.g.  <var>$("input").checkValidity()</var>, <var>$("input").validationMessage</var>, <var>$("input").validity.typeMismatch</var> ). </li>
+                        <li><a href="http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api">The constraint validation API</a> exposed on HTMLElement for legacy browser and on h5FormShim input wrappers (e.g. <var>input.checkValidity()</var>, <var>input.validationMessage</var>, <var>input.validity.typeMismatch</var> where <var>var input = hfFormShim.getInput("#email")</var>). </li>
                         <li>Can show <a href="#example2">validation messages on custom elements</a></li>
                         <li><a href="#example4">Easy attach of 3rd-party-made widgets</a> (datepicker, colorpicker, slider as so on)</li>
                         <li>Allows <a href="#example1">custom on-submit tooltips</a></li>
@@ -152,15 +152,16 @@ $.setCustomValidityCallback = function(error) {
                         <div class="td example">
                             <form class="example3" data-custom-validation="true">
                                 <label for="name">Zipcode (custom input type):</label>
-                                <input type="zip" placeholder="Zipcode" required="required" name="zip"  />
+                                <input data-type="zip" placeholder="Zipcode" required="required" name="zip"  />
                                 <button class="btn btn-inverse btn-large" type="submit">Submit</button>
                             </form>
                         </div>
                         <div class="td desc">
-                            <p>You can easily define your own input validator by using $.setCustomInputTypeValidator. It receives following arguments:
+                            <p>You can easily define your own input type validator by using $.setCustomInputTypeValidator.
+                                It receives following arguments:
                             </p>
                             <ul>
-                                <li>(string) Input type (here Zip for &lt;input type="zip"&gt;)</li>
+                                <li>(string) Input type (here Zip for &lt;input type="zip"&gt;). It takes data-type attribute value if specified (&lt;input data-type="zip"&gt;)</li>
                                 <li>(string) Input value validation message</li>
                                 <li>(function) Validation callback (returns boolean)</li>
                             </ul>

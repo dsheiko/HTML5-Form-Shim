@@ -20,6 +20,19 @@ Take in the account that legacy browsers ignore CSS pseudo-classes :focus, :inva
 
 NOTE: The examples below use CSS3 styles. If you want your forms not only behave, but look the same in all browsers, use simple styles
 
+### Features
+
+* [The constraint validation API](http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api) exposed on HTMLElement for legacy browser and on h5FormShim input wrappers (e.g. input.checkValidity(), input.validationMessage, input.validity.typeMismatch where var input = hfFormShim.getInput("#email")).
+* Can show validation messages on custom elements
+* Easy attach of 3rd-party-made widgets (datepicker, colorpicker, slider as so on)
+* Allows custom on-submit tooltips
+* Allows custom input type validators
+* Allows custom on-input callbacks
+* Shim formaction, formenctype, formmethod, and formtarget attributes
+* Covered with tests
+* Implemented as UMD (can be used as AMD or CommonJS module)
+
+
 #### Example 1: Custom form submission validation
 
 ```
@@ -187,3 +200,34 @@ $('form.example3 input[name=confirm]').on("oninput", function () {
     }
 });
 ```
+
+## API
+
+### Class diagram
+
+![Image](https://raw.github.com/dsheiko/HTML5-Form-Shim/master/doc/class-diagram.png)
+
+### hfFormShim
+
+#### .init( $form )
+
+Repeat initialization on a given form or all the forms in DOM if no argument given
+
+#### .getInput( $input )
+
+Obtain AbstractInput (hfFormShim input wrapper) for the given node to get access to The constraint validation API
+
+### AbstractInput
+
+#### .checkValidity( $form )
+
+Run all the validity tests (checkValidityWithoutRequired, validateValue, validateByPattern, validateCustomValidity) and return validation status
+
+#### .throwValidationException( validationProperty, validationMessage )
+
+Trigger validation exception which reflects on The constraint validation API
+
+#### .degrade()
+
+Set attribute to text to avoid collisions with browser embedded input handlers
+

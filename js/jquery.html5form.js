@@ -9,7 +9,7 @@
 
 /*global define:false, exports:true, require: false, window:true */
 /** @constructor */
-var htmlFiveFormShim = (function( global, factory ) {
+var hfFormShim = (function( global, factory ) {
     'use strict';
     // Universal Module Definition (UMD) to support AMD, CommonJS/Node.js,
     // Rhino, and plain browser loading.
@@ -24,7 +24,7 @@ var htmlFiveFormShim = (function( global, factory ) {
     }
 }( this, function( exports ) {
     'use strict';
-     exports.version = '2.0.2-dev';
+     exports.version = '2.1.0-dev';
 
      // Additional lambda-function to get original undefined
      return (function( global, undefined ) {
@@ -40,6 +40,8 @@ var htmlFiveFormShim = (function( global, factory ) {
             }( global )),
             /** @type {object} */
             document = global.document,
+            /** @type (object) */
+            composite = null,
             /**
              *  How long on-input event handler waits before catching the input
              *  @constant
@@ -189,6 +191,23 @@ var htmlFiveFormShim = (function( global, factory ) {
                        $("form").each(function(){
                            forms.push( util.createInstance( Form, [ $( this ) ] ) );
                        });
+                   },
+                   /**
+                    * Look up for AbstractInput instance for the given HTMLElement
+                    * @memberof Page
+                    * @public
+                    * @param {object} node
+                    * @return (object) AbstractInput
+                    */
+                   getInput: function( node ) {
+                       var $node = $( node ),
+                           input;
+                       for ( var i in forms ) {
+                           if ( ( input = forms[ i ].getInput( $node ) ) ) {
+                               return input;
+                           }
+                       }
+                       return null;
                    }
                };
            },
@@ -196,7 +215,6 @@ var htmlFiveFormShim = (function( global, factory ) {
             * @class
             */
            Form = function( ) {
-               var increment = 0;
                return {
                    /**
                     * Reference to the form element
@@ -239,23 +257,25 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * If it is not defined, the function generates a new id and
                     * bind it to the input
                     * @memberof Form
+                    * @private
                     * @return (number)
                     */
                    getLocalId: function( $node ) {
-                        var localId = $node.data("local-id") || increment++;
-                        $node.data("local-id", localId );
+                        var localId = $node.data("local-id") || Page.incrementor++;
+                        $node.data("local-id", Page.incrementor );
                         return localId;
                    },
                    /**
                     * Get AbstractInput by node
                     * @memberof Form
+                    * @public
                     * @return (object) AbstractInput
                     */
                    getInput: function( node ) {
                        // HTMLElement given
                        var $node = $( node ),
                            localId = this.getLocalId( $node );
-                        return this.inputs[ localId ];
+                        return this.inputs[ localId ] || null;
                    },
                    /**
                     * Collect child inputs to monitor
@@ -345,13 +365,13 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * @memberof Form
                     */
                    inputFactory : function( element ) {
-                       var type = util.ucfirst( element.attr('type') );
+                       var type = util.ucfirst( element.data('type') || element.attr('type') );
                        return util.createInstance(
                         Input[ type ] || Input.Text, [ element, this.isCustomValidation() ] );
                    },
                    /**
                     * Handle on-submit event
-                    * @param (Event) e
+                    * @param {event} e
                     * @private
                     * @memberof Form
                     */
@@ -360,17 +380,13 @@ var htmlFiveFormShim = (function( global, factory ) {
                        if ( !this.inputs ) {
                            return;
                        }
-                       e.preventDefault();
                        for( var i in this.inputs ) {
                            if ( this.inputs.hasOwnProperty( i ) ) {
                                 var input = this.inputs[ i ];
                                 // Reset input validity info before validation
                                 input.resetValidationState();
                                 if ( input.isShimRequired() ) {
-                                     // Here check for required
-                                     input.validateRequired();
-                                     // Check if input state is changed externally
-                                     input.validateCustomValidity();
+                                     input.checkValidity();
                                      input.updateState();
                                      // Here check for validity
                                      if ( !input.validity.valid ) {
@@ -465,12 +481,6 @@ var htmlFiveFormShim = (function( global, factory ) {
                     */
                    validationMessage: "",
 
-                   /**
-                    * Instance of ValidationLogger
-                    * @memberof AbstractInput
-                    * @type {object}
-                    */
-                   logger: null,
                    /**
                     * reference to the bound validation message container
                     * @memberof AbstractInput
@@ -574,9 +584,19 @@ var htmlFiveFormShim = (function( global, factory ) {
                     */
                    checkValidity: function() {
                         this.validateRequired();
+                        this.checkValidityWithoutRequired();
+                        return this.validity.valid;
+                   },
+                   /**
+                    * We don't validate required on input, otherwise
+                    * it would report error as sson as one focuses on the field
+                    * @private
+                    * @memberof AbstractInput
+                    */
+                   checkValidityWithoutRequired: function() {
                         this.validateValue && this.validateValue();
                         this.validateByPattern();
-                        return this.validity.valid;
+                        this.validateCustomValidity();
                    },
                    /**
                     * If validation message node assigned for this input found
@@ -643,9 +663,7 @@ var htmlFiveFormShim = (function( global, factory ) {
                            that.deferredRequest = null;
                            that.invokeOnInputCallBack();
                            that.boundingBox.trigger( "oninput", that );
-                           that.validateValue && that.validateValue();
-                           that.validateCustomValidity();
-                           that.validateByPattern();
+                           that.checkValidityWithoutRequired();
                            that.updateState();
                            that.validationMessageNode && that.showValidationMessage();
                        }, ONINPUT_DELAY );
@@ -757,8 +775,8 @@ var htmlFiveFormShim = (function( global, factory ) {
                     * Is invoked after every validation
                     * @public
                     * @memberof AbstractInput
-                    * @param (string) prop
-                    * @param (string) validationMessage
+                    * @param {string} prop
+                    * @param {string} validationMessage
                     */
                    throwValidationException: function( prop, validationMessage ) {
                        if ( this.validity[ prop ] === undefined ) {
@@ -964,6 +982,8 @@ var htmlFiveFormShim = (function( global, factory ) {
                }
            };
 
+      Page.incrementor = 0;
+
      /**
       * Set custom validator
       *
@@ -1004,7 +1024,7 @@ var htmlFiveFormShim = (function( global, factory ) {
     /**
      * Render tooltip when validation error happens on form submition
      * Can be overriden
-     * @param (String) error
+     * @param {string} error
      */
      $.setCustomValidityCallback = function( error ) {
        var pos = this.position(),
@@ -1035,28 +1055,37 @@ var htmlFiveFormShim = (function( global, factory ) {
 
 
        util.onDomReady(function(){
-           util.createInstance( Page );
+           composite = util.createInstance( Page );
        });
 
        return {
            /**
             * Repeat initialization on a given form or all the forms in DOM
             * if no argument given
-            * @memberof htmlFiveFormShim
+            * @memberof hfFormShim
             * @static
             * @param {object} $form  OPTIONAL
             */
            init: function( $form ) {
                if ( $form && $form.length ) {
-                   return util.createInstance( Form, [ $form ] );
+                   composite = util.createInstance( Form, [ $form ] );
+               } else {
+                   composite = util.createInstance( Page );
                }
-               $("form").each(function(){
-                    util.createInstance( Form, [ $form ] );
-                });
+           },
+           /**
+            * Obtain AbstractInput (hfFormShim input wrapper) for the given node
+            * @memberof hfFormShim
+            * @static
+            * @param {object} node
+            * @return {object} AbstractInput
+            */
+           getInput: function( node ) {
+               return composite.getInput( node );
            },
            /**
             * Provide access to objects from unit-tests            *
-            * @memberof htmlFiveFormShim
+            * @memberof hfFormShim
             * @static
             */
            getTestable: function() {

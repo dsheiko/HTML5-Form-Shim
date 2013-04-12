@@ -12,8 +12,8 @@
     var $ = window.jQuery,
         document = window.document,
         fixture = window.fixture,
-        // Import testable members of htmlFiveFormShim scope
-        testable = window.htmlFiveFormShim.getTestable();
+        // Import testable members of hfFormShim scope
+        testable = window.hfFormShim.getTestable();
 
     $( document ).ready(function(){
         test("util.createInstance", function() {
