@@ -731,7 +731,12 @@ var hfFormShim = (function( global, factory ) {
                            this.boundingBox.addClass('required')
                                .data("custom-validation" , "true");
                    },
-
+                   /**
+                    * Toggle .focus class on the input on focus/blur events
+                    *
+                    * @protected
+                    * @memberof AbstractInput
+                    */
                    shimFocusPseudoClass: function() {
                        var that = this;
                        this.boundingBox.on( "focus", function(){
