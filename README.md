@@ -232,3 +232,5 @@ Trigger validation exception which reflects on The constraint validation API
 
 Set attribute to text to avoid collisions with browser embedded input handlers
 
+
+[![ga-tracker](http://dsheiko.com/ga/ga.php?utmac=UA-1150677-13&utmn=1485295923&utmr=-&utmp=HTML5-Form-Shim&guid=ON "ga-tracker")](https://github.com/dsheiko/HTML5-Form-Shim)
