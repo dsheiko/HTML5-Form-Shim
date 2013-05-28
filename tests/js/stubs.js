@@ -8,7 +8,7 @@
 * @copyright (c) Dmitry Sheiko http://www.dsheiko.com
 * Code style: http://docs.jquery.com/JQuery_Core_Style_Guidelines
 */
-var fixture = {
+var stub = {
     AbstractInput: function() {
         return {
 
@@ -17,7 +17,7 @@ var fixture = {
     Input: {
         Text: function() {
             return {
-                "__extends__" : fixture.AbstractInput,
+                "__extends__" : stub.AbstractInput,
                 "__constructor__" : function() {
                     this.isConstructorCalled = true;
                 },

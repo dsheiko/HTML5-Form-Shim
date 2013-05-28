@@ -11,15 +11,15 @@
 (function( window, undefined ){
     var $ = window.jQuery,
         document = window.document,
-        fixture = window.fixture,
+        stub = window.stub,
         // Import testable members of hfFormShim scope
         testable = window.hfFormShim.getTestable();
 
     $( document ).ready(function(){
         test("util.createInstance", function() {
-            var control = testable.util.createInstance( fixture.Input.Text );
-            ok( control instanceof fixture.Input.Text, "Inherits from pseoudo-class" );
-            ok( control instanceof fixture.AbstractInput, "Inherits from base-class" );
+            var control = testable.util.createInstance( stub.Input.Text );
+            ok( control instanceof stub.Input.Text, "Inherits from pseoudo-class" );
+            ok( control instanceof stub.AbstractInput, "Inherits from base-class" );
             ok( control.isConstructorCalled, "__constructor__ pseudo-method was processed" );
         });
 

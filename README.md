@@ -7,10 +7,17 @@ That is a jQuery plugin, which brings [HTML5 Form](http://www.w3.org/TR/html5/fo
 Different browsers provide different look&feel for the form elements. However you would hardly able to re-style bubble validation messages , date-picker, color-picker and others. With this plugin you may intercept browser native HTML5 Form API control and, therefore, have all the attached UI components always in the same style. Besides, you can have own validation messaging (e.g. showing messages next to the field instead using tooltips).
 
 ### How to use
-To enable the shim you simply have to include jQuery and this plugin.
+To enable the shim you simply mark forms with data-enable-shim="true" while running jQuery and this plugin.
 
+```
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-    <script src="./js/jquery.html5form.js" type="text/javascript"></script>
+    <script src="./js/build/jquery.html5form.min.js" type="text/javascript"></script>
+```
+```
+<form data-enable-shim="true">
+...
+</form>
+```
 
 
 See details on how to use HTML5 form at http://www.html5rocks.com/en/tutorials/forms/html5forms/
@@ -37,7 +44,7 @@ NOTE: The examples below use CSS3 styles. If you want your forms not only behave
 #### Example 1: Custom form submission validation
 
 ```
-<form class="example1" data-custom-validation="true">
+<form class="example1" data-custom-validation="true" data-enable-shim="true">
     <label for="name">Name:</label>
     <input type="text" placeholder="Name" required="true" name="name"  />
     <label for="email">Email:</label>
@@ -82,7 +89,7 @@ your own function:
 
 #### Example 2: Showing validation messages on custom elements
 ```
-<form class="example2" data-custom-validation="true">
+<form class="example2" data-custom-validation="true" data-enable-shim="true">
     <label for="email">Email:</label>
     <input id="f2email" type="email" placeholder="Email" required="required" name="email" />
     <div class="help-inline">
@@ -101,7 +108,7 @@ This form forced to custom validation by attribute data-custom-validation. So wh
 #### Example 3: Custom input type validation
 
 ```
-<form class="example3">
+<form class="example3" data-enable-shim="true">
     <label for="name">Zipcode (custom input type):</label>
     <input type="zipcode" placeholder="Zipcode" required="required" name="zipcode"  />
     <button class="btn btn-inverse btn-large" type="submit">Submit</button>
@@ -125,7 +132,7 @@ Mark that the input element is available within the callback as the context (thi
 
 #### Example 4: Attaching 3rd-party widgets to form elements
 ```
-<form class="example4">
+<form class="example4" data-enable-shim="true">
 
     <label for="color">Color:</label>
     <input type="color" name="color" value="#d4251b" />
@@ -177,7 +184,7 @@ As you see here last argument of $.setCustomInputTypeValidator is initialization
 
 #### Example 5: Custom oninput callback
 ```
-<form class="example5"  data-custom-validation="true">
+<form class="example5"  data-custom-validation="true" data-enable-shim="true">
     <label for="email">Email:</label>
     <input type="email" placeholder="Email" required="required" name="email" />
     <label for="password">Password:</label>
@@ -210,9 +217,18 @@ $('form.example3 input[name=confirm]').on("oninput", function () {
 
 ### hfFormShim
 
-#### .init( $form )
+#### .init( options )
 
 Repeat initialization on a given form or all the forms in DOM if no argument given
+
+Whereas options is an object of the following structure:
+{
+    boundingBox: formNode,
+    inputs: "input, textarea, select", // OPTIONAL, by default "input, textarea"
+    handlers: { // OPTIONAL
+        onSubmit: fn(),
+    }
+}
 
 #### .getInput( $input )
 
@@ -234,3 +250,11 @@ Set attribute to text to avoid collisions with browser embedded input handlers
 
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/c47f48053eefc566f7a4790801f3ff6e "githalytics.com")](http://githalytics.com/dsheiko/HTML5-Form-Shim)
+
+## Building
+
+Just run the build script in the package root directory:
+
+```
+ant
+```

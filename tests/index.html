@@ -6,8 +6,8 @@
 	<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css" type="text/css" media="screen">
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script type="text/javascript" src="http://code.jquery.com/qunit/qunit-git.js"></script>
-        <script type="text/javascript" src="../js/jquery.html5form.js"></script>
-        <script type="text/javascript" src="./js/fixtures.js"></script>
+        <script type="text/javascript" src="../js/build/jquery.html5form.min.js"></script>
+        <script type="text/javascript" src="./js/stubs.js"></script>
 	<script type="text/javascript" src="./js/test.js"></script>
 </head>
 <body>
@@ -20,7 +20,7 @@
                 <input id="text" type="text" />
                 <input id="zip" type="zip" />
             </form>
-            <form action="oldAction" target="_self" method="GET" id="test2">
+            <form action="oldAction" data-enable-shim="true" target="_self" method="GET" id="test2">
                 <button id="btn1" formaction="newAction"></button>
                 <button id="btn2" formmethod="POST"></button>
                 <button id="btn3" formtarget="_blank"></button>
