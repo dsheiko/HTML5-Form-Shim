@@ -1,11 +1,4 @@
-<<<<<<< HEAD
+language: java
 install: ant install-deps
 before_script:
   - ant
-=======
- language: node_js
- node_js:
-   - "0.10"
-   - "0.8"
-   - "0.6"
->>>>>>> f3da2c5fe500aa4515d552850adb028fc1e467b1
