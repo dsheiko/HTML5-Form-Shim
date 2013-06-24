@@ -17,7 +17,9 @@
         "jscodesniffer": ">= 1.1.2",
         "grunt-jscs": ">= 0.1",
         "jsic": ">= 0.1.2",
-        "uglify-js": ">= 2.0.0"
+        "grunt-jsic": ">= 0.1",
+        "uglify-js": ">= 2.0.0",
+        "grunt-contrib-uglify": ">=0.1"
       },
     "licenses": [
     	{
