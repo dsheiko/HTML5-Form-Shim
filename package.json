@@ -9,11 +9,13 @@
     },
     "homepage": "http://demo.dsheiko.com/html5formshim/",
      "main": "./js/jquery.html5form.js",
-    "dependencies": {
-        "jQuery": ">= 1.7.1",
-        "uglify-js": ">= 2.0.0",
-
-    },
+    "devDependencies": {
+        "grunt": "~0.4.1",
+        "grunt-contrib-jshint": "~0.4.3",
+        "grunt-contrib-qunit": "~0.2.1",
+        "qunitjs": "1.x",
+        "uglify-js": ">= 2.0.0"
+      },
     "licenses": [
     	{
     		"type": "MIT",

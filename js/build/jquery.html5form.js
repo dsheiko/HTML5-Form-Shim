@@ -75,9 +75,9 @@ var hfFormShim = (function( global, factory ) {
                         Fn = function () {};
 
                     if ( members.hasOwnProperty( "__extends__" ) &&
-                        members[ "__extends__" ] ) {
+                        members.__extends__ ) {
                         module.prototype =
-                            util.createInstance( members[ "__extends__" ], args );
+                            util.createInstance( members.__extends__, args );
                     }
                     Fn.prototype = module.prototype; // Link to the supertype
                     for ( key in members ) { // Mix in members
@@ -87,7 +87,7 @@ var hfFormShim = (function( global, factory ) {
                     }
                     instance = new Fn();
                     members.hasOwnProperty("__constructor__") &&
-                        members[ "__constructor__" ].apply(instance, args || [] );
+                        members.__constructor__.apply(instance, args || [] );
                     return instance;
                },
                /**
@@ -151,7 +151,7 @@ var hfFormShim = (function( global, factory ) {
                     types = (function(props) {
                     for ( var i = 0, types = [], len = props.length; i < len; i++ ) {
                         inputElem.setAttribute( 'type', props[i] );
-                        types[ props[ i ] ] = !!( inputElem.type !== 'text' );
+                        types[ props[ i ] ] = ( inputElem.type !== 'text' );
                     }
                     return types;
                     })( 'search tel url email datetime date month week time datetime-local number range color' . split(' ') );
@@ -187,7 +187,7 @@ var hfFormShim = (function( global, factory ) {
                     * @name __constructor__
                     * @memberof Page
                     */
-                   "__constructor__": function() {
+                   __constructor__: function() {
                        $("form[data-enable-shim='true']").each(function(){
                            forms.push( util.createInstance( Form, [ { boundingBox: $( this ) } ] ) );
                        });
@@ -253,7 +253,7 @@ var hfFormShim = (function( global, factory ) {
                     * @memberof Form
                     * @param {object} options
                     */
-                   "__constructor__" : function( options ) {
+                   __constructor__ : function( options ) {
                        var that = this;
                        if ( !options.boundingBox ) {
                            throw new Error("Options property boundingBox undefined");
@@ -458,7 +458,7 @@ var hfFormShim = (function( global, factory ) {
                     customError: false,
                     // Returns true if the element's value has no validity problems; false otherwise.
                     valid: true
-               }
+               };
            },
 
            /**
@@ -526,7 +526,7 @@ var hfFormShim = (function( global, factory ) {
                     * @param {object} boundingBox
                     * @param {boolean} forceShim
                     */
-                   "__constructor__": function( boundingBox, forceShim ) {
+                   __constructor__: function( boundingBox, forceShim ) {
                        var that = this;
                        this.boundingBox = boundingBox;
                        this.forceShim = !!forceShim;
@@ -592,7 +592,7 @@ var hfFormShim = (function( global, factory ) {
                        this.boundingBox.get( 0 ).setCustomValidity = function( msg ) {
                            msg && this.throwValidationException( "customError", msg );
                            this.boundingBox.get( 0 ).setCustomValidity( msg );
-                       }
+                       };
 
                    },
                    /**
@@ -745,7 +745,7 @@ var hfFormShim = (function( global, factory ) {
                      */
                    validateCustomValidity: function() {
                        if ( this.boundingBox.data('customvalidity') ) {
-                           this.throwValidationException("customError", this.boundingBox.data('customvalidity'))
+                           this.throwValidationException("customError", this.boundingBox.data('customvalidity'));
                            return false;
                        }
                        return true;
@@ -900,18 +900,18 @@ var hfFormShim = (function( global, factory ) {
                /** @class */
                Text:  function() {
                    return {
-                       "__extends__" : AbstractInput
+                       __extends__ : AbstractInput
                    };
                },
                /** @class */
                Tel:  function() {
                     return {
-                        "__extends__" : AbstractInput,
+                        __extends__ : AbstractInput,
                         /**
                          * @name __constructor__
                          * @memberof Input.Tel
                          */
-                        "__constructor__": function() {
+                        __constructor__: function() {
                            this.degrade();
                         },
                         /**
@@ -932,12 +932,12 @@ var hfFormShim = (function( global, factory ) {
                /** @class */
                Email:  function() {
                     return {
-                        "__extends__" : AbstractInput,
+                        __extends__ : AbstractInput,
                         /**
                          * @name __constructor__
                          * @memberof Input.Email
                          */
-                        "__constructor__": function() {
+                        __constructor__: function() {
                            this.degrade();
                         },
                         /**
@@ -958,12 +958,12 @@ var hfFormShim = (function( global, factory ) {
                /** @class */
                Number:  function() {
                     return {
-                        "__extends__" : AbstractInput,
+                        __extends__ : AbstractInput,
                         /**
                          * @name __constructor__
                          * @memberof Input.Number
                          */
-                        "__constructor__": function() {
+                        __constructor__: function() {
                            this.degrade();
                         },
                         /**
@@ -990,12 +990,12 @@ var hfFormShim = (function( global, factory ) {
                /** @class */
                Url:  function() {
                    return {
-                       "__extends__" : AbstractInput,
+                       __extends__ : AbstractInput,
                         /**
                          * @name __constructor__
                          * @memberof Input.Url
                          */
-                       "__constructor__": function() {
+                       __constructor__: function() {
                            this.degrade();
                        },
                        /**
@@ -1033,12 +1033,12 @@ var hfFormShim = (function( global, factory ) {
           */
          Input[ util.ucfirst( type ) ] = function() {
                 return {
-                    "__extends__" : AbstractInput,
+                    __extends__ : AbstractInput,
                    /**
                     * @name __constructor__
                     * @memberof Input.AbstractType
                     */
-                    "__constructor__": function() {
+                    __constructor__: function() {
                         initCb && initCb.apply( this.boundingBox, [ this ] );
                     },
                    /**

@@ -1,11 +1,11 @@
                 function() {
                     return {
-                        "__extends__" : AbstractInput,
+                        __extends__ : AbstractInput,
                         /**
                          * @name __constructor__
                          * @memberof Input.Number
                          */
-                        "__constructor__": function() {
+                        __constructor__: function() {
                            this.degrade();
                         },
                         /**

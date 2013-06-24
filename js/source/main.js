@@ -109,12 +109,12 @@ var hfFormShim = (function( global, factory ) {
           */
          Input[ util.ucfirst( type ) ] = function() {
                 return {
-                    "__extends__" : AbstractInput,
+                    __extends__ : AbstractInput,
                    /**
                     * @name __constructor__
                     * @memberof Input.AbstractType
                     */
-                    "__constructor__": function() {
+                    __constructor__: function() {
                         initCb && initCb.apply( this.boundingBox, [ this ] );
                     },
                    /**

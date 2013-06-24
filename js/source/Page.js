@@ -5,7 +5,7 @@
                     * @name __constructor__
                     * @memberof Page
                     */
-                   "__constructor__": function() {
+                   __constructor__: function() {
                        $("form[data-enable-shim='true']").each(function(){
                            forms.push( util.createInstance( Form, [ { boundingBox: $( this ) } ] ) );
                        });

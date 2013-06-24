@@ -24,9 +24,9 @@
                         Fn = function () {};
 
                     if ( members.hasOwnProperty( "__extends__" ) &&
-                        members[ "__extends__" ] ) {
+                        members.__extends__ ) {
                         module.prototype =
-                            util.createInstance( members[ "__extends__" ], args );
+                            util.createInstance( members.__extends__, args );
                     }
                     Fn.prototype = module.prototype; // Link to the supertype
                     for ( key in members ) { // Mix in members
@@ -36,7 +36,7 @@
                     }
                     instance = new Fn();
                     members.hasOwnProperty("__constructor__") &&
-                        members[ "__constructor__" ].apply(instance, args || [] );
+                        members.__constructor__.apply(instance, args || [] );
                     return instance;
                },
                /**

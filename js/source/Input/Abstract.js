@@ -59,7 +59,7 @@
                     * @param {object} boundingBox
                     * @param {boolean} forceShim
                     */
-                   "__constructor__": function( boundingBox, forceShim ) {
+                   __constructor__: function( boundingBox, forceShim ) {
                        var that = this;
                        this.boundingBox = boundingBox;
                        this.forceShim = !!forceShim;
@@ -125,7 +125,7 @@
                        this.boundingBox.get( 0 ).setCustomValidity = function( msg ) {
                            msg && this.throwValidationException( "customError", msg );
                            this.boundingBox.get( 0 ).setCustomValidity( msg );
-                       }
+                       };
 
                    },
                    /**
@@ -278,7 +278,7 @@
                      */
                    validateCustomValidity: function() {
                        if ( this.boundingBox.data('customvalidity') ) {
-                           this.throwValidationException("customError", this.boundingBox.data('customvalidity'))
+                           this.throwValidationException("customError", this.boundingBox.data('customvalidity'));
                            return false;
                        }
                        return true;

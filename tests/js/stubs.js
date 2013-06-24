@@ -12,7 +12,7 @@ var stub = {
     AbstractInput: function() {
         return {
 
-        }
+        };
     },
     Input: {
         Text: function() {
@@ -22,7 +22,7 @@ var stub = {
                     this.isConstructorCalled = true;
                 },
                 isConstructorCalled: false
-            }
+            };
         }
     }
-}
+};

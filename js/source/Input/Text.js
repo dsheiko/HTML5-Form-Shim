@@ -1,5 +1,5 @@
             function() {
                    return {
-                       "__extends__" : AbstractInput
+                       __extends__ : AbstractInput
                    };
                }

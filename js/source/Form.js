@@ -37,7 +37,7 @@
                     * @memberof Form
                     * @param {object} options
                     */
-                   "__constructor__" : function( options ) {
+                   __constructor__ : function( options ) {
                        var that = this;
                        if ( !options.boundingBox ) {
                            throw new Error("Options property boundingBox undefined");

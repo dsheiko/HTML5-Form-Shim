@@ -1,0 +1,9 @@
+{
+  "globals": {
+    "define": false,
+    "require": false,
+    "exports": true,
+    "window": true
+  },
+  "expr" : true
+}

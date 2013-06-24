@@ -6,7 +6,7 @@
 * @version $Id: jquery.html5form.js, v 1.0 $
 * @license MIT
 * @copyright (c) Dmitry Sheiko http://www.dsheiko.com
-* Code style: http://docs.jquery.com/JQuery_Core_Style_Guidelines
+* @jscs standard:Jquery
 */
 (function( window, undefined ){
     var $ = window.jQuery,
@@ -135,7 +135,7 @@
             });
             input = testable.util.createInstance( testable.Input.Zip, [ $zip ] );
             input.validateValue();
-            ok( input.validity[ "customError" ], "Give correct error code" );
+            ok( input.validity.customError, "Give correct error code" );
             ok( !input.validity.valid );
 
             // Using argument to reach control

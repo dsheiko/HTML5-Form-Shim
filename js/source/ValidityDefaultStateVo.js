@@ -20,5 +20,5 @@
                     customError: false,
                     // Returns true if the element's value has no validity problems; false otherwise.
                     valid: true
-               }
+               };
            }

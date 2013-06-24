@@ -11,7 +11,7 @@
                     types = (function(props) {
                     for ( var i = 0, types = [], len = props.length; i < len; i++ ) {
                         inputElem.setAttribute( 'type', props[i] );
-                        types[ props[ i ] ] = !!( inputElem.type !== 'text' );
+                        types[ props[ i ] ] = ( inputElem.type !== 'text' );
                     }
                     return types;
                     })( 'search tel url email datetime date month week time datetime-local number range color' . split(' ') );
