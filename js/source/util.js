@@ -1,4 +1,4 @@
-            {
+            module.exports = {
 
                /**
                 * Object.create replica for pseudo-classes of module design
@@ -36,7 +36,7 @@
                     }
                     instance = new Fn();
                     members.hasOwnProperty("__constructor__") &&
-                        members.__constructor__.apply(instance, args || [] );
+                        members.__constructor__.apply( instance, args || [] );
                     return instance;
                },
                /**
@@ -81,4 +81,4 @@
                       str += '';
                       return str.charAt( 0 ).toUpperCase() + ( str.substr( 1 ).toLowerCase() );
                  }
-           }
+           };

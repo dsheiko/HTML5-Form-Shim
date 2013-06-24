@@ -1,4 +1,4 @@
-            {
+            module.exports = {
                 /**
                  *  List of supported types of input element
                  *  Run through HTML5's new input types to see if the UA understands any.
@@ -36,4 +36,4 @@
                             .split(' '));
                     return attrs;
                 }())
-            }
+            };

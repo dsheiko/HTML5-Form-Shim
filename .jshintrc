@@ -3,7 +3,8 @@
     "define": false,
     "require": false,
     "exports": true,
-    "window": true
+    "window": true,
+    "$import": false
   },
   "expr" : true
 }

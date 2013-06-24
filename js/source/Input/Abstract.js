@@ -1,4 +1,4 @@
-        function() {
+        module.exports = function() {
                return {
                    /**
                     * Reference to the input element
@@ -278,7 +278,8 @@
                      */
                    validateCustomValidity: function() {
                        if ( this.boundingBox.data('customvalidity') ) {
-                           this.throwValidationException("customError", this.boundingBox.data('customvalidity'));
+                           this.throwValidationException( "customError", 
+                            this.boundingBox.data('customvalidity') );
                            return false;
                        }
                        return true;
@@ -292,7 +293,7 @@
                    shimRequired: function() {
                        this.boundingBox.attr('required') === undefined ||
                            this.boundingBox.addClass('required')
-                               .data("custom-validation" , "true");
+                               .data( "custom-validation" , "true" );
                    },
                    /**
                     * Toggle .focus class on the input on focus/blur events
@@ -424,4 +425,4 @@
                             [ msg || this.validationMessage ]);
                    }
                };
-           }
+           };

@@ -1,4 +1,4 @@
-        function() {
+        module.exports = function() {
                return {
                     // Returns true if the element has no value but is a required field; false otherwise.
                     valueMissing: false,
@@ -21,4 +21,4 @@
                     // Returns true if the element's value has no validity problems; false otherwise.
                     valid: true
                };
-           }
+           };

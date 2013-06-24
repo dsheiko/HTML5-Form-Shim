@@ -6,12 +6,12 @@
 
     <target name="build">
         <exec executable="node">
-           <arg value="${js.dir}/scripts/jsic" />
+           <arg value="${root.dir}/node_modules/jsic/jsic.js" />
            <arg value="${js.dir}/source/main.js" />
            <arg value="${js.dir}/build/jquery.html5form.js" />
         </exec>
 
-        <exec executable="uglifyjs" output="${js.dir}/build/jquery.html5form.min.js">
+        <exec executable="${root.dir}/node_modules/uglify-js/bin/uglifyjs" output="${js.dir}/build/jquery.html5form.min.js">
            <arg value="${js.dir}/build/jquery.html5form.js" />
         </exec>
 

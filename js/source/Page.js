@@ -1,4 +1,4 @@
-            function() {
+            module.exports = function() {
                var forms = [];
                return {
                    /**
@@ -28,4 +28,4 @@
                        return null;
                    }
                };
-           }
+           };

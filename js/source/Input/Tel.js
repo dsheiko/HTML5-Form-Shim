@@ -1,4 +1,4 @@
-                function() {
+                module.exports = function() {
                     return {
                         __extends__ : AbstractInput,
                         /**
@@ -22,4 +22,4 @@
                                 "Please enter a valid tel. number +1 11 11 11");
                         }
                     };
-                }
+                };

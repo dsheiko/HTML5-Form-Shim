@@ -49,7 +49,7 @@ var hfFormShim = (function( global, factory ) {
              */
             ONINPUT_DELAY = 500,
             /** @namespace */
-            util =  {
+            util = {
 
                /**
                 * Object.create replica for pseudo-classes of module design
@@ -138,7 +138,7 @@ var hfFormShim = (function( global, factory ) {
             * @property {object} supportedInputTypes - List of supported types of input element
             * @property {object} supportedInputProps - List of supported properties of input element
             */
-           modernizr =  {
+           modernizr = {
                 /**
                  *  List of supported types of input element
                  *  Run through HTML5's new input types to see if the UA understands any.
@@ -180,7 +180,7 @@ var hfFormShim = (function( global, factory ) {
            /**
             * @class
             */
-           Page =  function() {
+           Page = function() {
                var forms = [];
                return {
                    /**
@@ -214,7 +214,7 @@ var hfFormShim = (function( global, factory ) {
            /**
             * @class
             */
-           Form =  function( ) {
+           Form = function( ) {
 
                return {
                    /**
@@ -436,7 +436,7 @@ var hfFormShim = (function( global, factory ) {
             * Value Object representing constraint validation API validity default state
             * @class
             */
-           ValidityDefaultStateVo =  function() {
+           ValidityDefaultStateVo = function() {
                return {
                     // Returns true if the element has no value but is a required field; false otherwise.
                     valueMissing: false,
@@ -465,7 +465,7 @@ var hfFormShim = (function( global, factory ) {
             * Abstract input (input of a given type or textarea)
             * @class
             */
-           AbstractInput =  function() {
+           AbstractInput = function() {
                return {
                    /**
                     * Reference to the input element
@@ -898,13 +898,13 @@ var hfFormShim = (function( global, factory ) {
             */
            Input = {
                /** @class */
-               Text:  function() {
+               Text: function() {
                    return {
                        __extends__ : AbstractInput
                    };
                },
                /** @class */
-               Tel:  function() {
+               Tel: function() {
                     return {
                         __extends__ : AbstractInput,
                         /**
@@ -930,7 +930,7 @@ var hfFormShim = (function( global, factory ) {
                     };
                 },
                /** @class */
-               Email:  function() {
+               Email: function() {
                     return {
                         __extends__ : AbstractInput,
                         /**
@@ -956,7 +956,7 @@ var hfFormShim = (function( global, factory ) {
                     };
                 },
                /** @class */
-               Number:  function() {
+               Number: function() {
                     return {
                         __extends__ : AbstractInput,
                         /**
@@ -988,7 +988,7 @@ var hfFormShim = (function( global, factory ) {
                     };
                },
                /** @class */
-               Url:  function() {
+               Url: function() {
                    return {
                        __extends__ : AbstractInput,
                         /**

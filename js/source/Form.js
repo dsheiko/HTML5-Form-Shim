@@ -1,4 +1,4 @@
-            function( ) {
+            module.exports = function( ) {
 
                return {
                    /**
@@ -65,7 +65,7 @@
                     */
                    getLocalId: function( $node ) {
                         var localId = $node.data("local-id") || Page.incrementor++;
-                        $node.data("local-id", Page.incrementor );
+                        $node.data( "local-id", Page.incrementor );
                         return localId;
                    },
                    /**
@@ -104,7 +104,7 @@
                     */
                    shimFormAttrMutators: function() {
                        var that = this;
-                       this.boundingBox.find( "input, button" ).each(function(){
+                       this.boundingBox.find("input, button").each(function(){
                             $( this ).attr('formaction')  &&
                                 $( this ).on( "click", function() {
                                     that.boundingBox.attr( 'action',
@@ -214,4 +214,4 @@
                        }
                    }
                };
-           }
+           };
