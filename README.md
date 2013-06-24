@@ -1,4 +1,6 @@
-# HTML5 Form Shim
+HTML5 Form Shim
+==============
+[![Build Status](https://travis-ci.org/dsheiko/HTML5-Form-Shim.png)](https://travis-ci.org/dsheiko/HTML5-Form-Shim)
 
 * The project site: https://github.com/dsheiko/HTML5-Form-Shim
 * The demo site: http://demo.dsheiko.com/html5formshim/
