@@ -8,7 +8,7 @@
         "url": "http://dsheiko.com"
     },
     "homepage": "http://demo.dsheiko.com/html5formshim/",
-     "main": "./js/jquery.html5form.js",
+    "main": "./js/jquery.html5form.js",
     "devDependencies": {
         "grunt": "~0.4.1",
         "grunt-contrib-jshint": "~0.4.3",
@@ -20,24 +20,27 @@
         "grunt-jsic": ">= 0.1",
         "uglify-js": ">= 2.0.0",
         "grunt-contrib-uglify": ">=0.1"
-      },
+    },
+    "scripts": {
+        "test": "grunt test"
+    },
     "licenses": [
-    	{
-    		"type": "MIT",
-    		"url": "http://github.com/fawek/codepainter/raw/master/LICENSE"
-    	}
+    {
+        "type": "MIT",
+        "url": "http://github.com/fawek/codepainter/raw/master/LICENSE"
+    }
     ],
     "maintainers": [
-    	{
-    		"name": "Dmitry Sheiko",
-    		"email": "me@dsheiko.com",
-    		"web": "http://dsheiko.com"
-    	}
+    {
+        "name": "Dmitry Sheiko",
+        "email": "me@dsheiko.com",
+        "web": "http://dsheiko.com"
+    }
     ],
     "repositories": [
-    	{
-            "type": "git",
-            "url": "https://dsheiko@github.com/dsheiko/HTML5-Form-Shim.git"
-    	}
+    {
+        "type": "git",
+        "url": "https://dsheiko@github.com/dsheiko/HTML5-Form-Shim.git"
+    }
     ]
 }
