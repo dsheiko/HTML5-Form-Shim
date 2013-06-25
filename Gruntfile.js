@@ -5,6 +5,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-jscs");
   grunt.loadNpmTasks("grunt-jsic");
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks("grunt-contrib-qunit");
   
 
   grunt.initConfig({
@@ -24,6 +25,9 @@ module.exports = function(grunt) {
     jsic: {
         files: ["./js/source/main.js", "./js/build/jquery.html5form.js"]
     },
+    qunit: {
+      all: ["tests/index.html"]
+    },
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
@@ -35,7 +39,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask("test", ["jshint", "jscs", "jsic", "uglify"]);
+  grunt.registerTask("test", ["jshint", "jscs", "jsic", "uglify", "qunit"]);
   grunt.registerTask("default", ["test"]);
 
 };
