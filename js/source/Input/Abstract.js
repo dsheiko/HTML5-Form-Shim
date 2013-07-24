@@ -11,16 +11,27 @@
                     * @memberof AbstractInput
                     * @type (object)
                     */
-                   defaultValidationMessages: {
-                       valueMissing : "Please fill out this field",
-                       typeMismatch : "",
-                       patternMismatch : "The pattern is mismatched",
-                       rangeUnderflow: "The value is too low",
-                       rangeOverflow: "The value is too high",
-                       tooLong: "The value is too long",
-                       stepMismatch: "Invalid step for the range",
-                       badInput: "The user agent is unable to convert to a value",
-                       customError: ""
+                   defaultValidationMessages: { 
+                       en: {
+                           valueMissing : "Please fill out this field",
+                           typeMismatch : "",
+                           patternMismatch : "The pattern is mismatched",
+                           rangeUnderflow: "The value is too low",
+                           rangeOverflow: "The value is too high",
+                           tooLong: "The value is too long",
+                           stepMismatch: "Invalid step for the range",
+                           badInput: "The user agent is unable to convert to a value",
+                           customError: "" },
+                       de: {
+                           valueMissing : "Bitte füllen Sie dieses Feld aus",
+                           typeMismatch : "",
+                           patternMismatch : "Die Eingabe stimmt nicht mit dem vorgegebenen Muster überein",
+                           rangeUnderflow: "Der Wert ist zu niedrig",
+                           rangeOverflow: "Der Wert ist zu hoch",
+                           tooLong: "Die Eingabe ist zu lang",
+                           stepMismatch: "Ungültiger Schritt in diesem Bereich",
+                           badInput: "Der Browser kann die Eingabe nicht in einen gültigen Wert umwandeln",
+                           customError: "" }
                    },
                    /**
                     * Constraint validation API
@@ -355,8 +366,11 @@
                        }
                        this.validity[ prop ] = true;
                        this.validity.valid = false;
+                       if (language!='de') {
+                           language='en';
+                       }
                        this.validationMessage = validationMessage ||
-                           this.defaultValidationMessages[ prop ];
+                           this.defaultValidationMessages[ language ][ prop ];
                        this.shimConstraintValidationApi();
                    },
                    /**
