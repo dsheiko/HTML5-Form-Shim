@@ -366,8 +366,8 @@
                        }
                        this.validity[ prop ] = true;
                        this.validity.valid = false;
-                       if (language!='de') {
-                           language='en';
+                       if (language != 'de') {
+                           language = 'en';
                        }
                        this.validationMessage = validationMessage ||
                            this.defaultValidationMessages[ language ][ prop ];
