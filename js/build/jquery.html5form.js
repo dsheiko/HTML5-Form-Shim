@@ -24,7 +24,7 @@ var hfFormShim = (function( global, factory ) {
     }
 }( this, function( exports ) {
     'use strict';
-     exports.version = '2.1.1-dev';
+     exports.version = '2.2.1-dev';
 
      // Additional lambda-function to get original undefined
      return (function( global, undefined ) {
@@ -48,6 +48,15 @@ var hfFormShim = (function( global, factory ) {
              *  @default
              */
             ONINPUT_DELAY = 500,
+            /** @namespace */
+            meta = {
+                /**
+                 * Detect language code
+                 * @public
+                 */
+                language: (function(){ return ( window.navigator.userLanguage ||
+                      window.navigator.language ).substr( 0, 2 ); }())
+            },
             /** @namespace */
             util = {
 
@@ -479,15 +488,26 @@ var hfFormShim = (function( global, factory ) {
                     * @type (object)
                     */
                    defaultValidationMessages: {
-                       valueMissing : "Please fill out this field",
-                       typeMismatch : "",
-                       patternMismatch : "The pattern is mismatched",
-                       rangeUnderflow: "The value is too low",
-                       rangeOverflow: "The value is too high",
-                       tooLong: "The value is too long",
-                       stepMismatch: "Invalid step for the range",
-                       badInput: "The user agent is unable to convert to a value",
-                       customError: ""
+                       en: {
+                           valueMissing : "Please fill out this field",
+                           typeMismatch : "",
+                           patternMismatch : "The pattern is mismatched",
+                           rangeUnderflow: "The value is too low",
+                           rangeOverflow: "The value is too high",
+                           tooLong: "The value is too long",
+                           stepMismatch: "Invalid step for the range",
+                           badInput: "The user agent is unable to convert to a value",
+                           customError: "" },
+                       de: {
+                           valueMissing : "Bitte füllen Sie dieses Feld aus",
+                           typeMismatch : "",
+                           patternMismatch : "Die Eingabe stimmt nicht mit dem vorgegebenen Muster überein",
+                           rangeUnderflow: "Der Wert ist zu niedrig",
+                           rangeOverflow: "Der Wert ist zu hoch",
+                           tooLong: "Die Eingabe ist zu lang",
+                           stepMismatch: "Ungültiger Schritt in diesem Bereich",
+                           badInput: "Der Browser kann die Eingabe nicht in einen gültigen Wert umwandeln",
+                           customError: "" }
                    },
                    /**
                     * Constraint validation API
@@ -745,7 +765,7 @@ var hfFormShim = (function( global, factory ) {
                      */
                    validateCustomValidity: function() {
                        if ( this.boundingBox.data('customvalidity') ) {
-                           this.throwValidationException( "customError", 
+                           this.throwValidationException( "customError",
                             this.boundingBox.data('customvalidity') );
                            return false;
                        }
@@ -815,6 +835,8 @@ var hfFormShim = (function( global, factory ) {
                     * @param {string} validationMessage
                     */
                    throwValidationException: function( prop, validationMessage ) {
+                       var msgContainer = this.defaultValidationMessages[ meta.language ] ||
+                           this.defaultValidationMessages.en;
                        if ( this.validity[ prop ] === undefined ) {
                            throw new SyntaxError(
                             "Invalid validity property '" +
@@ -822,8 +844,9 @@ var hfFormShim = (function( global, factory ) {
                        }
                        this.validity[ prop ] = true;
                        this.validity.valid = false;
+
                        this.validationMessage = validationMessage ||
-                           this.defaultValidationMessages[ prop ];
+                           msgContainer[ prop ];
                        this.shimConstraintValidationApi();
                    },
                    /**

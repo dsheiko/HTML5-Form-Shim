@@ -1,3 +1,5 @@
+2.2.1
+    Adopted localization proposed by @weberhofer and refactored it
 2.2.0
     Now forms shimed automatically only on demand (data-enable-shim="true")
     One can pass custom onSubmit form handler and query selector form inner input controls via hfFormShim.init

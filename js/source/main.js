@@ -24,7 +24,7 @@ var hfFormShim = (function( global, factory ) {
     }
 }( this, function( exports ) {
     'use strict';
-     exports.version = '2.1.1-dev';
+     exports.version = '2.2.1-dev';
 
      // Additional lambda-function to get original undefined
      return (function( global, undefined ) {
@@ -48,6 +48,15 @@ var hfFormShim = (function( global, factory ) {
              *  @default
              */
             ONINPUT_DELAY = 500,
+            /** @namespace */
+            meta = {
+                /**
+                 * Detect language code
+                 * @public
+                 */
+                language: (function(){ return ( window.navigator.userLanguage ||
+                      window.navigator.language ).substr( 0, 2 ); }())
+            },
             /** @namespace */
             util = $import("./util"),
            /**

@@ -6,7 +6,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-jsic");
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks("grunt-contrib-qunit");
-  
+
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -39,7 +39,8 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask("test", ["jshint", "jscs", "jsic", "uglify", "qunit"]);
-  grunt.registerTask("default", ["test"]);
+  grunt.registerTask("test", ["qunit"]);
+  grunt.registerTask("build", ["jshint", "jscs", "jsic", "uglify", "qunit"]);
+  grunt.registerTask("default", ["build"]);
 
 };

@@ -11,7 +11,7 @@
                     * @memberof AbstractInput
                     * @type (object)
                     */
-                   defaultValidationMessages: { 
+                   defaultValidationMessages: {
                        en: {
                            valueMissing : "Please fill out this field",
                            typeMismatch : "",
@@ -289,7 +289,7 @@
                      */
                    validateCustomValidity: function() {
                        if ( this.boundingBox.data('customvalidity') ) {
-                           this.throwValidationException( "customError", 
+                           this.throwValidationException( "customError",
                             this.boundingBox.data('customvalidity') );
                            return false;
                        }
@@ -359,6 +359,8 @@
                     * @param {string} validationMessage
                     */
                    throwValidationException: function( prop, validationMessage ) {
+                       var msgContainer = this.defaultValidationMessages[ meta.language ] ||
+                           this.defaultValidationMessages.en;
                        if ( this.validity[ prop ] === undefined ) {
                            throw new SyntaxError(
                             "Invalid validity property '" +
@@ -366,11 +368,9 @@
                        }
                        this.validity[ prop ] = true;
                        this.validity.valid = false;
-                       if (language!='de') {
-                           language='en';
-                       }
+
                        this.validationMessage = validationMessage ||
-                           this.defaultValidationMessages[ language ][ prop ];
+                           msgContainer[ prop ];
                        this.shimConstraintValidationApi();
                    },
                    /**
