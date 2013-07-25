@@ -255,8 +255,12 @@ Set attribute to text to avoid collisions with browser embedded input handlers
 
 ## Building
 
-Just run the build script in the package root directory:
+The project can be built with [Grunt task runner](http://gruntjs.com/). During the build Grunt validates the JavaScript sources with jshint and jscs,
+compiles JavaScripts chunks (file structure alike [ZF Naming convention](http://framework.zend.com/manual/1.12/en/coding-standard.naming-conventions.html)),
+runs Qunit tests and minifies JavaScript. To make a build just fire up Grunt anywhere withing your project directory:
 
 ```
-ant
+grunt
 ```
+
+TravisCI will report you if the build isn't successful
