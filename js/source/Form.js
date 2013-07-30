@@ -169,6 +169,10 @@
                     */
                    inputFactory : function( element ) {
                        var type = util.ucfirst( element.data('type') || element.attr('type') );
+                       // If the element has pattern attribute it removes the validator assigned to the eleent type
+                       if ( element.is('[pattern]') ) {
+                         type = "Text";
+                       }
                        return util.createInstance(
                         Input[ type ] || Input.Text, [ element, this.isCustomValidation() ] );
                    },

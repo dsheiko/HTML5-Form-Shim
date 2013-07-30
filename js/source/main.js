@@ -24,7 +24,7 @@ var hfFormShim = (function( global, factory ) {
     }
 }( this, function( exports ) {
     'use strict';
-     exports.version = '2.2.1-dev';
+     exports.version = '2.2.2-dev';
 
      // Additional lambda-function to get original undefined
      return (function( global, undefined ) {
