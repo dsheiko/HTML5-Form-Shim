@@ -638,12 +638,14 @@ var hfFormShim = (function( global, factory ) {
                     */
                    checkValidity: function() {
                         this.validateRequired();
-                        this.checkValidityWithoutRequired();
+                        if ( this.isRequired() || !this.isEmpty() ) {
+                          this.checkValidityWithoutRequired();
+                        }
                         return this.validity.valid;
                    },
                    /**
                     * We don't validate required on input, otherwise
-                    * it would report error as sson as one focuses on the field
+                    * it would report error as soon as one focuses on the field
                     * @private
                     * @memberof AbstractInput
                     */
@@ -890,11 +892,28 @@ var hfFormShim = (function( global, factory ) {
                     * @return {object} ValidationLogger
                     */
                    validateRequired: function() {
-                       if ( this.boundingBox.hasClass('required')  &&
-                            ( this.boundingBox.val() === this.boundingBox.attr('placeholder') ||
-                            !this.boundingBox.val())) {
+                       if ( this.isRequired() && this.isEmpty() ) {
                             this.throwValidationException("valueMissing");
                         }
+                   },
+                   /**
+                    * Tell is the input required
+                    * @public
+                    * @memberof AbstractInput
+                    * @return {boolean}
+                    */
+                   isRequired: function() {
+                       return this.boundingBox.hasClass('required');
+                   },
+                   /**
+                    * Tellif the input empty
+                    * @public
+                    * @memberof AbstractInput
+                    * @return {boolean}
+                    */
+                   isEmpty: function() {
+                       return ( this.boundingBox.val() === this.boundingBox.attr('placeholder') ||
+                            !this.boundingBox.val());
                    },
                    /**
                     * Update status of input
