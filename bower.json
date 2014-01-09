@@ -1,7 +1,7 @@
 {
   "name": "html5formshim",
   "description": "jQuery plugin, which brings HTML5 Form support on legacy browsers and allow to extend and customize it on new ones",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "homepage": "http://demo.dsheiko.com/html5formshim/",
   "main": "./js/jquery.html5form.js",
   "devDependencies": {
@@ -9,7 +9,7 @@
     "grunt-contrib-jshint": "~0.4.3",
     "grunt-contrib-qunit": "~0.2.1",
     "qunitjs": "1.x",
-    "jscodesniffer": ">= 1.1.2",
+    "jscodesniffer": ">= 2.0.0",
     "grunt-contrib-jscs": ">= 0.1",
     "jsic": ">= 0.1.2",
     "grunt-contrib-jsic": ">= 0.2",

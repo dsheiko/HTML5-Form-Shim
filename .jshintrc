@@ -4,7 +4,23 @@
     "require": false,
     "exports": true,
     "window": true,
-    "$import": false
+    "$import": false,
+		"test": true,
+		"ok": true,
+		"module": true,
+		"document": true
   },
-  "expr" : true
+	"boss": true,
+  "curly": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "expr": true,
+  "immed": true,
+  "noarg": true,
+  "onevar": true,
+  "quotmark": "double",
+  "smarttabs": true,
+  "trailing": true,
+  "undef": true,
+  "unused": true
 }

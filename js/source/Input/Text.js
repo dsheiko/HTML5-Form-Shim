@@ -1,5 +1,5 @@
-            module.exports = function() {
-                   return {
-                       __extends__ : AbstractInput
-                   };
-               };
+			module.exports = function() {
+					return {
+						__extends__: AbstractInput
+					};
+				};

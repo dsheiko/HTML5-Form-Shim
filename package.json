@@ -2,7 +2,7 @@
     "name": "html5formshim",
     "title": "HTML5 Form Shim",
     "description": "jQuery plugin, which brings HTML5 Form support on legacy browsers and allow to extend and customize it on new ones",
-    "version": "2.2.4",
+    "version": "2.2.5",
     "author": {
         "name": "Dmitry Sheiko",
         "url": "http://dsheiko.com"
@@ -14,11 +14,10 @@
         "grunt-contrib-jshint": "~0.4.3",
         "grunt-contrib-qunit": "~0.2.1",
         "qunitjs": "1.x",
-        "jscodesniffer": ">= 1.1.2",
-        "grunt-contrib-jscs": ">= 0.1",
-        "jsic": ">= 0.1.2",
-        "grunt-contrib-jsic": ">= 0.2",
+        "grunt-contrib-jscs": ">= 0.1.2",
+        "grunt-contrib-jsic": ">= 0.2.1",
         "uglify-js": ">= 2.0.0",
+				"grunt-contrib-clean": "*",
         "grunt-contrib-uglify": ">=0.1"
     },
     "scripts": {
@@ -37,10 +36,9 @@
         "web": "http://dsheiko.com"
     }
     ],
-    "repositories": [
+    "repository":
     {
         "type": "git",
         "url": "https://dsheiko@github.com/dsheiko/HTML5-Form-Shim.git"
     }
-    ]
 }

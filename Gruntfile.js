@@ -2,6 +2,7 @@
 module.exports = function(grunt) {
 
   grunt.loadNpmTasks("grunt-contrib-jshint");
+	grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks("grunt-contrib-jscs");
   grunt.loadNpmTasks("grunt-contrib-jsic");
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -10,11 +11,12 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+		clean: ["./js/build/*"],
     jshint: {
       options: {
         jshintrc: ".jshintrc"
       },
-      all: ["./js/source/**/*.js", "./tests/**/*.js"]
+      all: ["./js/build/jquery.html5form.js", "./tests/**/*.js"]
     },
     jscs: {
         options: {
@@ -43,8 +45,8 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask("test", ["qunit"]);
-  grunt.registerTask("build", ["jshint", "jscs", "jsic", "uglify", "qunit"]);
-  grunt.registerTask("default", ["build"]);
+  grunt.registerTask("test", [ "qunit" ]);
+  grunt.registerTask("build", [ "clean", "jscs", "jsic", "jshint", "uglify", "qunit" ]);
+  grunt.registerTask("default", [ "build" ]);
 
 };

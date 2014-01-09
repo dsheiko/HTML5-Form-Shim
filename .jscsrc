@@ -1,0 +1,9 @@
+{
+  "LineLength": false,
+  "QuoteConventions": false,
+	"VariableNamingConventions": {
+		"allowCase": [ "camel", "pascal" ],
+		"allowRepeating": true,
+		"allowNumbers": true
+	}
+}

@@ -168,7 +168,7 @@
         module("Test form attributes shim");
         test("input[formaction]", function() {
             var $form = $("form#test2"),
-                $btn = $form.find('#btn1');
+                $btn = $form.find("#btn1");
             $form.on( "submit", function( e ) {
                 e.preventDefault();
                 ok( $( this ).attr("action") === "newAction" );
@@ -178,7 +178,7 @@
 
         test("input[formmethod]", function() {
             var $form = $("form#test2"),
-                $btn = $form.find('#btn2');
+                $btn = $form.find("#btn2");
             $form.on( "submit", function( e ) {
                 e.preventDefault();
                 ok( $( this ).attr("method") === "POST" );
@@ -188,7 +188,7 @@
         });
         test("input[formtarget]", function() {
             var $form = $("form#test2"),
-                $btn = $form.find('#btn3');
+                $btn = $form.find("#btn3");
             $form.on( "submit", function( e ) {
                 e.preventDefault();
                 ok( $( this ).attr("target") === "_blank" );
@@ -197,7 +197,7 @@
         });
         test("input[formenctype]", function() {
             var $form = $("form#test2"),
-                $btn = $form.find('#btn4');
+                $btn = $form.find("#btn4");
             $form.on( "submit", function( e ) {
                 e.preventDefault();
                 ok( $( this ).attr("enctype") === "application/x-www-form-urlencoded" );
