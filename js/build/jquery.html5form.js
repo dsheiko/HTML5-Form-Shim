@@ -411,13 +411,13 @@ var hfFormShim = (function( global, factory ) {
 					* @memberof Form
 					*/
 					handleOnSubmit: function( e ) {
-						var isValid = true;
+						var isValid = true, i, input;
 						if ( !this.inputs ) {
 							return;
 						}
-						for( var i in this.inputs ) {
+						for( i in this.inputs ) {
 							if ( this.inputs.hasOwnProperty( i ) ) {
-								var input = this.inputs[ i ];
+								input = this.inputs[ i ];
 								// Reset input validity info before validation
 								input.resetValidationState();
 								if ( input.isShimRequired() ) {
@@ -1119,15 +1119,35 @@ var hfFormShim = (function( global, factory ) {
 		* @param {string} error
 		*/
 		$.setCustomValidityCallback = function( error ) {
-		var pos = this.position(),
+					/** $type {{top: number, left: number }} */
+			var pos = this.position(),
+					/** @type {jQuery} */
+					parentNode = this.parent(),
+					/** @type {jQuery} */
+					tooltip,
+					/** @type {string} */
+					tooltipId = "has-tip-" + Math.ceil( pos.left ) + "-" + Math.ceil( pos.top );
+
+
+			// Skip if the target already provided with tooltip (even in waiting)
+			if ( parentNode.hasClass( tooltipId ) ) {
+				return;
+			}
+			parentNode.addClass( tooltipId );
 			tooltip = $( "<div class=\"tooltip tooltip-e\">" +
 				"<div class=\"tooltip-arrow tooltip-arrow-e\"></div>" +
-					"<div class=\"tooltip-inner\">" + error + "</div>" +
-			"</div>" ).appendTo( this.parent() );
-			tooltip.css( "top", pos.top - ( tooltip.height() / 2 ) + 20 );
-			tooltip.css( "left", pos.left - tooltip.width() - 12 );
+				"<div class=\"tooltip-inner\">" + error + "</div>" +
+				"</div>"
+				).
+				appendTo( parentNode );
+
+			tooltip.css({
+				"top": pos.top - ( tooltip.height() / 2 ) + 20,
+				"left": pos.left - tooltip.width() - 12
+			});
 			global.setTimeout( function(){
-					tooltip.remove();
+				tooltip.remove();
+				parentNode.removeClass( tooltipId );
 			}, 2500 );
 	};
 	/**

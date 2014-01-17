@@ -183,13 +183,13 @@
 					* @memberof Form
 					*/
 					handleOnSubmit: function( e ) {
-						var isValid = true;
+						var isValid = true, i, input;
 						if ( !this.inputs ) {
 							return;
 						}
-						for( var i in this.inputs ) {
+						for( i in this.inputs ) {
 							if ( this.inputs.hasOwnProperty( i ) ) {
-								var input = this.inputs[ i ];
+								input = this.inputs[ i ];
 								// Reset input validity info before validation
 								input.resetValidationState();
 								if ( input.isShimRequired() ) {
