@@ -2,7 +2,7 @@
     "name": "html5formshim",
     "title": "HTML5 Form Shim",
     "description": "jQuery plugin, which brings HTML5 Form support on legacy browsers and allow to extend and customize it on new ones",
-    "version": "2.2.5",
+    "version": "2.2.6",
     "author": {
         "name": "Dmitry Sheiko",
         "url": "http://dsheiko.com"

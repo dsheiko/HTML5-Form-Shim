@@ -1,7 +1,7 @@
 {
   "name": "html5formshim",
   "description": "jQuery plugin, which brings HTML5 Form support on legacy browsers and allow to extend and customize it on new ones",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "homepage": "http://demo.dsheiko.com/html5formshim/",
   "main": "./js/build/jquery.html5form.js",
   "devDependencies": {

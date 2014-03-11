@@ -9,26 +9,27 @@
 
 /** @constructor */
 /* jshint -W098 */
-var hfFormShim = (function( global, factory ) {
+var hfFormShim = (function( global, factory, undefined ) {
 	"use strict";
+
 	// Universal Module Definition (UMD) to support AMD, CommonJS/Node.js,
 	// Rhino, and plain browser loading.
 	if ( typeof define === "function" && define.amd ) {
 		define(function( require, exports, module ) {
-			return factory( exports );
+			return factory( global, exports );
 		});
 	} else if ( typeof exports !== "undefined" ) {
-		return factory( exports );
+		return factory( global, exports );
 	} else {
-		return factory({});
+		return factory( global, {});
 	}
-}( this, function( exports ) {
+}( this, function( global, exports ) {
 	"use strict";
 		exports.version = "2.2.2-dev";
 
 		// Additional lambda-function to get original undefined
-		return (function( global, undefined ) {
-				/**
+
+		/**
 			* Get reference to jQuery
 			* @type {object}
 			**/
@@ -237,6 +238,6 @@ var hfFormShim = (function( global, factory ) {
 					Input: Input
 				};
 			}
-		};
-	}( window ));
+
+	};
 }));
