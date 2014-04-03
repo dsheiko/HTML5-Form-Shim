@@ -1,4 +1,33 @@
-			module.exports = {
+/**
+ * @author sheiko
+ * @license MIT
+ * jscs standard:Jquery
+ */
+
+/**
+ * Module that detects HTML5 and CSS3 features in the user’s browser
+ * @module modernizr
+ */
+
+// UMD boilerplate according to https://github.com/umdjs/umd
+if ( typeof module === "object" && typeof define !== "function" ) {
+	/**
+	* Override AMD `define` function for RequireJS
+	* @param {function( function, Object, Object )} factory
+	*/
+	var define = function ( factory ) {
+		module.exports = factory( require, exports, module );
+	};
+}
+/**
+ * @constructor
+ * @alias module:modernizr
+ */
+define(function() {
+	var
+			/** @type {object} */
+			document = window.document;
+	return {
 				/**
 					*  List of supported types of input element
 					*  Run through HTML5's new input types to see if the UA understands any.
@@ -39,3 +68,4 @@
 					return attrs;
 				}())
 			};
+});

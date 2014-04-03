@@ -4,49 +4,76 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks("grunt-contrib-jscs");
-  grunt.loadNpmTasks("grunt-contrib-jsic");
-  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks( "grunt-contrib-cjsc" );
   grunt.loadNpmTasks("grunt-contrib-qunit");
+	grunt.loadNpmTasks( "grunt-contrib-watch" );
 
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-		clean: ["./js/build/*"],
+		clean: ["./build/*"],
     jshint: {
       options: {
         jshintrc: ".jshintrc"
       },
-      all: ["./js/build/jquery.html5form.js", "./tests/**/*.js"]
+      all: [ "./src/**/*.js" ]
     },
     jscs: {
         options: {
             "standard": "Jquery"
         },
-        all: ["./js/source"]
+        all: [ "./src" ]
     },
-    jsic: {
-      development: {
-        files: {
-          "./js/build/jquery.html5form.js": "./js/source/main.js"
-        }
+    cjsc: {
+			debug: {
+        options: {
+          sourceMap: "build/*.map",
+					sourceMapRoot: "../src",
+          minify: false,
+					config: {
+						jQuery: {
+							globalProperty: "jQuery"
+						}
+					}
+         },
+         files: {
+            "./build/jquery.html5form.js": "./src/main.js"
+         }
+       },
+       build: {
+        options: {
+          debug: false,
+          minify: true,
+					banner: "/*! <%= pkg.name %> - v<%= pkg.version %> - " +
+                "<%= grunt.template.today(\"yyyy-mm-dd\") %> */",
+					config: {
+						jQuery: {
+							globalProperty: "jQuery"
+						}
+					}
+         },
+         files: {
+            "./build/jquery.html5form.min.js": "./src/main.js"
+         }
       }
     },
     qunit: {
       all: ["tests/index.html"]
     },
-    uglify: {
+		watch: {
       options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+        livereload: false
       },
-      build: {
-        src: './js/build/jquery.html5form.js',
-        dest: './js/build/jquery.html5form.min.js'
+      debug: {
+				files: [ "./src/**/**/**/*.js" ],
+				tasks: [ "cjsc:debug" ]
       }
     }
   });
 
   grunt.registerTask( "test", [ "jshint", "jscs", "qunit" ]);
-  grunt.registerTask( "build", [ "clean", "jsic", "uglify" ]);
-  grunt.registerTask( "default", [ "build", "test" ]);
+	grunt.registerTask( "debug", [ "jshint", "cjsc:debug" ]);
+  grunt.registerTask( "build", [ "clean", , "cjsc:build" ]);
+  grunt.registerTask( "default", [ "test" ]);
 
 };
