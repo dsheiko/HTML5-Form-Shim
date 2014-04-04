@@ -34,9 +34,9 @@ define(function() {
 				composite = null,
 
 				/**
-				 * @type {module:util}
+				 * @type {module:App/Misc/util}
 				 */
-				util = require( "./Misc/util" ),
+				util = require( "./App/Misc/util" ),
 				/**
 				 *
 				 * @type {jQuery}
@@ -44,13 +44,13 @@ define(function() {
 				$ = require( "jQuery" ),
 
 				/**
-				* @type {module:Page}
+				* @type {module:App/Page}
 				*/
-				Page = require( "./Page" ),
+				Page = require( "./App/Page" ),
 				/**
-				* @type {module:Form}
+				* @type {module:App/Form}
 				*/
-				Form = require( "./Form" );
+				Form = require( "./App/Form" );
 
 
 		/**

@@ -2,7 +2,7 @@
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module util
+ * @module App/util
  */
 
 
@@ -18,7 +18,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /*
  * @namespace
- * @alias module:util
+ * @alias module:App/Misc/util
  */
 define(function() {
 	var
@@ -39,7 +39,7 @@ define(function() {
 			* for modules
 			* @see http://bit.ly/1bUJnZ4
 			* @access private
-			* @memberof module:util
+			* @memberof module:App/Misc/util
 			* @param {function} constr - object constructor
 			* @param {array} args - array of arguments
 			* @returns {object}
@@ -89,7 +89,7 @@ define(function() {
 		},
 		/**
 		* Wrapper for DOMContentLoaded event listener to support AMD
-		* @memberof module:util
+		* @memberof module:App/Misc/util
 		* @param {function} fn
 		*/
 		onDomReady: function( fn ) {
@@ -103,7 +103,7 @@ define(function() {
 		},
 		/**
 			* PHP replica of is_string
-			* @memberof module:util
+			* @memberof module:App/Misc/util
 			* @param {*} value
 			* @returns {boolean}
 			*/
@@ -112,7 +112,7 @@ define(function() {
 		},
 		/**
 			* PHP replica of is_numeric
-			* @memberof module:util
+			* @memberof module:App/Misc/util
 			* @param {*} value
 			* @returns {boolean}
 			*/
@@ -121,7 +121,7 @@ define(function() {
 		},
 		/**
 			* Make a string's first character uppercase, others lowercase
-			* @memberof module:util
+			* @memberof module:App/Misc/util
 			* @param {string} str
 			* @returns {string}
 			*/

@@ -37,7 +37,7 @@ module.exports = function(grunt) {
 					}
          },
          files: {
-            "./build/jquery.html5form.js": "./src/main.js"
+            "./build/jquery.html5form.js": "./src/h5formshim.js"
          }
        },
        build: {
@@ -53,7 +53,7 @@ module.exports = function(grunt) {
 					}
          },
          files: {
-            "./build/jquery.html5form.min.js": "./src/main.js"
+            "./build/jquery.html5form.min.js": "./src/h5formshim.js"
          }
       }
     },
@@ -65,7 +65,7 @@ module.exports = function(grunt) {
         livereload: false
       },
       debug: {
-				files: [ "./src/**/**/**/*.js" ],
+				files: [ "./src/**/**/**/**/*.js" ],
 				tasks: [ "cjsc:debug" ]
       }
     }

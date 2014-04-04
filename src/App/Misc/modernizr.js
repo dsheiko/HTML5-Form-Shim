@@ -6,7 +6,7 @@
 
 /**
  * Module that detects HTML5 and CSS3 features in the user’s browser
- * @module modernizr
+ * @module App/modernizr
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -21,7 +21,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:modernizr
+ * @alias module:App/Misc/modernizr
  */
 define(function() {
 	var

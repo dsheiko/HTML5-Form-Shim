@@ -6,7 +6,7 @@
 
 /**
  * Module representing abstract Input
- * @module Input/Abstract/Shim
+ * @module App/Input/Abstract/Shim
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -21,7 +21,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Abstract/Shim
+ * @alias module:App/Input/Abstract/Shim
  */
 define(function() {
 	/**
@@ -30,9 +30,9 @@ define(function() {
 	 * @param {undefined} undefined
 	 */
 	return function( $node, isFormCustomValidation, undefined ){
-		/** @type {module:jQuery} */
+		/** @type {module:App/jQuery} */
 		var $ = require( "jQuery" ),
-				/** @type {module:config} */
+				/** @type {module:App/config} */
 				config = require( "../../config" ),
 				/**
 				 * @constant
@@ -65,7 +65,7 @@ define(function() {
 				*/
 				deferredRequest = null;
 
-		/** @lends module:Input/Abstract/Shim.prototype */
+		/** @lends module:App/Input/Abstract/Shim.prototype */
 		return {
 			/**
 			 * @constructs

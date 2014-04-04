@@ -6,7 +6,7 @@
 
 /**
  * Module representing form
- * @module Form
+ * @module App/Form
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -21,21 +21,21 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Form
+ * @alias module:App/Form
  */
 define(function() {
 	/** @type {module:jQuery} */
 	var $ = require( "jQuery" ),
-			/** @type {module:util} */
+			/** @type {module:App/Misc/util} */
 			util = require( "Misc/util" ),
-			/** @type {module:config} */
+			/** @type {module:App/config} */
 			config = require( "config" ),
 			/**
 			* @constant
 			* @default
 			* @type {string}
 			*/
-		  NAME = "Form";
+		  NAME = "Form",
 			/**
 			* Abstract input (input of a given type or textarea)
 			* @type {module:Input/Abstract}
@@ -108,7 +108,7 @@ define(function() {
 
 
 	return function(){
-		/** @lends module:Form.prototype */
+		/** @lends module:App/Form.prototype */
 		return {
 			/**
 			* Reference to the form element

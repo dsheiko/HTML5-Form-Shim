@@ -71,7 +71,7 @@ var _require = (function(){
 if ( typeof require === "undefined" ) {
 	require = _require;
 }
-_require.def( "src/main.js", function( _require, exports, module ){
+_require.def( "src/h5formshim.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
@@ -108,9 +108,9 @@ define(function() {
 				composite = null,
 
 				/**
-				 * @type {module:util}
+				 * @type {module:App/Misc/util}
 				 */
-				util = _require( "src/Misc/util.js" ),
+				util = _require( "src/App/Misc/util.js" ),
 				/**
 				 *
 				 * @type {jQuery}
@@ -118,13 +118,13 @@ define(function() {
 				$ = _require( "jQuery" ),
 
 				/**
-				* @type {module:Page}
+				* @type {module:App/Page}
 				*/
-				Page = _require( "src/Page.js" ),
+				Page = _require( "src/App/Page.js" ),
 				/**
-				* @type {module:Form}
+				* @type {module:App/Form}
 				*/
-				Form = _require( "src/Form.js" );
+				Form = _require( "src/App/Form.js" );
 
 
 		/**
@@ -217,12 +217,12 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Misc/util.js", function( _require, exports, module ){
+_require.def( "src/App/Misc/util.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module util
+ * @module App/util
  */
 
 
@@ -238,7 +238,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /*
  * @namespace
- * @alias module:util
+ * @alias module:App/Misc/util
  */
 define(function() {
 	var
@@ -259,7 +259,7 @@ define(function() {
 			* for modules
 			* @see http://bit.ly/1bUJnZ4
 			* @access private
-			* @memberof module:util
+			* @memberof module:App/Misc/util
 			* @param {function} constr - object constructor
 			* @param {array} args - array of arguments
 			* @returns {object}
@@ -309,7 +309,7 @@ define(function() {
 		},
 		/**
 		* Wrapper for DOMContentLoaded event listener to support AMD
-		* @memberof module:util
+		* @memberof module:App/Misc/util
 		* @param {function} fn
 		*/
 		onDomReady: function( fn ) {
@@ -323,7 +323,7 @@ define(function() {
 		},
 		/**
 			* PHP replica of is_string
-			* @memberof module:util
+			* @memberof module:App/Misc/util
 			* @param {*} value
 			* @returns {boolean}
 			*/
@@ -332,7 +332,7 @@ define(function() {
 		},
 		/**
 			* PHP replica of is_numeric
-			* @memberof module:util
+			* @memberof module:App/Misc/util
 			* @param {*} value
 			* @returns {boolean}
 			*/
@@ -341,7 +341,7 @@ define(function() {
 		},
 		/**
 			* Make a string's first character uppercase, others lowercase
-			* @memberof module:util
+			* @memberof module:App/Misc/util
 			* @param {string} str
 			* @returns {string}
 			*/
@@ -360,7 +360,7 @@ _require.def( "jQuery", function( _require, exports, module ){
 	return module;
 });
 
-_require.def( "src/Page.js", function( _require, exports, module ){
+_require.def( "src/App/Page.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
@@ -369,7 +369,7 @@ _require.def( "src/Page.js", function( _require, exports, module ){
 
 /**
  * Module representing page
- * @module Page
+ * @module App/Page
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -384,29 +384,29 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Page
+ * @alias module:App/Page
  */
 define(function() {
 	/** @type {module:jQuery} */
 	var $ = _require( "jQuery" );
-	/** @lends module:Page.prototype */
+	/** @lends module:App/Page.prototype */
 	return function() {
 		var
 		/**
 			* Module representing the Form
 			* @type {modele:Form}
 			*/
-			Form = _require( "src/Form.js" ),
+			Form = _require( "src/App/Form.js" ),
 			/**
-			 * @type {module:util}
+			 * @type {module:App/Misc/util}
 			 */
-			util = _require( "src/Misc/util.js" ),
+			util = _require( "src/App/Misc/util.js" ),
 			/**
 			 *
 			 * @type {Node[]}
 			 */
 			forms = [];
-		/** @lends module:Page.prototype */
+		/** @lends module:App/Page.prototype */
 		return {
 			/**
 			* @constructs
@@ -438,7 +438,7 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Form.js", function( _require, exports, module ){
+_require.def( "src/App/Form.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
@@ -447,7 +447,7 @@ _require.def( "src/Form.js", function( _require, exports, module ){
 
 /**
  * Module representing form
- * @module Form
+ * @module App/Form
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -462,36 +462,36 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Form
+ * @alias module:App/Form
  */
 define(function() {
 	/** @type {module:jQuery} */
 	var $ = _require( "jQuery" ),
-			/** @type {module:util} */
-			util = _require( "src/Misc/util.js" ),
-			/** @type {module:config} */
-			config = _require( "src/config.js" ),
+			/** @type {module:App/Misc/util} */
+			util = _require( "src/App/Misc/util.js" ),
+			/** @type {module:App/config} */
+			config = _require( "src/App/config.js" ),
 			/**
 			* @constant
 			* @default
 			* @type {string}
 			*/
-		  NAME = "Form";
+		  NAME = "Form",
 			/**
 			* Abstract input (input of a given type or textarea)
 			* @type {module:Input/Abstract}
 			*/
-			AbstractInput = _require( "src/Input/Abstract.js" ),
+			AbstractInput = _require( "src/App/Input/Abstract.js" ),
 			/**
 			* Input type custom validators
 			* @type {object}
 			*/
 			Input = {
-				Text: _require( "src/Input/Text.js" ),
-				Tel: _require( "src/Input/Tel.js" ),
-				Email: _require( "src/Input/Email.js" ),
-				Number: _require( "src/Input/Number.js" ),
-				Url: _require( "src/Input/Url.js" )
+				Text: _require( "src/App/Input/Text.js" ),
+				Tel: _require( "src/App/Input/Tel.js" ),
+				Email: _require( "src/App/Input/Email.js" ),
+				Number: _require( "src/App/Input/Number.js" ),
+				Url: _require( "src/App/Input/Url.js" )
 			},
 			/**
 			 * @type {Object}
@@ -549,7 +549,7 @@ define(function() {
 
 
 	return function(){
-		/** @lends module:Form.prototype */
+		/** @lends module:App/Form.prototype */
 		return {
 			/**
 			* Reference to the form element
@@ -773,12 +773,12 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/config.js", function( _require, exports, module ){
+_require.def( "src/App/config.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module main
+ * @module App/main
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -793,7 +793,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:config
+ * @alias module:App/config
  */
 define(function() {
 	"use strict";
@@ -804,7 +804,7 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Input/Abstract.js", function( _require, exports, module ){
+_require.def( "src/App/Input/Abstract.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
@@ -813,7 +813,7 @@ _require.def( "src/Input/Abstract.js", function( _require, exports, module ){
 
 /**
  * Module representing abstract Input
- * @module Input/Abstract
+ * @module App/Input/Abstract
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -828,16 +828,16 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Abstract
+ * @alias module:App/Input/Abstract
  */
 define(function() {
-	/** @type {module:jQuery} */
+	/** @type {module:App/jQuery} */
 	var $ = _require( "jQuery" ),
-			/** @type {module:Input/Abstract/Shim} */
-			Shim = _require( "src/Input/Abstract/Shim.js" ),
-			/** @type {module:Input/Abstract/Validator} */
-			Validator = _require( "src/Input/Abstract/Validator.js" );
-	/** @lends module:Input/Abstract.prototype */
+			/** @type {module:App/Input/Abstract/Shim} */
+			Shim = _require( "src/App/Input/Abstract/Shim.js" ),
+			/** @type {module:App/Input/Abstract/Validator} */
+			Validator = _require( "src/App/Input/Abstract/Validator.js" );
+	/** @lends module:App/Input/Abstract.prototype */
 	return function(){
 		return {
 			/**
@@ -846,17 +846,17 @@ define(function() {
 			*/
 			boundingBox: null,
 			/**
-			 * @type {module:Input/Abstract/Validator}
+			 * @type {module:App/Input/Abstract/Validator}
 			 */
 			validator: null,
 			/**
-			 * @type {module:Input/Abstract/Shim}
+			 * @type {module:App/Input/Abstract/Shim}
 			 */
 			shim: null,
 
 			/**
 			* Input constructor
-			* @constructs module:Input/Abstract
+			* @constructs module:App/Input/Abstract
 			* @param {Node} boundingBox
 			* @param {boolean} isFormCustomValidation
 			*/
@@ -891,7 +891,7 @@ define(function() {
 			},
 			/**
 			 * Stub to support 2.2 branch
-			 * @returns {module:Input/Abstract} self
+			 * @returns {module:App/Input/Abstract} self
 			 */
 			degrade: function() {
 				return this;
@@ -909,7 +909,7 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Input/Abstract/Shim.js", function( _require, exports, module ){
+_require.def( "src/App/Input/Abstract/Shim.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
@@ -918,7 +918,7 @@ _require.def( "src/Input/Abstract/Shim.js", function( _require, exports, module 
 
 /**
  * Module representing abstract Input
- * @module Input/Abstract/Shim
+ * @module App/Input/Abstract/Shim
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -933,7 +933,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Abstract/Shim
+ * @alias module:App/Input/Abstract/Shim
  */
 define(function() {
 	/**
@@ -942,10 +942,10 @@ define(function() {
 	 * @param {undefined} undefined
 	 */
 	return function( $node, isFormCustomValidation, undefined ){
-		/** @type {module:jQuery} */
+		/** @type {module:App/jQuery} */
 		var $ = _require( "jQuery" ),
-				/** @type {module:config} */
-				config = _require( "src/config.js" ),
+				/** @type {module:App/config} */
+				config = _require( "src/App/config.js" ),
 				/**
 				 * @constant
 				 * @default
@@ -964,7 +964,7 @@ define(function() {
 				 * Module that detects HTML5 and CSS3 features in the user’s browser
 				 * @type {modele:modernizr}
 				 */
-				 modernizr = _require( "src/Misc/modernizr.js" ),
+				 modernizr = _require( "src/App/Misc/modernizr.js" ),
 				/**
 				*  How long on-input event handler waits before catching the input
 				*  @constant
@@ -977,7 +977,7 @@ define(function() {
 				*/
 				deferredRequest = null;
 
-		/** @lends module:Input/Abstract/Shim.prototype */
+		/** @lends module:App/Input/Abstract/Shim.prototype */
 		return {
 			/**
 			 * @constructs
@@ -1197,7 +1197,7 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Misc/modernizr.js", function( _require, exports, module ){
+_require.def( "src/App/Misc/modernizr.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
@@ -1206,7 +1206,7 @@ _require.def( "src/Misc/modernizr.js", function( _require, exports, module ){
 
 /**
  * Module that detects HTML5 and CSS3 features in the user’s browser
- * @module modernizr
+ * @module App/modernizr
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -1221,7 +1221,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:modernizr
+ * @alias module:App/Misc/modernizr
  */
 define(function() {
 	var
@@ -1272,7 +1272,7 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Input/Abstract/Validator.js", function( _require, exports, module ){
+_require.def( "src/App/Input/Abstract/Validator.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
@@ -1281,7 +1281,7 @@ _require.def( "src/Input/Abstract/Validator.js", function( _require, exports, mo
 
 /**
  * Module representing abstract Input
- * @module Input/Abstract/Validator
+ * @module App/Input/Abstract/Validator
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -1296,7 +1296,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Abstract/Validator
+ * @alias module:App/Input/Abstract/Validator
  */
 define(function() {
 	/**
@@ -1304,28 +1304,28 @@ define(function() {
 	 * @param {Boolean} isFormCustomValidation
 	 */
 	return function( $node, isFormCustomValidation ){
-		/** @type {module:jQuery} */
+		/** @type {module:App/jQuery} */
 		var $ = _require( "jQuery" ),
 				/**
-				* @type {module:util}
+				* @type {module:App/Misc/util}
 				*/
-				util = _require( "src/Misc/util.js" ),
+				util = _require( "src/App/Misc/util.js" ),
 				/**
 				* Value Object representing constraint validation API validity default state
 				* @type {modele:Input/Abstract/Validator/Vo/ValidityDefaultState}
 				*/
-				ValidityDefaultStateVo = _require( "src/Input/Abstract/Vo/ValidityDefaultState.js" ),
+				ValidityDefaultStateVo = _require( "src/App/Input/Abstract/Vo/ValidityDefaultState.js" ),
 				/**
-				* @type (module:dictionary)
+				* @type (module:App/dictionary)
 				*/
-				defaultValidationMessages = _require( "src/Input/Abstract/Validator/dictionary.js" ),
+				defaultValidationMessages = _require( "src/App/Input/Abstract/Validator/dictionary.js" ),
 				/**
 				* reference to the bound validation message container
 				* @type {Node}
 				*/
 				validationMessageNode = null;
 
-		/** @lends module:Input/Abstract/Validator.prototype */
+		/** @lends module:App/Input/Abstract/Validator.prototype */
 		return {
 			/**
 			* @type {Node}
@@ -1333,7 +1333,7 @@ define(function() {
 			boundingBox: $node,
 			/**
 			* Constraint validation API
-			* @type {module:Vo/ValidityDefaultState}
+			* @type {module:App/Vo/ValidityDefaultState}
 			*/
 			validity: new ValidityDefaultStateVo(),
 			/**
@@ -1491,7 +1491,7 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Input/Abstract/Vo/ValidityDefaultState.js", function( _require, exports, module ){
+_require.def( "src/App/Input/Abstract/Vo/ValidityDefaultState.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
@@ -1500,7 +1500,7 @@ _require.def( "src/Input/Abstract/Vo/ValidityDefaultState.js", function( _requir
 
 /**
  * Value Object representing constraint validation API validity default state
- * @module Input/Abstract/Validator/Vo/ValidityDefaultState
+ * @module App/Input/Abstract/Validator/Vo/ValidityDefaultState
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -1515,11 +1515,11 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Abstract/Validator/Vo/ValidityDefaultState
+ * @alias module:App/Input/Abstract/Validator/Vo/ValidityDefaultState
  */
 define(function() {
 	return function() {
-		/** @lends module:Input/Abstract/Validator/Vo/ValidityDefaultState.prototype */
+		/** @lends module:App/Input/Abstract/Validator/Vo/ValidityDefaultState.prototype */
 		return {
 			/**
 			 * Returns true if the element has no value but is a required field; false otherwise.
@@ -1578,7 +1578,7 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Input/Abstract/Validator/dictionary.js", function( _require, exports, module ){
+_require.def( "src/App/Input/Abstract/Validator/dictionary.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
@@ -1587,7 +1587,7 @@ _require.def( "src/Input/Abstract/Validator/dictionary.js", function( _require, 
 
 /**
  * Module representing abstract Input
- * @module Input/Abstract/Validator/dictionary
+ * @module App/Input/Abstract/Validator/dictionary
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -1602,7 +1602,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Abstract/Validator/dictionary
+ * @alias module:App/Input/Abstract/Validator/dictionary
  */
 define(function() {
 	return {
@@ -1632,17 +1632,17 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Input/Text.js", function( _require, exports, module ){
+_require.def( "src/App/Input/Text.js", function( _require, exports, module ){
 			/**
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module main
+ * @module App/main
  */
 
 /**
  * Module representing Text Input
- * @module Input/Text
+ * @module App/Input/Text
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -1657,22 +1657,22 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Text
+ * @alias module:App/Input/Text
  */
 define(function() {
 	"use strict";
-	var /** @type {module:config} */
-		config = _require( "src/config.js" ),
+	var /** @type {module:App/config} */
+		config = _require( "src/App/config.js" ),
 		/**
 		* @constant
 		* @default
 		* @type {string}
 		*/
 		NAME = "Input/Text";
-	/** @lends module:Input/Text.prototype */
+	/** @lends module:App/Input/Text.prototype */
 	return function() {
 			return {
-			__extends__: _require( "src/Input/Abstract.js" ),
+			__extends__: _require( "src/App/Input/Abstract.js" ),
 			/**
 			* @constructs
 			*/
@@ -1685,17 +1685,17 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Input/Tel.js", function( _require, exports, module ){
+_require.def( "src/App/Input/Tel.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module main
+ * @module App/main
  */
 
 /**
  * Module representing Number Tel
- * @module Tel/Number
+ * @module App/Tel/Number
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -1710,22 +1710,22 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Tel/Number
+ * @alias module:App/Tel/Number
  */
 define(function() {
 	"use strict";
-	var /** @type {module:config} */
-		config = _require( "src/config.js" ),
+	var /** @type {module:App/config} */
+		config = _require( "src/App/config.js" ),
 		/**
 		* @constant
 		* @default
 		* @type {string}
 		*/
 		NAME = "Input/Tel";
-	/** @lends module:Tel/Number.prototype */
+	/** @lends module:App/Tel/Number.prototype */
 	return function() {
 		return {
-			__extends__: _require( "src/Input/Abstract.js" ),
+			__extends__: _require( "src/App/Input/Abstract.js" ),
 			/**
 			* @constructs
 			*/
@@ -1751,17 +1751,17 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Input/Email.js", function( _require, exports, module ){
+_require.def( "src/App/Input/Email.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module main
+ * @module App/main
  */
 
 /**
  * Module representing Email Input
- * @module Input/Email
+ * @module App/Input/Email
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -1776,12 +1776,12 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Email
+ * @alias module:App/Input/Email
  */
 define(function() {
 	"use strict";
-	var /** @type {module:config} */
-			config = _require( "src/config.js" ),
+	var /** @type {module:App/config} */
+			config = _require( "src/App/config.js" ),
 			/**
 			* @constant
 			* @default
@@ -1789,10 +1789,10 @@ define(function() {
 			*/
 		 NAME = "Input/Email";
 
-	/** @lends module:Input/Email.prototype */
+	/** @lends module:App/Input/Email.prototype */
 	return function() {
 		return {
-			__extends__: _require( "src/Input/Abstract.js" ),
+			__extends__: _require( "src/App/Input/Abstract.js" ),
 			/**
 			* @constructs
 			*/
@@ -1818,17 +1818,17 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Input/Number.js", function( _require, exports, module ){
+_require.def( "src/App/Input/Number.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module main
+ * @module App/main
  */
 
 /**
  * Module representing Number Input
- * @module Input/Number
+ * @module App/Input/Number
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -1843,24 +1843,24 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Number
+ * @alias module:App/Input/Number
  */
 define(function() {
 	"use strict";
-	/** @type {module:util} */
-	var util = _require( "src/Misc/util.js" ),
-		/** @type {module:config} */
-		config = _require( "src/config.js" ),
+	/** @type {module:App/Misc/util} */
+	var util = _require( "src/App/Misc/util.js" ),
+		/** @type {module:App/config} */
+		config = _require( "src/App/config.js" ),
 		/**
 		* @constant
 		* @default
 		* @type {string}
 		*/
 		NAME = "Input/Number";
-	/** @lends module:Input/Number.prototype */
+	/** @lends module:App/Input/Number.prototype */
 	return function() {
 		return {
-			__extends__: _require( "src/Input/Abstract.js" ),
+			__extends__: _require( "src/App/Input/Abstract.js" ),
 			/**
 			* @constructs
 			*/
@@ -1893,17 +1893,17 @@ define(function() {
 	return module;
 });
 
-_require.def( "src/Input/Url.js", function( _require, exports, module ){
+_require.def( "src/App/Input/Url.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module main
+ * @module App/main
  */
 
 /**
  * Module representing Url Input
- * @module Input/Url
+ * @module App/Input/Url
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -1918,22 +1918,22 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Url
+ * @alias module:App/Input/Url
  */
 define(function() {
 	"use strict";
-	var /** @type {module:config} */
-			config = _require( "src/config.js" ),
+	var /** @type {module:App/config} */
+			config = _require( "src/App/config.js" ),
 			/**
 			* @constant
 			* @default
 			* @type {string}
 			*/
 			NAME = "Input/Url";
-	/** @lends module:Input/Url.prototype */
+	/** @lends module:App/Input/Url.prototype */
 	return function() {
 		return {
-			__extends__: _require( "src/Input/Abstract.js" ),
+			__extends__: _require( "src/App/Input/Abstract.js" ),
 			/**
 			* @constructs
 			*/
@@ -1961,6 +1961,6 @@ define(function() {
 	return module;
 });
 
-_require( "src/main.js" );
+_require( "src/h5formshim.js" );
 
 //# sourceMappingURL=./jquery.html5form.js.map

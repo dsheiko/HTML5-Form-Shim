@@ -6,7 +6,7 @@
 
 /**
  * Module representing abstract Input
- * @module Input/Abstract/Validator/dictionary
+ * @module App/Input/Abstract/Validator/dictionary
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -21,7 +21,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Abstract/Validator/dictionary
+ * @alias module:App/Input/Abstract/Validator/dictionary
  */
 define(function() {
 	return {

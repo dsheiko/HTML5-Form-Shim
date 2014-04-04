@@ -6,7 +6,7 @@
 
 /**
  * Module representing abstract Input
- * @module Input/Abstract/Validator
+ * @module App/Input/Abstract/Validator
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -21,7 +21,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Abstract/Validator
+ * @alias module:App/Input/Abstract/Validator
  */
 define(function() {
 	/**
@@ -29,10 +29,10 @@ define(function() {
 	 * @param {Boolean} isFormCustomValidation
 	 */
 	return function( $node, isFormCustomValidation ){
-		/** @type {module:jQuery} */
+		/** @type {module:App/jQuery} */
 		var $ = require( "jQuery" ),
 				/**
-				* @type {module:util}
+				* @type {module:App/Misc/util}
 				*/
 				util = require( "../../Misc/util" ),
 				/**
@@ -41,7 +41,7 @@ define(function() {
 				*/
 				ValidityDefaultStateVo = require( "Vo/ValidityDefaultState" ),
 				/**
-				* @type (module:dictionary)
+				* @type (module:App/dictionary)
 				*/
 				defaultValidationMessages = require( "Validator/dictionary" ),
 				/**
@@ -50,7 +50,7 @@ define(function() {
 				*/
 				validationMessageNode = null;
 
-		/** @lends module:Input/Abstract/Validator.prototype */
+		/** @lends module:App/Input/Abstract/Validator.prototype */
 		return {
 			/**
 			* @type {Node}
@@ -58,7 +58,7 @@ define(function() {
 			boundingBox: $node,
 			/**
 			* Constraint validation API
-			* @type {module:Vo/ValidityDefaultState}
+			* @type {module:App/Vo/ValidityDefaultState}
 			*/
 			validity: new ValidityDefaultStateVo(),
 			/**

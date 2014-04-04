@@ -6,7 +6,7 @@
 
 /**
  * Module representing abstract Input
- * @module Input/Abstract
+ * @module App/Input/Abstract
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -21,16 +21,16 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Abstract
+ * @alias module:App/Input/Abstract
  */
 define(function() {
-	/** @type {module:jQuery} */
+	/** @type {module:App/jQuery} */
 	var $ = require( "jQuery" ),
-			/** @type {module:Input/Abstract/Shim} */
+			/** @type {module:App/Input/Abstract/Shim} */
 			Shim = require( "Abstract/Shim" ),
-			/** @type {module:Input/Abstract/Validator} */
+			/** @type {module:App/Input/Abstract/Validator} */
 			Validator = require( "Abstract/Validator" );
-	/** @lends module:Input/Abstract.prototype */
+	/** @lends module:App/Input/Abstract.prototype */
 	return function(){
 		return {
 			/**
@@ -39,17 +39,17 @@ define(function() {
 			*/
 			boundingBox: null,
 			/**
-			 * @type {module:Input/Abstract/Validator}
+			 * @type {module:App/Input/Abstract/Validator}
 			 */
 			validator: null,
 			/**
-			 * @type {module:Input/Abstract/Shim}
+			 * @type {module:App/Input/Abstract/Shim}
 			 */
 			shim: null,
 
 			/**
 			* Input constructor
-			* @constructs module:Input/Abstract
+			* @constructs module:App/Input/Abstract
 			* @param {Node} boundingBox
 			* @param {boolean} isFormCustomValidation
 			*/
@@ -84,7 +84,7 @@ define(function() {
 			},
 			/**
 			 * Stub to support 2.2 branch
-			 * @returns {module:Input/Abstract} self
+			 * @returns {module:App/Input/Abstract} self
 			 */
 			degrade: function() {
 				return this;

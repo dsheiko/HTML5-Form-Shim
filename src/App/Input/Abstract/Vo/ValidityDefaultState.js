@@ -6,7 +6,7 @@
 
 /**
  * Value Object representing constraint validation API validity default state
- * @module Input/Abstract/Validator/Vo/ValidityDefaultState
+ * @module App/Input/Abstract/Validator/Vo/ValidityDefaultState
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -21,11 +21,11 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Abstract/Validator/Vo/ValidityDefaultState
+ * @alias module:App/Input/Abstract/Validator/Vo/ValidityDefaultState
  */
 define(function() {
 	return function() {
-		/** @lends module:Input/Abstract/Validator/Vo/ValidityDefaultState.prototype */
+		/** @lends module:App/Input/Abstract/Validator/Vo/ValidityDefaultState.prototype */
 		return {
 			/**
 			 * Returns true if the element has no value but is a required field; false otherwise.

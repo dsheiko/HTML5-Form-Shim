@@ -2,12 +2,12 @@
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module main
+ * @module App/main
  */
 
 /**
  * Module representing Number Input
- * @module Input/Number
+ * @module App/Input/Number
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -22,13 +22,13 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Number
+ * @alias module:App/Input/Number
  */
 define(function() {
 	"use strict";
-	/** @type {module:util} */
+	/** @type {module:App/Misc/util} */
 	var util = require( "../Misc/util" ),
-		/** @type {module:config} */
+		/** @type {module:App/config} */
 		config = require( "../config" ),
 		/**
 		* @constant
@@ -36,7 +36,7 @@ define(function() {
 		* @type {string}
 		*/
 		NAME = "Input/Number";
-	/** @lends module:Input/Number.prototype */
+	/** @lends module:App/Input/Number.prototype */
 	return function() {
 		return {
 			__extends__: require( "Abstract" ),

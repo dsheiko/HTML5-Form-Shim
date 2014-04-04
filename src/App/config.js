@@ -2,7 +2,7 @@
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module main
+ * @module App/main
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -17,7 +17,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:config
+ * @alias module:App/config
  */
 define(function() {
 	"use strict";

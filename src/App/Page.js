@@ -6,7 +6,7 @@
 
 /**
  * Module representing page
- * @module Page
+ * @module App/Page
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -21,12 +21,12 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Page
+ * @alias module:App/Page
  */
 define(function() {
 	/** @type {module:jQuery} */
 	var $ = require( "jQuery" );
-	/** @lends module:Page.prototype */
+	/** @lends module:App/Page.prototype */
 	return function() {
 		var
 		/**
@@ -35,7 +35,7 @@ define(function() {
 			*/
 			Form = require( "./Form" ),
 			/**
-			 * @type {module:util}
+			 * @type {module:App/Misc/util}
 			 */
 			util = require( "./Misc/util" ),
 			/**
@@ -43,7 +43,7 @@ define(function() {
 			 * @type {Node[]}
 			 */
 			forms = [];
-		/** @lends module:Page.prototype */
+		/** @lends module:App/Page.prototype */
 		return {
 			/**
 			* @constructs

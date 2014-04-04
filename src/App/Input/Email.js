@@ -2,12 +2,12 @@
  * @author sheiko
  * @license MIT
  * jscs standard:Jquery
- * @module main
+ * @module App/main
  */
 
 /**
- * Module representing Url Input
- * @module Input/Url
+ * Module representing Email Input
+ * @module App/Input/Email
  */
 
 // UMD boilerplate according to https://github.com/umdjs/umd
@@ -22,19 +22,20 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 }
 /**
  * @constructor
- * @alias module:Input/Url
+ * @alias module:App/Input/Email
  */
 define(function() {
 	"use strict";
-	var /** @type {module:config} */
+	var /** @type {module:App/config} */
 			config = require( "../config" ),
 			/**
 			* @constant
 			* @default
 			* @type {string}
 			*/
-			NAME = "Input/Url";
-	/** @lends module:Input/Url.prototype */
+		 NAME = "Input/Email";
+
+	/** @lends module:App/Input/Email.prototype */
 	return function() {
 		return {
 			__extends__: require( "Abstract" ),
@@ -50,13 +51,11 @@ define(function() {
 				* @returns {boolean}
 				*/
 				this.validator.validateValue = function() {
-					// The pattern is taken from http://stackoverflow.com/questions/2838404/javascript-regex-url-matching
-					// pattern fragments: protocol, domain name OR ip (v4) address, port and path, query string, fragment locater
-					var pattern = /^(https?:\/\/)?((([a-z\d]([a-z\d\-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[\-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=\-]*)?(\#[\-a-z\d_]*)?$/i;
-					config.debug && console.log( "Module Input/Url: validation" );
+					var pattern = /^[a-zA-Z0-9._\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$/g;
+					config.debug && console.log( "%s: validates value of %o", NAME, this.boundingBox.get( 0 ) );
 					pattern.test( this.boundingBox.val() ) ||
 						this.throwValidationException( "typeMismatch",
-							"Please enter a valid URL" );
+							"Please enter a valid email address" );
 				};
 			}
 		};
