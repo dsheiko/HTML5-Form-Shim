@@ -24,7 +24,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Text
  */
-define(function() {
+define(function( require ) {
 	"use strict";
 	var /** @type {module:App/config} */
 		config = require( "../config" ),
@@ -37,7 +37,7 @@ define(function() {
 	/** @lends module:App/Input/Text.prototype */
 	return function() {
 			return {
-			__extends__: require( "Abstract" ),
+			__extends__: require( "./Abstract" ),
 			/**
 			* @constructs
 			*/

@@ -31,7 +31,7 @@ module.exports = function(grunt) {
 					sourceMapRoot: "../src",
           minify: false,
 					config: {
-						jQuery: {
+						jquery: {
 							globalProperty: "jQuery"
 						}
 					}
@@ -47,7 +47,7 @@ module.exports = function(grunt) {
 					banner: "/*! <%= pkg.name %> - v<%= pkg.version %> - " +
                 "<%= grunt.template.today(\"yyyy-mm-dd\") %> */",
 					config: {
-						jQuery: {
+						jquery: {
 							globalProperty: "jQuery"
 						}
 					}

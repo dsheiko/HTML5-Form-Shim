@@ -19,7 +19,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:main
  */
-define(function() {
+define(function( require ) {
 	"use strict";
 		/**
 			* Get reference to jQuery
@@ -41,7 +41,7 @@ define(function() {
 				 *
 				 * @type {jQuery}
 				 */
-				$ = require( "jQuery" ),
+				$ = require( "jquery" ),
 
 				/**
 				* @type {module:App/Page}

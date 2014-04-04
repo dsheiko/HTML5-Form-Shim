@@ -23,9 +23,9 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Page
  */
-define(function() {
+define(function( require ) {
 	/** @type {module:jQuery} */
-	var $ = require( "jQuery" );
+	var $ = require( "jquery" );
 	/** @lends module:App/Page.prototype */
 	return function() {
 		var

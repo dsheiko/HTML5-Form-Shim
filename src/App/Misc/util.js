@@ -20,12 +20,12 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @namespace
  * @alias module:App/Misc/util
  */
-define(function() {
+define(function( require ) {
 	var
 			/** @type {object} */
 			document = window.document,
 			/** @type {module:jQuery} */
-			$ = require( "jQuery" ),
+			$ = require( "jquery" ),
 			/**
 			* Object.create replica for pseudo-classes of module design
 			* createInstance implements C-like inheritance
@@ -94,7 +94,7 @@ define(function() {
 		*/
 		onDomReady: function( fn ) {
 			if ( typeof define === "function" && define.amd ) {
-				require( [ "domReady" ], function ( domReady ) {
+				require( [ "./domReady" ], function ( domReady ) {
 					domReady( fn );
 				});
 			} else {

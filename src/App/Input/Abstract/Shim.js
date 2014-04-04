@@ -23,7 +23,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Abstract/Shim
  */
-define(function() {
+define(function( require ) {
 	/**
 	 * @param {Node} $node
 	 * @param {Boolean} isFormCustomValidation
@@ -31,7 +31,7 @@ define(function() {
 	 */
 	return function( $node, isFormCustomValidation, undefined ){
 		/** @type {module:App/jQuery} */
-		var $ = require( "jQuery" ),
+		var $ = require( "jquery" ),
 				/** @type {module:App/config} */
 				config = require( "../../config" ),
 				/**

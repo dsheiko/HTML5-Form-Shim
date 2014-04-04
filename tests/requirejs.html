@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>QUnit Test Suite</title>
+	<link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css">
+	<script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+	<script src="vendors/require.js"></script>
+</head>
+<body>
+	<div style="visibility: hidden">
+			<form id="test1">
+					<input id="email" type="email" />
+					<input id="number" type="number" />
+					<input id="url" type="url" />
+					<input id="tel" type="tel" pattern="^\+(?:[0-9] ?){6,14}[0-9]$" />
+					<input id="text" type="text" />
+					<input id="zip" type="zip" />
+			</form>
+			<form action="oldAction" data-enable-shim="true" target="_self" method="GET" id="test2">
+					<button id="btn1" formaction="newAction"></button>
+					<button id="btn2" formmethod="POST"></button>
+					<button id="btn3" formtarget="_blank"></button>
+					<button id="btn4" formenctype="application/x-www-form-urlencoded"></button>
+			</form>
+	</div>
+
+	<h1 id="qunit-header">Html5FormShim jQuery Plugin Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">test markup</div>
+  <div id="sandbox"></div>
+
+	<script type="text/javascript">
+		require.config({
+				baseUrl: "../src",
+				paths: {
+					jquery: "../tests/vendors/jquery-1.11.0.min"
+				}
+		});
+		require([ "h5formshim" ], function( $ ) {
+				console.log( $ ) // OK
+		});
+	</script>
+</body>
+</html>

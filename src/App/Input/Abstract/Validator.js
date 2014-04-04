@@ -23,14 +23,14 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Abstract/Validator
  */
-define(function() {
+define(function( require ) {
 	/**
 	 * @param {Node} node
 	 * @param {Boolean} isFormCustomValidation
 	 */
 	return function( $node, isFormCustomValidation ){
 		/** @type {module:App/jQuery} */
-		var $ = require( "jQuery" ),
+		var $ = require( "jquery" ),
 				/**
 				* @type {module:App/Misc/util}
 				*/
@@ -39,11 +39,11 @@ define(function() {
 				* Value Object representing constraint validation API validity default state
 				* @type {modele:Input/Abstract/Validator/Vo/ValidityDefaultState}
 				*/
-				ValidityDefaultStateVo = require( "Vo/ValidityDefaultState" ),
+				ValidityDefaultStateVo = require( "./Vo/ValidityDefaultState" ),
 				/**
 				* @type (module:App/dictionary)
 				*/
-				defaultValidationMessages = require( "Validator/dictionary" ),
+				defaultValidationMessages = require( "./Validator/dictionary" ),
 				/**
 				* reference to the bound validation message container
 				* @type {Node}

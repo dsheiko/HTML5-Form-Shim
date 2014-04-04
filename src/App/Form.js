@@ -23,13 +23,13 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Form
  */
-define(function() {
+define(function( require ) {
 	/** @type {module:jQuery} */
-	var $ = require( "jQuery" ),
+	var $ = require( "jquery" ),
 			/** @type {module:App/Misc/util} */
-			util = require( "Misc/util" ),
+			util = require( "./Misc/util" ),
 			/** @type {module:App/config} */
-			config = require( "config" ),
+			config = require( "./config" ),
 			/**
 			* @constant
 			* @default
@@ -38,14 +38,14 @@ define(function() {
 		  NAME = "Form",
 			/**
 			* Abstract input (input of a given type or textarea)
-			* @type {module:Input/Abstract}
+			* @type {module:App/Input/Abstract}
 			*/
 			AbstractInput = require( "./Input/Abstract" ),
 			/**
 			* Input type custom validators
 			* @type {object}
 			*/
-			Input = {
+			inputClasses = {
 				Text: require( "./Input/Text" ),
 				Tel: require( "./Input/Tel" ),
 				Email: require( "./Input/Email" ),
@@ -86,7 +86,7 @@ define(function() {
 		* @class
 		* @name Input.AbstractType
 		*/
-		Input[ util.ucfirst( type ) ] = function() {
+		inputClasses[ util.ucfirst( type ) ] = function() {
 			return {
 				__extends__: AbstractInput,
 				/**
@@ -106,8 +106,14 @@ define(function() {
 		};
 	};
 
-
-	return function(){
+	/**
+	 *
+	 * @param {Object} [inputClassesDi] - dependency injection
+	 */
+	return function( inputClassesDi ){
+		if ( inputClassesDi ) {
+			inputClasses = inputClassesDi;
+		}
 		/** @lends module:App/Form.prototype */
 		return {
 			/**
@@ -164,7 +170,7 @@ define(function() {
 					this.boundingBox.attr( "novalidate", "novalidate" );
 				}
 				this.shimFormAttrMutators();
-				this.initInputs();
+				inputClasses && this.initInputs();
 				this.boundingBox.on( "submit", function( e ){
 					that.handleOnSubmit( e );
 				});
@@ -186,7 +192,7 @@ define(function() {
 			* Get AbstractInput by node
 			* @access public
 			* @param {Node} node
-			* @returns (module:Input/AbstractInput)
+			* @returns (module:App/Input/AbstractInput)
 			*/
 			getInput: function( node ) {
 				// HTMLElement given
@@ -212,30 +218,30 @@ define(function() {
 			},
 			/**
 			* Shim formaction, formenctype, formmethod, and formtarget
+			* http://html5doctor.com/html5-forms-introduction-and-new-attributes/#formaction
 			* @access protected
 			*/
 			shimFormAttrMutators: function() {
 				var that = this;
-				this.boundingBox.find( "input, button" ).each(function(){
+				// From the specification:
+				// It has effect on the form element and can only be used with a submit
+				// or image button (type="submit" or type="image").
+				this.boundingBox.find( "button[type=submit], button[type=image]" ).each(function(){
 					$( this ).attr( "formaction" )  &&
 						$( this ).on( "click", function() {
-							that.boundingBox.attr( "action",
-								$( this ).attr( "formaction" ) );
+							that.boundingBox.attr( "action", $( this ).attr( "formaction" ) );
 						});
 					$( this ).attr( "formenctype" ) &&
 						$( this ).on( "click", function() {
-							that.boundingBox.attr( "enctype",
-								$( this ).attr( "formenctype" ) );
+							that.boundingBox.attr( "enctype", $( this ).attr( "formenctype" ) );
 						});
 					$( this ).attr( "formmethod" ) &&
 						$( this ).on( "click", function() {
-							that.boundingBox.attr( "method",
-								$( this ).attr( "formmethod" ) );
+							that.boundingBox.attr( "method", $( this ).attr( "formmethod" ) );
 						});
 					$( this ).attr( "formtarget" ) &&
 						$( this ).on( "click", function() {
-							that.boundingBox.attr( "target",
-								$( this ).attr( "formtarget" ) );
+							that.boundingBox.attr( "target", $( this ).attr( "formtarget" ) );
 						});
 				});
 			},
@@ -275,7 +281,7 @@ define(function() {
 			* Make an instance of custom validator for a given input type
 			* @access public
 			* @param {Node} element
-			* @constructs module:Input/AbstractInput
+			* @constructs module:App/Input/AbstractInput
 			*/
 			inputFactory: function( element ) {
 				var type = util.ucfirst( element.data( "type" ) || element.attr( "type" ) );
@@ -284,7 +290,7 @@ define(function() {
 					type = "Text";
 				}
 				return util
-					.createInstance( Input[ type ] || Input.Text, [ element, this.isCustomValidation() ] );
+					.createInstance( inputClasses[ type ] || inputClasses.Text, [ element, this.isCustomValidation() ] );
 			},
 			/**
 			* Handle on-submit event

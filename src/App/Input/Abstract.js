@@ -23,13 +23,13 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Abstract
  */
-define(function() {
+define(function( require ) {
 	/** @type {module:App/jQuery} */
-	var $ = require( "jQuery" ),
+	var $ = require( "jquery" ),
 			/** @type {module:App/Input/Abstract/Shim} */
-			Shim = require( "Abstract/Shim" ),
+			Shim = require( "./Abstract/Shim" ),
 			/** @type {module:App/Input/Abstract/Validator} */
-			Validator = require( "Abstract/Validator" );
+			Validator = require( "./Abstract/Validator" );
 	/** @lends module:App/Input/Abstract.prototype */
 	return function(){
 		return {
