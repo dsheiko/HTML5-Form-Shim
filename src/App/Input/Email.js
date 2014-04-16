@@ -26,8 +26,8 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  */
 define(function( require ) {
 	"use strict";
-	var /** @type {module:App/config} */
-			config = require( "../config" ),
+	var /** @type {module:App/Misc/log} */
+			log = require( "../Misc/log" ),
 			/**
 			* @constant
 			* @default
@@ -43,7 +43,7 @@ define(function( require ) {
 			* @constructs
 			*/
 			__constructor__: function() {
-				config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
+				log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 				/**
 				* Validate input value
 				*
@@ -52,7 +52,7 @@ define(function( require ) {
 				*/
 				this.validator.validateValue = function() {
 					var pattern = /^[a-zA-Z0-9._\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$/g;
-					config.debug && console.log( "%s: validates value of %o", NAME, this.boundingBox.get( 0 ) );
+					log.log( NAME, "validates value", this.boundingBox.get( 0 ) );
 					pattern.test( this.boundingBox.val() ) ||
 						this.throwValidationException( "typeMismatch",
 							"Please enter a valid email address" );

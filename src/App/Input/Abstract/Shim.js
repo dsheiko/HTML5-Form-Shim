@@ -32,8 +32,8 @@ define(function( require ) {
 	return function( $node, isFormCustomValidation, undefined ){
 		/** @type {module:App/jQuery} */
 		var $ = require( "jquery" ),
-				/** @type {module:App/config} */
-				config = require( "../../config" ),
+				/** @type {module:App/Misc/log} */
+				log = require( "../../Misc/log" ),
 				/**
 				 * @constant
 				 * @default
@@ -274,7 +274,7 @@ define(function( require ) {
 			* @access public
 			*/
 			degrade: function() {
-				config.debug && console.log( "%s: degraded %o", NAME, $node.get( 0 ) );
+				log.log( NAME, "degrades", $node.get( 0 ) );
 				$node.get( 0 ).type = "text";
 				return this;
 			}

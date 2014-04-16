@@ -26,8 +26,8 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  */
 define(function( require ) {
 	"use strict";
-	var /** @type {module:App/config} */
-		config = require( "../config" ),
+	var /** @type {module:App/Misc/log} */
+			log = require( "../Misc/log" ),
 		/**
 		* @constant
 		* @default
@@ -42,7 +42,7 @@ define(function( require ) {
 			* @constructs
 			*/
 			__constructor__: function() {
-				config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
+				log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 				/**
 				* Validate input value
 				*
@@ -51,7 +51,7 @@ define(function( require ) {
 				*/
 				this.validator.validateValue = function() {
 					var pattern = /^\+(?:[0-9] ?){6,14}[0-9]$/;
-					config.debug && console.log( "Module Input/Tel: validation" );
+					log.log( NAME, "validates", this.boundingBox.get( 0 ) );
 					pattern.test( this.boundingBox.val() ) ||
 						this.throwValidationException( "typeMismatch",
 						"Please enter a valid tel. number +1 11 11 11" );

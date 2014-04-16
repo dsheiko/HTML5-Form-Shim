@@ -26,8 +26,8 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  */
 define(function( require ) {
 	"use strict";
-	var /** @type {module:App/config} */
-		config = require( "../config" ),
+	var /** @type {module:App/Misc/log} */
+			log = require( "../Misc/log" ),
 		/**
 		* @constant
 		* @default
@@ -42,7 +42,7 @@ define(function( require ) {
 			* @constructs
 			*/
 			__constructor__: function() {
-				config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
+				log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 			}
 		};
 	};

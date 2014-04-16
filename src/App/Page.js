@@ -43,8 +43,11 @@ define(function( require ) {
 			 * @type {Node[]}
 			 */
 			forms = [];
-		/** @lends module:App/Page.prototype */
-		return {
+		/**
+		 * Expose the shim as global
+		 * @lends module:App/Page.prototype
+		 */
+		window.hfFormShim = {
 			/**
 			* @constructs
 			*/
@@ -70,5 +73,6 @@ define(function( require ) {
 				return null;
 			}
 		};
+		return window.hfFormShim;
 	};
 });

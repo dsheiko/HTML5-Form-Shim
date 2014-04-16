@@ -28,14 +28,14 @@ define(function( require ) {
 	"use strict";
 	/** @type {module:App/Misc/util} */
 	var util = require( "../Misc/util" ),
-		/** @type {module:App/config} */
-		config = require( "../config" ),
-		/**
-		* @constant
-		* @default
-		* @type {string}
-		*/
-		NAME = "Input/Number";
+			/** @type {module:App/Misc/log} */
+			log = require( "../Misc/log" ),
+			/**
+			* @constant
+			* @default
+			* @type {string}
+			*/
+			NAME = "Input/Number";
 	/** @lends module:App/Input/Number.prototype */
 	return function() {
 		return {
@@ -51,7 +51,7 @@ define(function( require ) {
 				* @returns {boolean}
 				*/
 				this.validator.validateValue = function() {
-					config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
+					log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 					util.isNumber( parseInt( this.boundingBox.val(), 10 ) ) ||
 						this.throwValidationException( "typeMismatch",
 							"Please enter a valid number" );

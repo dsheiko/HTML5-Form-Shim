@@ -50,7 +50,12 @@ define(function( require ) {
 				/**
 				* @type {module:App/Form}
 				*/
-				Form = require( "./App/Form" );
+				Form = require( "./App/Form" ),
+				/**
+				* @callback onReadyCb
+				* @type {onReadyCb}
+				*/
+			  onReadyCb = function(){};
 
 
 		/**
@@ -108,6 +113,7 @@ define(function( require ) {
 
 		util.onDomReady(function(){
 			composite = util.createInstance( Page );
+			onReadyCb();
 		});
 
 		if ( typeof $ === "undefined" ) {
@@ -115,12 +121,14 @@ define(function( require ) {
 		}
 
 		/** @lends module:main.prototype */
-		return {
+		window.hfFormShim = {
+
 			/**
 			* Repeat initialization on a given form or all the forms in DOM
 			* if no argument given
 			* @access public
 			* @param {object} [options]
+			* @returns {module:main}
 			*/
 			init: function( options ) {
 				if ( options && options.boundingBox && options.boundingBox.length ) {
@@ -128,6 +136,16 @@ define(function( require ) {
 				} else {
 					composite = util.createInstance( Page );
 				}
+				return this;
+			},
+			/**
+			 * Assign on-ready callback (triggered by util.onDomReady)
+			 * @param {onReadyCb} cb
+			 * @returns {module:main}
+			 */
+			onReady: function( cb ) {
+				onReadyCb = cb;
+				return this;
 			},
 			/**
 			* Obtain AbstractInput (hfFormShim input wrapper) for the given node
@@ -139,4 +157,5 @@ define(function( require ) {
 				return composite.getInput( node );
 			}
 	};
+	return window.hfFormShim;
 });

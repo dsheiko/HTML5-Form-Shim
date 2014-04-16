@@ -28,8 +28,8 @@ define(function( require ) {
 	var $ = require( "jquery" ),
 			/** @type {module:App/Misc/util} */
 			util = require( "./Misc/util" ),
-			/** @type {module:App/config} */
-			config = require( "./config" ),
+			 /** @type {module:App/Misc/log} */
+			log = require( "./Misc/log" ),
 			/**
 			* @constant
 			* @default
@@ -108,12 +108,8 @@ define(function( require ) {
 
 	/**
 	 *
-	 * @param {Object} [inputClassesDi] - dependency injection
 	 */
-	return function( inputClassesDi ){
-		if ( inputClassesDi ) {
-			inputClasses = inputClassesDi;
-		}
+	return function(){
 		/** @lends module:App/Form.prototype */
 		return {
 			/**
@@ -161,7 +157,7 @@ define(function( require ) {
 				}
 				this.boundingBox = options.boundingBox;
 
-				config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
+				log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 
 				$.extend( this.options, options );
 				// Untie object reference

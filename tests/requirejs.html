@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-debug="true">
 <head>
 	<meta charset="UTF-8" />
 	<title>QUnit Test Suite</title>
@@ -18,11 +18,12 @@
 					<input id="zip" type="zip" />
 			</form>
 			<form action="oldAction" data-enable-shim="true" target="_self" method="GET" id="test2">
-					<button id="btn1" formaction="newAction"></button>
-					<button id="btn2" formmethod="POST"></button>
-					<button id="btn3" formtarget="_blank"></button>
-					<button id="btn4" formenctype="application/x-www-form-urlencoded"></button>
+					<button id="btn1" type="submit" formaction="newAction"></button>
+					<button id="btn2" type="submit" formmethod="POST"></button>
+					<button id="btn3" type="submit" formtarget="_blank"></button>
+					<button id="btn4" type="submit" formenctype="application/x-www-form-urlencoded"></button>
 			</form>
+			<form data-enable-shim="true" method="GET" id="test3"></form>
 	</div>
 
 	<h1 id="qunit-header">Html5FormShim jQuery Plugin Test Suite</h1>
@@ -33,6 +34,8 @@
 	<div id="qunit-fixture">test markup</div>
   <div id="sandbox"></div>
 
+	<script id="debug-log" type="text/plain"></script>
+
 	<script type="text/javascript">
 		require.config({
 				baseUrl: "../src",
@@ -40,8 +43,60 @@
 					jquery: "../tests/vendors/jquery-1.11.0.min"
 				}
 		});
-		require([ "h5formshim" ], function( $ ) {
-				console.log( $ ) // OK
+		require([ "jquery", "./App/Misc/log", "h5formshim" ], function( $, log, hfFormShim ) {
+			var $debugLog = $( "#debug-log" ),
+					log = [];
+
+			hfFormShim.init({
+				boundingBox: $( "#test1" )
+			}).onReady(function(){
+
+				log = $debugLog.html().split( "\n" );
+
+				module( "When form explicetly pointed out" );
+					test( "Is the form #test1 initialized", function() {
+						ok( $.inArray( "Form:initializes:test1", log ) !== -1 );
+					});
+					test( "Is the input #email initialized", function() {
+						ok( $.inArray( "Input/Email:initializes:email", log ) !== -1 );
+					});
+					test( "Is the input #url initialized", function() {
+						ok( $.inArray( "Input/Url:initializes:url", log ) !== -1 );
+					});
+					test( "Is the input #tel initialized", function() {
+						ok( $.inArray( "Input/Text:initializes:tel", log ) !== -1 );
+					});
+					test( "Is the input #text initialized", function() {
+						ok( $.inArray( "Input/Text:initializes:text", log ) !== -1 );
+					});
+					test( "Is the input #zip initialized", function() {
+						ok( $.inArray( "Input/Text:initializes:zip", log ) !== -1 );
+					});
+
+
+				module( "When form initialized during bootstrap" );
+					test( "Are all the forms marked with data-enable-shim initialized", function() {
+						ok( $.inArray( "Form:initializes:test2", log ) !== -1 );
+						ok( $.inArray( "Form:initializes:test3", log ) !== -1 );
+					});
+
+				module( "Shim reset attributes" );
+					test( "Shim formaction, formenctype, formmethod, and formtarget", function() {
+						var $form = $( "#test2" );
+						$form.on( "submit", function( e ){
+							e.preventDefault();
+						});
+						$( "#btn1" ).trigger( "click" );
+						ok( $form.attr( "action") === "newAction", "formaction" );
+						$( "#btn2" ).trigger( "click" );
+						ok( $form.attr( "method") === "POST", "formmethod" );
+						$( "#btn3" ).trigger( "click" );
+						ok( $form.attr( "target") === "_blank", "formtarget" );
+						$( "#btn4" ).trigger( "click" );
+						ok( $form.attr( "enctype") === "application/x-www-form-urlencoded", "formenctype" );
+					});
+			});
+
 		});
 	</script>
 </body>
