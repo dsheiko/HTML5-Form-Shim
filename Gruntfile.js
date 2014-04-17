@@ -84,7 +84,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask( "test", [ "jshint", "jscs", "qunit" ]);
+  grunt.registerTask( "test", [ "jshint", "jscs:test", "qunit" ]);
 	grunt.registerTask( "debug", [ "jshint", "cjsc:debug" ]);
   grunt.registerTask( "build", [ "clean", , "cjsc:build" ]);
   grunt.registerTask( "default", [ "test" ]);

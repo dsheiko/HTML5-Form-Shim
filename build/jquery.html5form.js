@@ -557,7 +557,7 @@ define(function( require ) {
 			/**
 			 * @alias module:App/form
 			 */
-			Form =  function(){
+			Form = function(){
 				/** @lends module:App/Form.prototype */
 				return {
 					/**
@@ -861,7 +861,7 @@ define(function() {
 	/** @type {module:jQuery} */
 	var $ = _require( "jquery" ),
 			isSync = false,
-			isDebugMode = false,
+			isConsoleLogMode = false,
 			$output = null,
 
 			/** @type {LogVo[]} */
@@ -872,7 +872,13 @@ define(function() {
 		 * @param {Node} node
 		 */
 			renderMessage = function( module, action, node ) {
-				if ( !isDebugMode ){
+				$output && $output.html(function( i, html ){
+					return html + module + ":" + action + (
+						( node && node.id ) ? ":" + node.id : ""
+						) + "\n";
+				});
+
+				if ( !isConsoleLogMode ){
 					return;
 				}
 				if ( node ) {
@@ -880,20 +886,17 @@ define(function() {
 				} else {
 					console.log( "%s: %s", module, action );
 				}
-				$output && $output.html(function( i, html ){
-					return html + module + ":" + action + (
-						( node && node.id ) ? ":" + node.id : ""
-						) + "\n";
-				});
 			},
 
 			/**
 			 * Obtain bindings from DOM
 			 */
 			syncUi = function(){
+				var logNode = $( "#" + $( "html" ).data( "debug-log" ) );
 				isSync = true;
-				isDebugMode = !!$( "html" ).data( "debug" );
-				$output = $( "#debug-log").length ? $( "#debug-log") : null;
+
+				isConsoleLogMode = !!$( "html" ).data( "debug-console" );
+				$output = logNode.length ? logNode : null;
 
 				$.each( messages, function( i ){
 					renderMessage.apply( renderMessage, messages[ i ] );
@@ -1075,8 +1078,21 @@ define(function( require ) {
 				* @default
 				* @type {string[]}
 				*/
-			 H5_INPUT_TYPES = [ "color", "date", "datetime", "datetime-local", "email", "month",
-				 "number", "range", "search", "tel", "time", "url", "week" ],
+			 H5_INPUT_TYPES = [
+				 "color",
+				 "date",
+				 "datetime",
+				 "datetime-local",
+				 "email",
+				 "month",
+				 "number",
+				 "range",
+				 "search",
+				 "tel",
+				 "time",
+				 "url",
+				 "week"
+			 ],
 				/**
 				 * Module that detects HTML5 and CSS3 features in the user’s browser
 				 * @type {modele:modernizr}
@@ -2081,7 +2097,9 @@ define(function( require ) {
 				this.validator.validateValue = function() {
 					// The pattern is taken from http://stackoverflow.com/questions/2838404/javascript-regex-url-matching
 					// pattern fragments: protocol, domain name OR ip (v4) address, port and path, query string, fragment locater
-					var pattern = /^(https?:\/\/)?((([a-z\d]([a-z\d\-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[\-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=\-]*)?(\#[\-a-z\d_]*)?$/i;
+					var pattern = new RegExp( "^(https?:\\/\\/)?((([a-z\\d]([a-z\\d\\-]*[a-z\\d])*)\\.)" +
+						 "+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[\\-a-z\\d%_.~+]*)" +
+						 "*(\\?[;&a-z\\d%_.~+=\\-]*)?(\\#[\\-a-z\\d_]*)?$", "i" );
 					log.log( NAME, "validates", this.boundingBox.get( 0 ) );
 					pattern.test( this.boundingBox.val() ) ||
 						this.throwValidationException( "typeMismatch",

@@ -31,7 +31,7 @@ define(function() {
 	/** @type {module:jQuery} */
 	var $ = require( "jquery" ),
 			isSync = false,
-			isDebugMode = false,
+			isConsoleLogMode = false,
 			$output = null,
 
 			/** @type {LogVo[]} */
@@ -42,7 +42,13 @@ define(function() {
 		 * @param {Node} node
 		 */
 			renderMessage = function( module, action, node ) {
-				if ( !isDebugMode ){
+				$output && $output.html(function( i, html ){
+					return html + module + ":" + action + (
+						( node && node.id ) ? ":" + node.id : ""
+						) + "\n";
+				});
+
+				if ( !isConsoleLogMode ){
 					return;
 				}
 				if ( node ) {
@@ -50,20 +56,17 @@ define(function() {
 				} else {
 					console.log( "%s: %s", module, action );
 				}
-				$output && $output.html(function( i, html ){
-					return html + module + ":" + action + (
-						( node && node.id ) ? ":" + node.id : ""
-						) + "\n";
-				});
 			},
 
 			/**
 			 * Obtain bindings from DOM
 			 */
 			syncUi = function(){
+				var logNode = $( "#" + $( "html" ).data( "debug-log" ) );
 				isSync = true;
-				isDebugMode = !!$( "html" ).data( "debug" );
-				$output = $( "#debug-log" ).length ? $( "#debug-log" ) : null;
+
+				isConsoleLogMode = !!$( "html" ).data( "debug-console" );
+				$output = logNode.length ? logNode : null;
 
 				$.each( messages, function( i ){
 					renderMessage.apply( renderMessage, messages[ i ] );
