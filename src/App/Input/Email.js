@@ -51,7 +51,7 @@ define(function( require ) {
 				* @returns {boolean}
 				*/
 				this.validator.validateValue = function() {
-					var pattern = /^[a-zA-Z0-9._\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$/g;
+					var pattern = /^[a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~\.]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$/g;
 					log.log( NAME, "validates value", this.boundingBox.get( 0 ) );
 					pattern.test( this.boundingBox.val() ) ||
 						this.throwValidationException( "typeMismatch",

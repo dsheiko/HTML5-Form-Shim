@@ -78,6 +78,13 @@ define(function( require ) {
 				this.lookForValidationMessageNode();
 			},
 			/**
+			 * Reset vaidator
+			 */
+			reset: function() {
+				this.validationMessage = "";
+				this.validity = new ValidityDefaultStateVo();
+			},
+			/**
 			* Emulate API method checkValidity
 			* @access public
 			*/
@@ -110,6 +117,15 @@ define(function( require ) {
 				return ( $node.val() === $node.attr( "placeholder" ) ||
 					!$node.val() );
 			},
+
+			/**
+			 * Access value  for $.setCustomInputTypeValidator
+			 * @returns {*}
+			 */
+			val: function() {
+				return $node.val();
+			},
+
 			/**
 			* Tell is the input required
 			* @access public
@@ -195,6 +211,21 @@ define(function( require ) {
 				this.validationMessage = validationMessage ||
 					msgContainer[ prop ];
 				this.shimConstraintValidationApi();
+			},
+			/**
+			* Try to emulate Constraint Validation Api
+			* http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api
+			* on legacy browsers
+			* @access protected
+			*/
+			shimConstraintValidationApi: function() {
+				var node = $node.get( 0 );
+				try {
+					node.validity = this.validity;
+				} catch ( err ) {
+					// If the element has only getter (new browsers)
+					// just ignore it
+				}
 			},
 			/**
 			* Fallback for pattern validator

@@ -30,36 +30,60 @@ define(function() {
 	"use strict";
 	/** @type {module:jQuery} */
 	var $ = require( "jquery" ),
+			isSync = false,
 			isDebugMode = false,
-			$output = null;
+			$output = null,
 
-	$( window.document ).ready(function(){
-		isDebugMode = !!$( "html" ).data( "debug" );
-		$output = $( "#debug-log").length ? $( "#debug-log") : null;
-	});
+			/** @type {LogVo[]} */
+			messages = [],
+			/**
+		 * @param {string} module
+		 * @param {string} action
+		 * @param {Node} node
+		 */
+			renderMessage = function( module, action, node ) {
+				if ( !isDebugMode ){
+					return;
+				}
+				if ( node ) {
+					console.log( "%s: %s on %o", module, action, node );
+				} else {
+					console.log( "%s: %s", module, action );
+				}
+				$output && $output.html(function( i, html ){
+					return html + module + ":" + action + (
+						( node && node.id ) ? ":" + node.id : ""
+						) + "\n";
+				});
+			},
+
+			/**
+			 * Obtain bindings from DOM
+			 */
+			syncUi = function(){
+				isSync = true;
+				isDebugMode = !!$( "html" ).data( "debug" );
+				$output = $( "#debug-log").length ? $( "#debug-log") : null;
+
+				$.each( messages, function( i ){
+					renderMessage.apply( renderMessage, messages[ i ] );
+				});
+			};
+
+			$( window.document ).ready( syncUi );
 
 	return {
-		/** @type {LogVo[]} */
-		messages: [],
+
 		/**
 		 * @param {string} module
 		 * @param {string} action
 		 * @param {Node} node
 		 */
-		log: function( module, action, node) {
-			if ( !isDebugMode ){
-				return;
+		log: function( module, action, node ) {
+			if ( isSync ) {
+				return renderMessage( module, action, node );
 			}
-			if ( node ) {
-				console.log( "%s: %s on %o", module, action, node );
-			} else {
-				console.log( "%s: %s", module, action );
-			}
-			$output && $output.html(function( i, html ){
-				return html + module + ":" + action + (
-					( node && node.id ) ? ":" + node.id : ""
-					) + "\n";
-			});
+			messages.push([ module, action, node ]);
 		}
 	};
 });

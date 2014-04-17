@@ -57,7 +57,7 @@ define(function( require ) {
 				this.boundingBox = boundingBox;
 				this.validator = new Validator( boundingBox, isFormCustomValidation );
 				this.validator.init();
-				this.shim = new Shim( boundingBox, isFormCustomValidation );
+				this.shim = new Shim( boundingBox, isFormCustomValidation, this );
 				this.shim.init();
 				this.updateState();
 			},

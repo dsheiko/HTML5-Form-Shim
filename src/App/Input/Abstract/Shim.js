@@ -27,9 +27,10 @@ define(function( require ) {
 	/**
 	 * @param {Node} $node
 	 * @param {Boolean} isFormCustomValidation
+	 * @param {module:App/Input/Abstract} input
 	 * @param {undefined} undefined
 	 */
-	return function( $node, isFormCustomValidation, undefined ){
+	return function( $node, isFormCustomValidation, input, undefined ){
 		/** @type {module:App/jQuery} */
 		var $ = require( "jquery" ),
 				/** @type {module:App/Misc/log} */
@@ -85,7 +86,7 @@ define(function( require ) {
 					this.shimRequiredAttr();
 				}
 				// Shim autofocus attribute when it's not supported
-				if ( isFormCustomValidation && !modernizr.supportedInputProps.autofocus ) {
+				if ( isFormCustomValidation || !modernizr.supportedInputProps.autofocus ) {
 					this.shimFocusPseudoClass();
 					this.shimAutofocus();
 				}
@@ -169,17 +170,13 @@ define(function( require ) {
 				}
 				deferredRequest = window.setTimeout( function(){
 					// Reset input validity info before validation
-					that.resetValidationState();
+					input.validator.resetValidationState();
 					deferredRequest = null;
 					that.invokeOnInputCallBack();
-					$node.trigger( "oninput", that );
-					that.checkValidityWithoutRequired();
-					that.updateState();
-
-
-
-
-					that.validationMessageNode && that.showValidationMessage();
+					$node.trigger( "input", that );
+					input.validator.checkValidityWithoutRequired();
+					input.updateState();
+					input.validator.validationMessageNode && input.validator.showValidationMessage();
 				}, ONINPUT_DELAY );
 			},
 			/**
@@ -202,6 +199,7 @@ define(function( require ) {
 			* @access protected
 			*/
 			handleOnFocus: function() {
+				$node.addClass( "focus" );
 				if ( $node.val() === $node.attr( "placeholder" ) ) {
 					$node.val( "" );
 					$node.removeClass( "placeholder" );
@@ -213,6 +211,7 @@ define(function( require ) {
 			* @access protected
 			*/
 			handleOnBlur: function() {
+				$node.removeClass( "focus" );
 				if ( !$node.val() ) {
 					$node.val( $node.attr( "placeholder" ) );
 					$node.addClass( "placeholder" );
@@ -243,28 +242,15 @@ define(function( require ) {
 					$node.data( "custom-validation" );
 			},
 			/**
-			* Try to emulate Constraint Validation Api
-			* http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api
-			* on legacy browsers
-			* @access protected
-			*/
-			shimConstraintValidationApi: function() {
-				var node = $node.get( 0 );
-				try {
-					node.validity = this.validity;
-				} catch ( err ) {
-					// If the element has only getter (new browsers)
-					// just ignore it
-				}
-			},
-			/**
-			 *
+			 * Wrap with cross-cutting concern
+			 * Example: input.setCustomValidity( "The two passwords must match." );
 			 * @returns {undefined}
 			 */
 			shimSetCustomValidity: function() {
+				var old = $node.get( 0 ).setCustomValidity || function(){};
 				$node.get( 0 ).setCustomValidity = function( msg ) {
-					msg && this.throwValidationException( "customError", msg );
-					$node.get( 0 ).setCustomValidity( msg );
+					msg && input.validator.throwValidationException( "customError", msg );
+					old( msg );
 				};
 			},
 

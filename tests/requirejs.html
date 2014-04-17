@@ -11,13 +11,15 @@
 	<div style="visibility: hidden">
 			<form id="test1">
 					<input id="email" type="email" />
-					<input id="number" type="number" />
+					<input id="number" type="number" min="1" max="10" />
 					<input id="url" type="url" />
 					<input id="tel" type="tel" pattern="^\+(?:[0-9] ?){6,14}[0-9]$" />
 					<input id="text" type="text" />
 					<input id="zip" type="zip" />
+					<input id="required" required />
 			</form>
 			<form action="oldAction" data-enable-shim="true" target="_self" method="GET" id="test2">
+					<input id="text2" />
 					<button id="btn1" type="submit" formaction="newAction"></button>
 					<button id="btn2" type="submit" formmethod="POST"></button>
 					<button id="btn3" type="submit" formtarget="_blank"></button>
@@ -26,7 +28,7 @@
 			<form data-enable-shim="true" method="GET" id="test3"></form>
 	</div>
 
-	<h1 id="qunit-header">Html5FormShim jQuery Plugin Test Suite</h1>
+	<h1 id="qunit-header">Html5FormShim jQuery Plugin Test Suite (RequireJS)</h1>
 	<h2 id="qunit-banner"></h2>
 	<div id="qunit-testrunner-toolbar"></div>
 	<h2 id="qunit-userAgent"></h2>
@@ -41,9 +43,11 @@
 				baseUrl: "../src",
 				paths: {
 					jquery: "../tests/vendors/jquery-1.11.0.min"
-				}
+				},
+				urlArgs: "bust=" + ( new Date() ).getTime()
 		});
-		require([ "jquery", "./App/Misc/log", "h5formshim" ], function( $, log, hfFormShim ) {
+
+		require([ "require", "jquery", "h5formshim" ], function( require, $, hfFormShim ) {
 			var $debugLog = $( "#debug-log" ),
 					log = [];
 
@@ -95,6 +99,173 @@
 						$( "#btn4" ).trigger( "click" );
 						ok( $form.attr( "enctype") === "application/x-www-form-urlencoded", "formenctype" );
 					});
+
+					module( "Test validateValue methods on form controls" );
+						test( "email's value has type mismatch", function( assert ) {
+							var $input = $( "#email" ),
+									validator = hfFormShim.getInput( $input ).validator;
+							$input.val( "invalid-email" );
+							validator.reset();
+							validator.validateValue();
+							assert.ok( !validator.validity.valid );
+							assert.ok( validator.validity.typeMismatch );
+						});
+						test( "email's value is valid", function( assert ) {
+							var $input = $( "#email" ),
+									validator = hfFormShim.getInput( $input ).validator;
+							$input.val( "valid.email@email.com" );
+							validator.reset();
+							validator.validateValue();
+							assert.ok( validator.validity.valid );
+						});
+						test( "number's value has type mismatch", function( assert ) {
+							var $input = $( "#number" ),
+									validator = hfFormShim.getInput( $input ).validator;
+							$input.val( "invalid-number" );
+							validator.reset();
+							validator.validateValue();
+							assert.ok( !validator.validity.valid );
+							assert.ok( validator.validity.typeMismatch );
+						});
+						test( "number's value has rangeUnderflow", function( assert ) {
+							var $input = $( "#number" ),
+									validator = hfFormShim.getInput( $input ).validator;
+							$input.val( 0 );
+							validator.reset();
+							validator.validateValue();
+							assert.ok( !validator.validity.valid );
+							assert.ok( validator.validity.rangeUnderflow );
+						});
+						test( "number's value has rangeOverflow", function( assert ) {
+							var $input = $( "#number" ),
+									validator = hfFormShim.getInput( $input ).validator;
+							$input.val( 20 );
+							validator.reset();
+							validator.validateValue();
+							assert.ok( !validator.validity.valid );
+							assert.ok( validator.validity.rangeOverflow );
+						});
+						test( "number's value is valid", function( assert ) {
+							var $input = $( "#number" ),
+									validator = hfFormShim.getInput( $input ).validator;
+							$input.val( 5 );
+							validator.reset();
+							validator.validateValue();
+							assert.ok( validator.validity.valid );
+						});
+						test( "url's value has type mismatch", function( assert ) {
+							var $input = $( "#url" ),
+									validator = hfFormShim.getInput( $input ).validator;
+							$input.val( "invalid-url" );
+							validator.reset();
+							validator.validateValue();
+							assert.ok( !validator.validity.valid );
+							assert.ok( validator.validity.typeMismatch );
+						});
+						test( "url's value is valid", function( assert ) {
+							var $input = $( "#url" ),
+									validator = hfFormShim.getInput( $input ).validator;
+							$input.val( "http://google.com" );
+							validator.reset();
+							validator.validateValue();
+							assert.ok( validator.validity.valid );
+						});
+
+						test( "tel's value has type patternMismatch (validateByPattern)", function( assert ) {
+							var $input = $( "#tel" ),
+									validator = hfFormShim.getInput( $input ).validator;
+							$input.val( "invalid-tel" );
+							validator.reset();
+							validator.validateByPattern();
+							assert.ok( !validator.validity.valid );
+							assert.ok( validator.validity.patternMismatch );
+						});
+						test( "tel's value is valid", function( assert ) {
+							var $input = $( "#tel" ),
+									validator = hfFormShim.getInput( $input ).validator;
+							$input.val( "+48 111 11" );
+							validator.reset();
+							validator.validateByPattern();
+							assert.ok( validator.validity.valid );
+						});
+
+
+						test( "custom validator using context to reach control", function( assert ) {
+							var $input = $( "#zip" ),
+									validator,
+									msg = "Please enter a valid zip code";
+							$input.val( "invalid-zip" );
+
+							// Using context to reach control
+							$.setCustomInputTypeValidator( "Zip", msg, function() {
+									var pattern = /^[0-9]{6,8}$/g;
+									return pattern.test( $( this ).val() );
+							});
+
+							validator = hfFormShim.getInput( $input ).validator;
+							validator.reset();
+							validator.validateValue();
+
+							assert.ok( !validator.validity.valid );
+							assert.ok( validator.validity.customError);
+							assert.strictEqual( validator.validationMessage, msg );
+						});
+
+						test( "custom validator using argument to reach control", function( assert ) {
+							var $input = $( "#zip" ),
+									validator,
+									msg = "Please enter a valid zip code";
+							$input.val( "invalid-zip" );
+
+							// Using argument to reach control
+						 $.setCustomInputTypeValidator( "Zip", msg, function( control ) {
+								 var pattern = /^[0-9]{6,8}$/g, isValid = pattern.test( control.val() );
+								 isValid || control.throwValidationException( "typeMismatch", "Please enter a valid zip code" );
+								 return isValid;
+						 });
+
+							validator = hfFormShim.getInput( $input ).validator;
+							validator.reset();
+							validator.validateValue();
+
+							assert.ok( !validator.validity.valid );
+							assert.ok( validator.validity.customError);
+							assert.strictEqual( validator.validationMessage, msg );
+						});
+
+						test( "zip's value is valid", function( assert ) {
+							var $input = $( "#zip" ),
+									validator,
+									msg = "Please enter a valid zip code";
+							$input.val( "803333" );
+							// Using context to reach control
+							$.setCustomInputTypeValidator( "Zip", msg, function() {
+									var pattern = /^[0-9]{6,8}$/g;
+									return pattern.test( $( this ).val() );
+							});
+							validator = hfFormShim.getInput( $input ).validator;
+							validator.reset();
+							validator.validateValue();
+							assert.ok( validator.validity.valid );
+						});
+
+					module( "Test setCustomValidity constraint on form controls" );
+						test( "When manually defined, input throws validation error", function( assert ) {
+							var $input = $( "#email" ),
+									msg = "Custom message",
+									validator = hfFormShim.getInput( $input ).validator;
+
+							// The control was set externally to error state
+	            $input.setCustomValidity( msg );
+
+							$input.val( "invalid-email" );
+							validator.reset();
+							validator.validateCustomValidity();
+							assert.ok( !validator.validity.valid );
+							assert.strictEqual( validator.validationMessage, msg );
+						});
+
+
 			});
 
 		});

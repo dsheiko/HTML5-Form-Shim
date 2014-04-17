@@ -93,20 +93,13 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:main
  */
-define(function() {
+define(function( require ) {
 	"use strict";
 		/**
 			* Get reference to jQuery
 			* @type {object}
 			**/
 		var
-
-				/**
-				 * Composite that can as Page as Form
-				 * @type (object)
-				 */
-				composite = null,
-
 				/**
 				 * @type {module:App/Misc/util}
 				 */
@@ -118,14 +111,27 @@ define(function() {
 				$ = _require( "jquery" ),
 
 				/**
+				* Page singleton
 				* @type {module:App/Page}
 				*/
-				Page = _require( "src/App/Page.js" ),
+				page = _require( "src/App/Page.js" ),
 				/**
 				* @type {module:App/Form}
 				*/
-				Form = _require( "src/App/Form.js" );
+				Form = _require( "src/App/Form.js" ),
+				/**
+				* @callback onReadyCb
+				* @type {onReadyCb}
+				*/
+			  onReadyCb = function(){};
 
+		/**
+		 * Wrap $.setCustomInputTypeValidator defined in module:App/Form to make it caling page.init
+		 */
+		$.setCustomInputTypeValidator = function() {
+			Form.setCustomInputTypeValidator.apply( this, arguments );
+			page.init();
+		};
 
 		/**
 		* Render tooltip when validation error happens on form submition
@@ -180,8 +186,10 @@ define(function() {
 	};
 
 
+
 		util.onDomReady(function(){
-			composite = util.createInstance( Page );
+			page.syncUi();
+			onReadyCb();
 		});
 
 		if ( typeof $ === "undefined" ) {
@@ -189,19 +197,31 @@ define(function() {
 		}
 
 		/** @lends module:main.prototype */
-		return {
+		window.hfFormShim = {
+
 			/**
 			* Repeat initialization on a given form or all the forms in DOM
 			* if no argument given
 			* @access public
 			* @param {object} [options]
+			* @returns {module:main}
 			*/
 			init: function( options ) {
 				if ( options && options.boundingBox && options.boundingBox.length ) {
-					composite = util.createInstance( Form, [ options ] );
+					page.add( util.createInstance( Form, [ options ] ) );
 				} else {
-					composite = util.createInstance( Page );
+					page.syncUi();
 				}
+				return this;
+			},
+			/**
+			 * Assign on-ready callback (triggered by util.onDomReady)
+			 * @param {onReadyCb} cb
+			 * @returns {module:main}
+			 */
+			onReady: function( cb ) {
+				onReadyCb = cb;
+				return this;
 			},
 			/**
 			* Obtain AbstractInput (hfFormShim input wrapper) for the given node
@@ -210,9 +230,10 @@ define(function() {
 			* @returns {module:Input/Abstract}
 			*/
 			getInput: function( node ) {
-				return composite.getInput( node );
+				return page.getInput( node );
 			}
 	};
+	return window.hfFormShim;
 });
 	return module;
 });
@@ -240,7 +261,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @namespace
  * @alias module:App/Misc/util
  */
-define(function() {
+define(function( require ) {
 	var
 			/** @type {object} */
 			document = window.document,
@@ -314,7 +335,7 @@ define(function() {
 		*/
 		onDomReady: function( fn ) {
 			if ( typeof define === "function" && define.amd ) {
-				require( [ "domReady" ], function ( domReady ) {
+				require( [ "./domReady" ], function ( domReady ) {
 					domReady( fn );
 				});
 			} else {
@@ -340,15 +361,30 @@ define(function() {
 			return !isNaN( parseFloat( value ) ) && isFinite( value );
 		},
 		/**
-			* Make a string's first character uppercase, others lowercase
-			* @memberof module:App/Misc/util
-			* @param {string} str
-			* @returns {string}
-			*/
-			ucfirst: function( str ) {
-				str += "";
-				return str.charAt( 0 ).toUpperCase() + ( str.substr( 1 ).toLowerCase() );
+		* Make a string's first character uppercase, others lowercase
+		* @memberof module:App/Misc/util
+		* @param {string} str
+		* @returns {string}
+		*/
+		ucfirst: function( str ) {
+			str += "";
+			return str.charAt( 0 ).toUpperCase() + ( str.substr( 1 ).toLowerCase() );
+		},
+		/**
+		 * Simplified replica of ES5 Array.prototype.filter
+		 * @param {*[]} arr
+		 * @param {function} cb
+		 * @returns {*[]}
+		 */
+		filter: function( arr, cb ) {
+			var i = 0,
+					len = arr.length,
+					res = [];
+			for ( ; i < len; i++ ) {
+				cb( arr[ i ] ) && res.push( arr[ i ] );
 			}
+      return res;
+		}
 	};
 });
 	return module;
@@ -386,11 +422,11 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Page
  */
-define(function() {
+define(function( require ) {
 	/** @type {module:jQuery} */
 	var $ = _require( "jquery" );
 	/** @lends module:App/Page.prototype */
-	return function() {
+	return (function() {
 		var
 		/**
 			* Module representing the Form
@@ -406,15 +442,32 @@ define(function() {
 			 * @type {Node[]}
 			 */
 			forms = [];
-		/** @lends module:App/Page.prototype */
+		/**
+		 * Expose the shim as global
+		 * @lends module:App/Page.prototype
+		 */
 		return {
 			/**
-			* @constructs
+			* Sync UI on DOM ready
 			*/
-			__constructor__: function() {
+			syncUi: function() {
 				$( "form[data-enable-shim='true']" ).each(function(){
-					forms.push( util.createInstance( Form, [ { boundingBox: $( this ) } ] ) );
+					var $node = $( this );
+					// Ignore if node is already added
+					if ( util.filter( forms, function( item ){
+							return item.boundingBox === $node;
+						}).length ) {
+						return;
+					}
+					forms.push( util.createInstance( Form, [ { boundingBox: $node } ] ) );
 				});
+			},
+			/**
+			 * Add form into the stack
+			 * @param {moule:App/Form} form
+			 */
+			add: function( form ) {
+				forms.push( form );
 			},
 			/**
 			* Look up for AbstractInput instance for the given HTMLElement
@@ -431,9 +484,17 @@ define(function() {
 					}
 				}
 				return null;
+			},
+			/**
+			 * Init all the forms (useful when inputs must be reinitialized)
+			 */
+			init: function() {
+				$.each( forms, function( i ){
+					forms[ i ].init();
+				});
 			}
 		};
-	};
+	}());
 });
 	return module;
 });
@@ -464,13 +525,13 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Form
  */
-define(function() {
+define(function( require ) {
 	/** @type {module:jQuery} */
 	var $ = _require( "jquery" ),
 			/** @type {module:App/Misc/util} */
 			util = _require( "src/App/Misc/util.js" ),
-			/** @type {module:App/config} */
-			config = _require( "src/App/config.js" ),
+			 /** @type {module:App/Misc/log} */
+			log = _require( "src/App/Misc/log.js" ),
 			/**
 			* @constant
 			* @default
@@ -486,7 +547,7 @@ define(function() {
 			* Input type custom validators
 			* @type {object}
 			*/
-			inputClasses = {
+			inputConstructors = {
 				Text: _require( "src/App/Input/Text.js" ),
 				Tel: _require( "src/App/Input/Tel.js" ),
 				Email: _require( "src/App/Input/Email.js" ),
@@ -494,11 +555,226 @@ define(function() {
 				Url: _require( "src/App/Input/Url.js" )
 			},
 			/**
-			 * @type {Object}
-			 * @property {number} incrementor
+			 * @alias module:App/form
 			 */
-			Page = {
-				incrementor: 0
+			Form =  function(){
+				/** @lends module:App/Form.prototype */
+				return {
+					/**
+					* Reference to the form element
+					* @type {Node}
+					*/
+					boundingBox: null,
+					/**
+					* List of monitored child inputs
+					* @type {Object}
+					*/
+					inputs: {},
+					/**
+					* Options interface
+					* @type {Object}
+					* @property {Node} boundingBox - form container
+					* @property {string} inputs - list of controls of the interest
+					* @property {Object} handlers - custom handlers
+					*/
+					options: {
+						boundingBox: null,
+						inputs: "input, textarea",
+						/**
+						 * @type {Object}
+						 * @property {function} onSubmit - form onSubmit custom handler placeholder
+						 */
+						handlers: {
+							onSubmit: function(){}
+						}
+
+					},
+					/**
+					* Returns true if the form has no validity problems; false otherwise.
+					* @type {boolean}
+					*/
+					valid: true,
+					/**
+					* @constructs
+					* @param {object} options
+					*/
+					__constructor__: function( options ) {
+						var that = this;
+
+						if ( !options.boundingBox ) {
+							throw new Error( "Options property boundingBox undefined ");
+						}
+						this.boundingBox = options.boundingBox;
+
+						log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
+
+						$.extend( this.options, options );
+
+						if (this.isCustomValidation()) {
+							this.boundingBox.attr( "novalidate", "novalidate" );
+						}
+						this.shimFormAttrMutators();
+
+						inputConstructors && this.init();
+
+						this.boundingBox.on( "submit", function( e ){
+							that.handleOnSubmit( e );
+						});
+					},
+
+
+
+					/**
+					* Get AbstractInput by node
+					* @access public
+					* @param {Node} node
+					* @returns (module:App/Input/AbstractInput)
+					*/
+					getInput: function( node ) {
+						// HTMLElement given
+						var $node = $( node ),
+								find = util.filter( this.inputs, function( el ){
+									return $node.get( 0 ) === el.boundingBox.get( 0 );
+								});
+						return find.length ? find[ 0 ] : null;
+					},
+
+					/**
+					* Init child inputs
+					* @access protected
+					*/
+					init: function() {
+						var that = this;
+						// Untie object reference
+						this.inputs = [];
+
+						this.boundingBox.find( this.options.inputs ).each(function(){
+							var $node = $( this ),
+								instance;
+							if ( !that.getInput( $node ) ) {
+								instance = that.inputFactory( $node );
+								instance && that.inputs.push( instance );
+							}
+						});
+					},
+
+					/**
+					* Shim formaction, formenctype, formmethod, and formtarget
+					* http://html5doctor.com/html5-forms-introduction-and-new-attributes/#formaction
+					* @access protected
+					*/
+					shimFormAttrMutators: function() {
+						var that = this;
+						// From the specification:
+						// It has effect on the form element and can only be used with a submit
+						// or image button (type="submit" or type="image").
+						this.boundingBox.find( "button[type=submit], button[type=image]" ).each(function(){
+							$( this ).attr( "formaction" )  &&
+								$( this ).on( "click", function() {
+									that.boundingBox.attr( "action", $( this ).attr( "formaction" ) );
+								});
+							$( this ).attr( "formenctype" ) &&
+								$( this ).on( "click", function() {
+									that.boundingBox.attr( "enctype", $( this ).attr( "formenctype" ) );
+								});
+							$( this ).attr( "formmethod" ) &&
+								$( this ).on( "click", function() {
+									that.boundingBox.attr( "method", $( this ).attr( "formmethod" ) );
+								});
+							$( this ).attr( "formtarget" ) &&
+								$( this ).on( "click", function() {
+									that.boundingBox.attr( "target", $( this ).attr( "formtarget" ) );
+								});
+						});
+					},
+					/**
+					* Is data-custom-validation attribute set?
+					* @access public
+					* @returns {boolean}
+					*/
+					isCustomValidation: function() {
+						return ( this.boundingBox.data( "custom-validation" ) !== undefined );
+					},
+					/**
+					* Is novalidate attribute set?
+					* @access public
+					* @returns {boolean}
+					*/
+					isNoValidate: function() {
+						return ( this.boundingBox.attr( "novalidate" ) !== undefined );
+					},
+					/**
+					* Set form to valid state
+					* @access public
+					*/
+					setValid: function() {
+						this.valid = true;
+						this.boundingBox.addClass( "valid" ).removeClass( "invalid" );
+					},
+					/**
+					* Set form to invalid state
+					* @access public
+					*/
+					setInvalid: function() {
+						this.valid = false;
+						this.boundingBox.addClass( "invalid" ).removeClass( "valid" );
+					},
+					/**
+					* Make an instance of custom validator for a given input type
+					* @access public
+					* @param {Node} element
+					* @constructs module:App/Input/AbstractInput
+					*/
+					inputFactory: function( element ) {
+						var type = util.ucfirst( element.data( "type" ) || element.attr( "type" ) );
+						// If the element has pattern attribute it removes the validator assigned to the eleent type
+						if ( element.is( "[pattern]" ) ) {
+							type = "Text";
+						}
+						return util
+							.createInstance( inputConstructors[ type ] || inputConstructors.Text, [ element, this.isCustomValidation() ] );
+					},
+					/**
+					* Handle on-submit event
+					* @param {Event} e
+					* @access protected
+					*/
+					handleOnSubmit: function( e ) {
+						var isValid = true, i, input;
+						if ( !this.inputs ) {
+							return;
+						}
+						for( i in this.inputs ) {
+							if ( this.inputs.hasOwnProperty( i ) ) {
+								input = this.inputs[ i ];
+								// Reset input validity info before validation
+								input.validator.resetValidationState();
+								if ( input.shim.isShimRequired() ) {
+										input.validator.checkValidity();
+										input.updateState();
+										// Here check for validity
+										if ( !input.validator.validity.valid ) {
+											if ( input.validator.validationMessageNode ) {
+												input.validator.showValidationMessage();
+											} else {
+												// Show tooltip and stop propagation
+												isValid && input.showTooltip();
+											}
+											isValid = false;
+										}
+								}
+							}
+						}
+						// Invoke given onSubmit handler
+						this.options.handlers.onSubmit();
+						if ( isValid ) {
+							this.setValid();
+						} else {
+							this.setInvalid();
+							e.preventDefault();
+						}
+					}
+				};
 			};
 
 	/**
@@ -522,12 +798,12 @@ define(function() {
 	* @param {validatorCb} validatorCb - validatorCb( node: jQuery, logger: ValidationLogger ): boolean
 	* @param {initCb} initCb - initCb( node: jQuery, logger: ValidationLogger ): boolean
 	*/
-	$.setCustomInputTypeValidator = function( type, msg, validatorCb, initCb ) {
+	Form.setCustomInputTypeValidator = function( type, msg, validatorCb, initCb ) {
 		/**
 		* @class
 		* @name Input.AbstractType
 		*/
-		inputClasses[ util.ucfirst( type ) ] = function() {
+		inputConstructors[ util.ucfirst( type ) ] = function() {
 			return {
 				__extends__: AbstractInput,
 				/**
@@ -546,240 +822,12 @@ define(function() {
 			};
 		};
 	};
-
-	/**
-	 *
-	 * @param {Object} [inputClassesDi] - dependency injection
-	 */
-	return function( inputClassesDi ){
-		if ( inputClassesDi ) {
-			inputClasses = inputClassesDi;
-		}
-		/** @lends module:App/Form.prototype */
-		return {
-			/**
-			* Reference to the form element
-			* @type {Node}
-			*/
-			boundingBox: null,
-			/**
-			* List of monitored child inputs
-			* @type {Object}
-			*/
-			inputs: {},
-			/**
-			* Options interface
-			* @type {Object}
-			* @property {Node} boundingBox - form container
-			* @property {string} inputs - list of controls of the interest
-			* @property {Object} handlers - custom handlers
-			*/
-			options: {
-				boundingBox: null,
-				inputs: "input, textarea",
-				/**
-				 * @type {Object}
-				 * @property {function} onSubmit - form onSubmit custom handler placeholder
-				 */
-				handlers: {
-					onSubmit: function(){}
-				}
-
-			},
-			/**
-			* Returns true if the form has no validity problems; false otherwise.
-			* @type {boolean}
-			*/
-			valid: true,
-			/**
-			* @constructs
-			* @param {object} options
-			*/
-			__constructor__: function( options ) {
-				var that = this;
-				if ( !options.boundingBox ) {
-					throw new Error( "Options property boundingBox undefined ");
-				}
-				this.boundingBox = options.boundingBox;
-
-				config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
-
-				$.extend( this.options, options );
-				// Untie object reference
-				this.inputs = [];
-				if (this.isCustomValidation()) {
-					this.boundingBox.attr( "novalidate", "novalidate" );
-				}
-				this.shimFormAttrMutators();
-				inputClasses && this.initInputs();
-				this.boundingBox.on( "submit", function( e ){
-					that.handleOnSubmit( e );
-				});
-			},
-			/**
-			* Obtain input local id (in-form unique hash)
-			* If it is not defined, the function generates a new id and
-			* bind it to the input
-			* @access protected
-			* @param {Node} $node
-			* @returns (number)
-			*/
-			getLocalId: function( $node ) {
-				var localId = $node.data( "local-id" ) || Page.incrementor++;
-				$node.data( "local-id", Page.incrementor );
-				return localId;
-			},
-			/**
-			* Get AbstractInput by node
-			* @access public
-			* @param {Node} node
-			* @returns (module:App/Input/AbstractInput)
-			*/
-			getInput: function( node ) {
-				// HTMLElement given
-				var $node = $( node ),
-					localId = this.getLocalId( $node );
-				return this.inputs[ localId ] || null;
-			},
-			/**
-			* Collect child inputs to monitor
-			* @access protected
-			*/
-			initInputs: function() {
-				var that = this;
-				this.boundingBox.find( this.options.inputs ).each(function(){
-					var $node = $( this ),
-						localId = that.getLocalId( $node ),
-						instance = that.inputFactory( $node );
-
-					if ( instance !== false ) {
-						that.inputs[ localId ] = instance;
-					}
-				});
-			},
-			/**
-			* Shim formaction, formenctype, formmethod, and formtarget
-			* http://html5doctor.com/html5-forms-introduction-and-new-attributes/#formaction
-			* @access protected
-			*/
-			shimFormAttrMutators: function() {
-				var that = this;
-				// From the specification:
-				// It has effect on the form element and can only be used with a submit
-				// or image button (type="submit" or type="image").
-				this.boundingBox.find( "button[type=submit], button[type=image]" ).each(function(){
-					$( this ).attr( "formaction" )  &&
-						$( this ).on( "click", function() {
-							that.boundingBox.attr( "action", $( this ).attr( "formaction" ) );
-						});
-					$( this ).attr( "formenctype" ) &&
-						$( this ).on( "click", function() {
-							that.boundingBox.attr( "enctype", $( this ).attr( "formenctype" ) );
-						});
-					$( this ).attr( "formmethod" ) &&
-						$( this ).on( "click", function() {
-							that.boundingBox.attr( "method", $( this ).attr( "formmethod" ) );
-						});
-					$( this ).attr( "formtarget" ) &&
-						$( this ).on( "click", function() {
-							that.boundingBox.attr( "target", $( this ).attr( "formtarget" ) );
-						});
-				});
-			},
-			/**
-			* Is data-custom-validation attribute set?
-			* @access public
-			* @returns {boolean}
-			*/
-			isCustomValidation: function() {
-				return ( this.boundingBox.data( "custom-validation" ) !== undefined );
-			},
-			/**
-			* Is novalidate attribute set?
-			* @access public
-			* @returns {boolean}
-			*/
-			isNoValidate: function() {
-				return ( this.boundingBox.attr( "novalidate" ) !== undefined );
-			},
-			/**
-			* Set form to valid state
-			* @access public
-			*/
-			setValid: function() {
-				this.valid = true;
-				this.boundingBox.addClass( "valid" ).removeClass( "invalid" );
-			},
-			/**
-			* Set form to invalid state
-			* @access public
-			*/
-			setInvalid: function() {
-				this.valid = false;
-				this.boundingBox.addClass( "invalid" ).removeClass( "valid" );
-			},
-			/**
-			* Make an instance of custom validator for a given input type
-			* @access public
-			* @param {Node} element
-			* @constructs module:App/Input/AbstractInput
-			*/
-			inputFactory: function( element ) {
-				var type = util.ucfirst( element.data( "type" ) || element.attr( "type" ) );
-				// If the element has pattern attribute it removes the validator assigned to the eleent type
-				if ( element.is( "[pattern]" ) ) {
-					type = "Text";
-				}
-				return util
-					.createInstance( inputClasses[ type ] || inputClasses.Text, [ element, this.isCustomValidation() ] );
-			},
-			/**
-			* Handle on-submit event
-			* @param {Event} e
-			* @access protected
-			*/
-			handleOnSubmit: function( e ) {
-				var isValid = true, i, input;
-				if ( !this.inputs ) {
-					return;
-				}
-				for( i in this.inputs ) {
-					if ( this.inputs.hasOwnProperty( i ) ) {
-						input = this.inputs[ i ];
-						// Reset input validity info before validation
-						input.resetValidationState();
-						if ( input.isShimRequired() ) {
-								input.checkValidity();
-								input.updateState();
-								// Here check for validity
-								if ( !input.validity.valid ) {
-									if ( input.validationMessageNode ) {
-										input.showValidationMessage();
-									} else {
-										// Show tooltip and stop propagation
-										isValid && input.showTooltip();
-									}
-									isValid = false;
-								}
-						}
-					}
-				}
-				// Invoke given onSubmit handler
-				this.options.handlers.onSubmit();
-				if ( isValid ) {
-					this.setValid();
-				} else {
-					this.setInvalid();
-					e.preventDefault();
-				}
-			}
-		};
-	};
+	return Form;
 });
 	return module;
 });
 
-_require.def( "src/App/config.js", function( _require, exports, module ){
+_require.def( "src/App/Misc/log.js", function( _require, exports, module ){
 /**
  * @author sheiko
  * @license MIT
@@ -798,13 +846,75 @@ if ( typeof module === "object" && typeof define !== "function" ) {
 	};
 }
 /**
+ * @typedef {Object} LogVo
+ * @property {string} module
+ * @property {string} action
+ * @property {Node} noder}
+ */
+
+/**
  * @constructor
- * @alias module:App/config
+ * @alias module:App/Misc/log
  */
 define(function() {
 	"use strict";
+	/** @type {module:jQuery} */
+	var $ = _require( "jquery" ),
+			isSync = false,
+			isDebugMode = false,
+			$output = null,
+
+			/** @type {LogVo[]} */
+			messages = [],
+			/**
+		 * @param {string} module
+		 * @param {string} action
+		 * @param {Node} node
+		 */
+			renderMessage = function( module, action, node ) {
+				if ( !isDebugMode ){
+					return;
+				}
+				if ( node ) {
+					console.log( "%s: %s on %o", module, action, node );
+				} else {
+					console.log( "%s: %s", module, action );
+				}
+				$output && $output.html(function( i, html ){
+					return html + module + ":" + action + (
+						( node && node.id ) ? ":" + node.id : ""
+						) + "\n";
+				});
+			},
+
+			/**
+			 * Obtain bindings from DOM
+			 */
+			syncUi = function(){
+				isSync = true;
+				isDebugMode = !!$( "html" ).data( "debug" );
+				$output = $( "#debug-log").length ? $( "#debug-log") : null;
+
+				$.each( messages, function( i ){
+					renderMessage.apply( renderMessage, messages[ i ] );
+				});
+			};
+
+			$( window.document ).ready( syncUi );
+
 	return {
-		debug: true
+
+		/**
+		 * @param {string} module
+		 * @param {string} action
+		 * @param {Node} node
+		 */
+		log: function( module, action, node ) {
+			if ( isSync ) {
+				return renderMessage( module, action, node );
+			}
+			messages.push([ module, action, node ]);
+		}
 	};
 });
 	return module;
@@ -836,7 +946,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Abstract
  */
-define(function() {
+define(function( require ) {
 	/** @type {module:App/jQuery} */
 	var $ = _require( "jquery" ),
 			/** @type {module:App/Input/Abstract/Shim} */
@@ -870,7 +980,7 @@ define(function() {
 				this.boundingBox = boundingBox;
 				this.validator = new Validator( boundingBox, isFormCustomValidation );
 				this.validator.init();
-				this.shim = new Shim( boundingBox, isFormCustomValidation );
+				this.shim = new Shim( boundingBox, isFormCustomValidation, this );
 				this.shim.init();
 				this.updateState();
 			},
@@ -941,17 +1051,18 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Abstract/Shim
  */
-define(function() {
+define(function( require ) {
 	/**
 	 * @param {Node} $node
 	 * @param {Boolean} isFormCustomValidation
+	 * @param {module:App/Input/Abstract} input
 	 * @param {undefined} undefined
 	 */
-	return function( $node, isFormCustomValidation, undefined ){
+	return function( $node, isFormCustomValidation, input, undefined ){
 		/** @type {module:App/jQuery} */
 		var $ = _require( "jquery" ),
-				/** @type {module:App/config} */
-				config = _require( "src/App/config.js" ),
+				/** @type {module:App/Misc/log} */
+				log = _require( "src/App/Misc/log.js" ),
 				/**
 				 * @constant
 				 * @default
@@ -1003,7 +1114,7 @@ define(function() {
 					this.shimRequiredAttr();
 				}
 				// Shim autofocus attribute when it's not supported
-				if ( isFormCustomValidation && !modernizr.supportedInputProps.autofocus ) {
+				if ( isFormCustomValidation || !modernizr.supportedInputProps.autofocus ) {
 					this.shimFocusPseudoClass();
 					this.shimAutofocus();
 				}
@@ -1087,17 +1198,13 @@ define(function() {
 				}
 				deferredRequest = window.setTimeout( function(){
 					// Reset input validity info before validation
-					that.resetValidationState();
+					input.validator.resetValidationState();
 					deferredRequest = null;
 					that.invokeOnInputCallBack();
-					$node.trigger( "oninput", that );
-					that.checkValidityWithoutRequired();
-					that.updateState();
-
-
-
-
-					that.validationMessageNode && that.showValidationMessage();
+					$node.trigger( "input", that );
+					input.validator.checkValidityWithoutRequired();
+					input.updateState();
+					input.validator.validationMessageNode && input.validator.showValidationMessage();
 				}, ONINPUT_DELAY );
 			},
 			/**
@@ -1120,6 +1227,7 @@ define(function() {
 			* @access protected
 			*/
 			handleOnFocus: function() {
+				$node.addClass( "focus" );
 				if ( $node.val() === $node.attr( "placeholder" ) ) {
 					$node.val( "" );
 					$node.removeClass( "placeholder" );
@@ -1131,6 +1239,7 @@ define(function() {
 			* @access protected
 			*/
 			handleOnBlur: function() {
+				$node.removeClass( "focus" );
 				if ( !$node.val() ) {
 					$node.val( $node.attr( "placeholder" ) );
 					$node.addClass( "placeholder" );
@@ -1161,28 +1270,15 @@ define(function() {
 					$node.data( "custom-validation" );
 			},
 			/**
-			* Try to emulate Constraint Validation Api
-			* http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api
-			* on legacy browsers
-			* @access protected
-			*/
-			shimConstraintValidationApi: function() {
-				var node = $node.get( 0 );
-				try {
-					node.validity = this.validity;
-				} catch ( err ) {
-					// If the element has only getter (new browsers)
-					// just ignore it
-				}
-			},
-			/**
-			 *
+			 * Wrap with cross-cutting concern
+			 * Example: input.setCustomValidity( "The two passwords must match." );
 			 * @returns {undefined}
 			 */
 			shimSetCustomValidity: function() {
+				var old = $node.get( 0 ).setCustomValidity || function(){};
 				$node.get( 0 ).setCustomValidity = function( msg ) {
-					msg && this.throwValidationException( "customError", msg );
-					$node.get( 0 ).setCustomValidity( msg );
+					msg && input.validator.throwValidationException( "customError", msg );
+					old( msg );
 				};
 			},
 
@@ -1192,7 +1288,7 @@ define(function() {
 			* @access public
 			*/
 			degrade: function() {
-				config.debug && console.log( "%s: degraded %o", NAME, $node.get( 0 ) );
+				log.log( NAME, "degrades", $node.get( 0 ) );
 				$node.get( 0 ).type = "text";
 				return this;
 			}
@@ -1304,7 +1400,7 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Abstract/Validator
  */
-define(function() {
+define(function( require ) {
 	/**
 	 * @param {Node} node
 	 * @param {Boolean} isFormCustomValidation
@@ -1359,6 +1455,13 @@ define(function() {
 				this.lookForValidationMessageNode();
 			},
 			/**
+			 * Reset vaidator
+			 */
+			reset: function() {
+				this.validationMessage = "";
+				this.validity = new ValidityDefaultStateVo();
+			},
+			/**
 			* Emulate API method checkValidity
 			* @access public
 			*/
@@ -1391,6 +1494,15 @@ define(function() {
 				return ( $node.val() === $node.attr( "placeholder" ) ||
 					!$node.val() );
 			},
+
+			/**
+			 * Access value  for $.setCustomInputTypeValidator
+			 * @returns {*}
+			 */
+			val: function() {
+				return $node.val();
+			},
+
 			/**
 			* Tell is the input required
 			* @access public
@@ -1476,6 +1588,21 @@ define(function() {
 				this.validationMessage = validationMessage ||
 					msgContainer[ prop ];
 				this.shimConstraintValidationApi();
+			},
+			/**
+			* Try to emulate Constraint Validation Api
+			* http://www.w3.org/html/wg/drafts/html/master/forms.html#the-constraint-validation-api
+			* on legacy browsers
+			* @access protected
+			*/
+			shimConstraintValidationApi: function() {
+				var node = $node.get( 0 );
+				try {
+					node.validity = this.validity;
+				} catch ( err ) {
+					// If the element has only getter (new browsers)
+					// just ignore it
+				}
 			},
 			/**
 			* Fallback for pattern validator
@@ -1665,10 +1792,10 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Text
  */
-define(function() {
+define(function( require ) {
 	"use strict";
-	var /** @type {module:App/config} */
-		config = _require( "src/App/config.js" ),
+	var /** @type {module:App/Misc/log} */
+			log = _require( "src/App/Misc/log.js" ),
 		/**
 		* @constant
 		* @default
@@ -1683,7 +1810,7 @@ define(function() {
 			* @constructs
 			*/
 			__constructor__: function() {
-				config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
+				log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 			}
 		};
 	};
@@ -1718,10 +1845,10 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Tel/Number
  */
-define(function() {
+define(function( require ) {
 	"use strict";
-	var /** @type {module:App/config} */
-		config = _require( "src/App/config.js" ),
+	var /** @type {module:App/Misc/log} */
+			log = _require( "src/App/Misc/log.js" ),
 		/**
 		* @constant
 		* @default
@@ -1736,7 +1863,7 @@ define(function() {
 			* @constructs
 			*/
 			__constructor__: function() {
-				config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
+				log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 				/**
 				* Validate input value
 				*
@@ -1745,7 +1872,7 @@ define(function() {
 				*/
 				this.validator.validateValue = function() {
 					var pattern = /^\+(?:[0-9] ?){6,14}[0-9]$/;
-					config.debug && console.log( "Module Input/Tel: validation" );
+					log.log( NAME, "validates", this.boundingBox.get( 0 ) );
 					pattern.test( this.boundingBox.val() ) ||
 						this.throwValidationException( "typeMismatch",
 						"Please enter a valid tel. number +1 11 11 11" );
@@ -1784,10 +1911,10 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Email
  */
-define(function() {
+define(function( require ) {
 	"use strict";
-	var /** @type {module:App/config} */
-			config = _require( "src/App/config.js" ),
+	var /** @type {module:App/Misc/log} */
+			log = _require( "src/App/Misc/log.js" ),
 			/**
 			* @constant
 			* @default
@@ -1803,7 +1930,7 @@ define(function() {
 			* @constructs
 			*/
 			__constructor__: function() {
-				config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
+				log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 				/**
 				* Validate input value
 				*
@@ -1811,8 +1938,8 @@ define(function() {
 				* @returns {boolean}
 				*/
 				this.validator.validateValue = function() {
-					var pattern = /^[a-zA-Z0-9._\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$/g;
-					config.debug && console.log( "%s: validates value of %o", NAME, this.boundingBox.get( 0 ) );
+					var pattern = /^[a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~\.]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$/g;
+					log.log( NAME, "validates value", this.boundingBox.get( 0 ) );
 					pattern.test( this.boundingBox.val() ) ||
 						this.throwValidationException( "typeMismatch",
 							"Please enter a valid email address" );
@@ -1851,18 +1978,18 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Number
  */
-define(function() {
+define(function( require ) {
 	"use strict";
 	/** @type {module:App/Misc/util} */
 	var util = _require( "src/App/Misc/util.js" ),
-		/** @type {module:App/config} */
-		config = _require( "src/App/config.js" ),
-		/**
-		* @constant
-		* @default
-		* @type {string}
-		*/
-		NAME = "Input/Number";
+			/** @type {module:App/Misc/log} */
+			log = _require( "src/App/Misc/log.js" ),
+			/**
+			* @constant
+			* @default
+			* @type {string}
+			*/
+			NAME = "Input/Number";
 	/** @lends module:App/Input/Number.prototype */
 	return function() {
 		return {
@@ -1871,6 +1998,7 @@ define(function() {
 			* @constructs
 			*/
 			__constructor__: function() {
+				log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 				/**
 				* Validate input value
 				*
@@ -1878,7 +2006,6 @@ define(function() {
 				* @returns {boolean}
 				*/
 				this.validator.validateValue = function() {
-					config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
 					util.isNumber( parseInt( this.boundingBox.val(), 10 ) ) ||
 						this.throwValidationException( "typeMismatch",
 							"Please enter a valid number" );
@@ -1926,10 +2053,10 @@ if ( typeof module === "object" && typeof define !== "function" ) {
  * @constructor
  * @alias module:App/Input/Url
  */
-define(function() {
+define(function( require ) {
 	"use strict";
-	var /** @type {module:App/config} */
-			config = _require( "src/App/config.js" ),
+	var /** @type {module:App/Misc/log} */
+			log = _require( "src/App/Misc/log.js" ),
 			/**
 			* @constant
 			* @default
@@ -1944,7 +2071,7 @@ define(function() {
 			* @constructs
 			*/
 			__constructor__: function() {
-				config.debug && console.log( "%s: initialized on %o", NAME, this.boundingBox.get( 0 ) );
+				log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 				/**
 				* Validate input value
 				*
@@ -1955,7 +2082,7 @@ define(function() {
 					// The pattern is taken from http://stackoverflow.com/questions/2838404/javascript-regex-url-matching
 					// pattern fragments: protocol, domain name OR ip (v4) address, port and path, query string, fragment locater
 					var pattern = /^(https?:\/\/)?((([a-z\d]([a-z\d\-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[\-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=\-]*)?(\#[\-a-z\d_]*)?$/i;
-					config.debug && console.log( "Module Input/Url: validation" );
+					log.log( NAME, "validates", this.boundingBox.get( 0 ) );
 					pattern.test( this.boundingBox.val() ) ||
 						this.throwValidationException( "typeMismatch",
 							"Please enter a valid URL" );

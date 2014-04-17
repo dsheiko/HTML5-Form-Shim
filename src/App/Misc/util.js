@@ -120,14 +120,29 @@ define(function( require ) {
 			return !isNaN( parseFloat( value ) ) && isFinite( value );
 		},
 		/**
-			* Make a string's first character uppercase, others lowercase
-			* @memberof module:App/Misc/util
-			* @param {string} str
-			* @returns {string}
-			*/
-			ucfirst: function( str ) {
-				str += "";
-				return str.charAt( 0 ).toUpperCase() + ( str.substr( 1 ).toLowerCase() );
+		* Make a string's first character uppercase, others lowercase
+		* @memberof module:App/Misc/util
+		* @param {string} str
+		* @returns {string}
+		*/
+		ucfirst: function( str ) {
+			str += "";
+			return str.charAt( 0 ).toUpperCase() + ( str.substr( 1 ).toLowerCase() );
+		},
+		/**
+		 * Simplified replica of ES5 Array.prototype.filter
+		 * @param {*[]} arr
+		 * @param {function} cb
+		 * @returns {*[]}
+		 */
+		filter: function( arr, cb ) {
+			var i = 0,
+					len = arr.length,
+					res = [];
+			for ( ; i < len; i++ ) {
+				cb( arr[ i ] ) && res.push( arr[ i ] );
 			}
+      return res;
+		}
 	};
 });

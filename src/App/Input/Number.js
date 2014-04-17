@@ -44,6 +44,7 @@ define(function( require ) {
 			* @constructs
 			*/
 			__constructor__: function() {
+				log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 				/**
 				* Validate input value
 				*
@@ -51,7 +52,6 @@ define(function( require ) {
 				* @returns {boolean}
 				*/
 				this.validator.validateValue = function() {
-					log.log( NAME, "initializes", this.boundingBox.get( 0 ) );
 					util.isNumber( parseInt( this.boundingBox.val(), 10 ) ) ||
 						this.throwValidationException( "typeMismatch",
 							"Please enter a valid number" );

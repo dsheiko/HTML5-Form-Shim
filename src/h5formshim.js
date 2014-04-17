@@ -26,13 +26,6 @@ define(function( require ) {
 			* @type {object}
 			**/
 		var
-
-				/**
-				 * Composite that can as Page as Form
-				 * @type (object)
-				 */
-				composite = null,
-
 				/**
 				 * @type {module:App/Misc/util}
 				 */
@@ -44,9 +37,10 @@ define(function( require ) {
 				$ = require( "jquery" ),
 
 				/**
+				* Page singleton
 				* @type {module:App/Page}
 				*/
-				Page = require( "./App/Page" ),
+				page = require( "./App/Page" ),
 				/**
 				* @type {module:App/Form}
 				*/
@@ -57,6 +51,13 @@ define(function( require ) {
 				*/
 			  onReadyCb = function(){};
 
+		/**
+		 * Wrap $.setCustomInputTypeValidator defined in module:App/Form to make it caling page.init
+		 */
+		$.setCustomInputTypeValidator = function() {
+			Form.setCustomInputTypeValidator.apply( this, arguments );
+			page.init();
+		};
 
 		/**
 		* Render tooltip when validation error happens on form submition
@@ -111,8 +112,9 @@ define(function( require ) {
 	};
 
 
+
 		util.onDomReady(function(){
-			composite = util.createInstance( Page );
+			page.syncUi();
 			onReadyCb();
 		});
 
@@ -132,9 +134,9 @@ define(function( require ) {
 			*/
 			init: function( options ) {
 				if ( options && options.boundingBox && options.boundingBox.length ) {
-					composite = util.createInstance( Form, [ options ] );
+					page.add( util.createInstance( Form, [ options ] ) );
 				} else {
-					composite = util.createInstance( Page );
+					page.syncUi();
 				}
 				return this;
 			},
@@ -154,7 +156,7 @@ define(function( require ) {
 			* @returns {module:Input/Abstract}
 			*/
 			getInput: function( node ) {
-				return composite.getInput( node );
+				return page.getInput( node );
 			}
 	};
 	return window.hfFormShim;

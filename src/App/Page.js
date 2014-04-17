@@ -27,7 +27,7 @@ define(function( require ) {
 	/** @type {module:jQuery} */
 	var $ = require( "jquery" );
 	/** @lends module:App/Page.prototype */
-	return function() {
+	return (function() {
 		var
 		/**
 			* Module representing the Form
@@ -47,14 +47,28 @@ define(function( require ) {
 		 * Expose the shim as global
 		 * @lends module:App/Page.prototype
 		 */
-		window.hfFormShim = {
+		return {
 			/**
-			* @constructs
+			* Sync UI on DOM ready
 			*/
-			__constructor__: function() {
+			syncUi: function() {
 				$( "form[data-enable-shim='true']" ).each(function(){
-					forms.push( util.createInstance( Form, [ { boundingBox: $( this ) } ] ) );
+					var $node = $( this );
+					// Ignore if node is already added
+					if ( util.filter( forms, function( item ){
+							return item.boundingBox === $node;
+						}).length ) {
+						return;
+					}
+					forms.push( util.createInstance( Form, [ { boundingBox: $node } ] ) );
 				});
+			},
+			/**
+			 * Add form into the stack
+			 * @param {moule:App/Form} form
+			 */
+			add: function( form ) {
+				forms.push( form );
 			},
 			/**
 			* Look up for AbstractInput instance for the given HTMLElement
@@ -71,8 +85,15 @@ define(function( require ) {
 					}
 				}
 				return null;
+			},
+			/**
+			 * Init all the forms (useful when inputs must be reinitialized)
+			 */
+			init: function() {
+				$.each( forms, function( i ){
+					forms[ i ].init();
+				});
 			}
 		};
-		return window.hfFormShim;
-	};
+	}());
 });

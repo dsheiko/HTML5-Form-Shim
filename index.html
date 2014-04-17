@@ -277,11 +277,11 @@ From which you can access the element <var>control.boundingBox</var>(the same as
                             <p>HTML5 introduces a new event oninput, which can be handled to perform additional validation
                                 tests on a field. For example, making registration form you can define a handler
                                 which checks by XMLHttpRequest if the given email already exists in DB. Here an example for
-                                a cross-browser oninput handler:
+                                a cross-browser on-input handler:
                             </p>
 
                                 <textarea class="code" rows="12">
-$('form.example3 input[name=confirm]').on("oninput", function () {
+$('form.example3 input[name=confirm]').on("input", function () {
     var input = $(this);
     if (input.val() != $('form.example3 input[name=password]').val()) {
     input.setCustomValidity('The two passwords must match.');
@@ -313,13 +313,13 @@ $('form.example3 input[name=confirm]').on("oninput", function () {
         // Using setCustomValidity example
         // The setCustomValidity(message), when invoked, must set the custom
         // validity error message to the value of the given message argument.
-        $('form.example5 input[name=confirm]').on( "oninput", function () {
+        $( "form.example5 input[name=confirm]" ).on( "input", function () {
           var input = $( this );
-          if ( input.val() != $('form.example5 input[name=password]' ).val()) {
-            input.setCustomValidity('The two passwords must match.');
+          if ( input.val() != $( "form.example5 input[name=password]" ).val() ) {
+            input.setCustomValidity( "The two passwords must match." );
           } else {
             // input is valid -- reset the error message
-            input.setCustomValidity('');
+            input.setCustomValidity( "" );
           }
         });
 
