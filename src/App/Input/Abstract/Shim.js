@@ -47,8 +47,21 @@ define(function( require ) {
 				* @default
 				* @type {string[]}
 				*/
-			 H5_INPUT_TYPES = [ "color", "date", "datetime", "datetime-local", "email", "month",
-				 "number", "range", "search", "tel", "time", "url", "week" ],
+			 H5_INPUT_TYPES = [
+				 "color",
+				 "date",
+				 "datetime",
+				 "datetime-local",
+				 "email",
+				 "month",
+				 "number",
+				 "range",
+				 "search",
+				 "tel",
+				 "time",
+				 "url",
+				 "week"
+			 ],
 				/**
 				 * Module that detects HTML5 and CSS3 features in the user’s browser
 				 * @type {modele:modernizr}

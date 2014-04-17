@@ -63,7 +63,7 @@ define(function() {
 			syncUi = function(){
 				isSync = true;
 				isDebugMode = !!$( "html" ).data( "debug" );
-				$output = $( "#debug-log").length ? $( "#debug-log") : null;
+				$output = $( "#debug-log" ).length ? $( "#debug-log" ) : null;
 
 				$.each( messages, function( i ){
 					renderMessage.apply( renderMessage, messages[ i ] );

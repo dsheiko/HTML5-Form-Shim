@@ -5,7 +5,7 @@
  */
 
 
-define(function () {
+define(function() {
     "use strict";
 
     var isTop, testDiv, scrollIntervalId,
@@ -14,7 +14,7 @@ define(function () {
         doc = isBrowser ? window.document : null,
         readyCalls = [];
 
-    function runCallbacks(callbacks) {
+    function runCallbacks( callbacks ) {
         var i;
         for ( i = 0; i < callbacks.length; i += 1 ) {
             callbacks[ i ]( doc );
@@ -69,7 +69,7 @@ define(function () {
                         testDiv.doScroll();
                         pageLoaded();
                     } catch ( e ) {}
-                }, 30);
+                }, 30 );
             }
         }
 

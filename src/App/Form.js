@@ -55,7 +55,7 @@ define(function( require ) {
 			/**
 			 * @alias module:App/form
 			 */
-			Form =  function(){
+			Form = function(){
 				/** @lends module:App/Form.prototype */
 				return {
 					/**
