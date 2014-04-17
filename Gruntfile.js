@@ -18,11 +18,24 @@ module.exports = function(grunt) {
       },
       all: ["./js/build/jquery.html5form.js", "./tests/**/*.js"]
     },
-    jscs: {
-        options: {
-            "standard": "Jquery"
-        },
-        all: ["./js/source"]
+		jscs: {
+			app: {
+				options: {
+					standard: "Jquery"
+				},
+				files: {
+					src: [ "./js/source" ]
+				}
+			},
+      test: {
+				options: {
+					standard: "Jquery",
+          reportFull: true
+				},
+				files: {
+					src: [ "./js/source" ]
+				}
+			}
     },
     jsic: {
       development: {
@@ -45,7 +58,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask( "test", [ "jshint", "jscs", "qunit" ]);
+  grunt.registerTask( "test", [ "jshint", "jscs:test", "qunit" ]);
   grunt.registerTask( "build", [ "clean", "jsic", "uglify" ]);
   grunt.registerTask( "default", [ "build", "test" ]);
 
