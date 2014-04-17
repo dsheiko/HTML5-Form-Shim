@@ -18,11 +18,24 @@ module.exports = function(grunt) {
       },
       all: [ "./src/**/*.js" ]
     },
-    jscs: {
-        options: {
-            "standard": "Jquery"
-        },
-        all: [ "./src" ]
+		jscs: {
+			app: {
+				options: {
+					standard: "Jquery"
+				},
+				files: {
+					src: [ "./src" ]
+				}
+			},
+      test: {
+				options: {
+					standard: "Jquery",
+          reportFull: true
+				},
+				files: {
+					src: [ "./src" ]
+				}
+			}
     },
     cjsc: {
 			debug: {
