@@ -182,7 +182,7 @@
 					lookForValidationMessageNode: function() {
 						var id, $hint;
 						if ((id = this.boundingBox.attr( "id" ))) {
-							$hint = $( "form *[data-validation-message-for=" + id + "]" );
+							$hint = $( "form *[data-validation-message-for='" + id + "']" );
 							this.validationMessageNode = $hint.length ? $hint : null;
 						}
 					},
