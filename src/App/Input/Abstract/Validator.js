@@ -151,7 +151,7 @@ define(function( require ) {
 			lookForValidationMessageNode: function() {
 				var id = $node.attr( "id" ), $hint;
 				if ( id ) {
-					$hint = $( "form *[data-validation-message-for=" + id + "]" );
+					$hint = $( "form *[data-validation-message-for='" + id + "']" );
 					validationMessageNode = $hint.length ? $hint : null;
 				}
 			},
