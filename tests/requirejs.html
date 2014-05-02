@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-debug-log="true" data-debug-console="true">
+<html data-debug-log="debug-log" data-debug-console="false">
 <head>
 	<meta charset="UTF-8" />
 	<title>QUnit Test Suite</title>
@@ -10,13 +10,16 @@
 <body>
 	<div style="visibility: hidden">
 			<form id="test1">
+				<fieldset>
 					<input id="email" type="email" />
-					<input id="number" type="number" min="1" max="10" />
-					<input id="url" type="url" />
-					<input id="tel" type="tel" pattern="^\+(?:[0-9] ?){6,14}[0-9]$" />
-					<input id="text" type="text" />
-					<input id="zip" type="zip" />
-					<input id="required" required />
+					<div data-validation-message-for="email"></div>
+				</fieldset>
+				<input id="number" type="number" min="1" max="10" />
+				<input id="url" type="url" />
+				<input id="tel" type="tel" pattern="^\+(?:[0-9] ?){6,14}[0-9]$" />
+				<input id="text" type="text" />
+				<input id="zip" type="zip" />
+				<input id="required" required />
 			</form>
 			<form action="oldAction" data-enable-shim="true" target="_self" method="GET" id="test2">
 					<input id="text2" />
@@ -264,6 +267,25 @@
 							assert.ok( !validator.validity.valid );
 							assert.strictEqual( validator.validationMessage, msg );
 						});
+
+
+				module( "--" );
+					test( "Shim++ ", function() {
+						var $form = $( "#test1" ),
+								$input = $( "#email" ),
+								$errMsg = $( "div[data-validation-message-for='email']" );
+
+						$form.on( "submit", function( e ){
+							e.preventDefault();
+						});
+
+						$input.val( "invalid-email" );
+
+						$form.submit();
+						console.info($errMsg);
+						ok( 1 );
+
+					});
 
 
 			});

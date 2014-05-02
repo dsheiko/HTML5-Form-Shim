@@ -40,7 +40,7 @@ NOTE: The examples below use CSS3 styles. If you want your forms not only behave
 * Allows custom on-input callbacks
 * Shim formaction, formenctype, formmethod, and formtarget attributes
 * Covered with tests
-* Implemented as UMD (can be used as AMD or CommonJS module)
+* Implemented as UMD (can be used as AMD or CommonJS modules)
 
 
 #### Example 1: Custom form submission validation
@@ -212,10 +212,6 @@ $('form.example3 input[name=confirm]').on("oninput", function () {
 ```
 
 ## API
-
-### Class diagram
-
-![Image](https://raw.github.com/dsheiko/HTML5-Form-Shim/master/doc/class-diagram.png)
 
 ### hfFormShim
 
