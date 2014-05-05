@@ -230,7 +230,8 @@ define(function( require ) {
 							type = "Text";
 						}
 						return util
-							.createInstance( inputConstructors[ type ] || inputConstructors.Text, [ element, this.isCustomValidation() ] );
+							.createInstance( inputConstructors[ type ] || inputConstructors.Text,
+								[ element, this.isCustomValidation() ] );
 					},
 					/**
 					* Handle on-submit event
@@ -242,6 +243,7 @@ define(function( require ) {
 						if ( !this.inputs ) {
 							return;
 						}
+						log.log( NAME, "submitted", this.boundingBox.get( 0 ) );
 						for( i in this.inputs ) {
 							if ( this.inputs.hasOwnProperty( i ) ) {
 								input = this.inputs[ i ];
@@ -250,12 +252,15 @@ define(function( require ) {
 								if ( input.shim.isShimRequired() ) {
 										input.validator.checkValidity();
 										input.updateState();
+										JSON.stringify && log.log( "Input/*", "validity: " + JSON.stringify( input.validator.validity ) +
+												", validation message: " + input.validator.validationMessage,
+												input.boundingBox.get( 0 ) );
 										// Here check for validity
 										if ( !input.validator.validity.valid ) {
 											if ( input.validator.validationMessageNode ) {
 												input.validator.showValidationMessage();
 											} else {
-												// Show tooltip and stop propagation
+												// Show tooltip ONCE and stop propagation
 												isValid && input.showTooltip();
 											}
 											isValid = false;
@@ -263,13 +268,15 @@ define(function( require ) {
 								}
 							}
 						}
-						// Invoke given onSubmit handler
-						this.options.handlers.onSubmit();
+						log.log( NAME, "validation status is " + ( isValid ? "true" : "false" ), this.boundingBox.get( 0 ) );
 						if ( isValid ) {
 							this.setValid();
+							// Invoke given onSubmit handler
+							this.options.handlers.onSubmit();
 						} else {
 							this.setInvalid();
 							e.preventDefault();
+							e.stopImmediatePropagation();
 						}
 					}
 				};

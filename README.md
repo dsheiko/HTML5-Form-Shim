@@ -224,7 +224,7 @@ Whereas options is an object of the following structure:
     boundingBox: formNode,
     inputs: "input, textarea, select", // OPTIONAL, by default "input, textarea"
     handlers: { // OPTIONAL
-        onSubmit: fn(),
+        onSubmit: fn()
     }
 }
 

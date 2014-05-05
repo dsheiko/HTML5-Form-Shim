@@ -43,6 +43,10 @@ define(function( require ) {
 			 */
 			validator: null,
 			/**
+			 * @type {function}
+			 */
+			validateValue: null,
+			/**
 			 * @type {module:App/Input/Abstract/Shim}
 			 */
 			shim: null,
@@ -71,6 +75,7 @@ define(function( require ) {
 				this.boundingBox
 					.removeClass( "valid invalid" )
 					.addClass( state );
+				this.shim.shimConstraintValidationApi( this.validator.validity , this.validator.validationMessage );
 				return state;
 			},
 			/**

@@ -43,15 +43,15 @@ define(function( require ) {
 				/**
 				* @type (module:App/dictionary)
 				*/
-				defaultValidationMessages = require( "./Validator/dictionary" ),
-				/**
-				* reference to the bound validation message container
-				* @type {Node}
-				*/
-				validationMessageNode = null;
+				defaultValidationMessages = require( "./Validator/dictionary" );
 
 		/** @lends module:App/Input/Abstract/Validator.prototype */
 		return {
+			/**
+			* reference to the bound validation message container
+			* @type {Node}
+			*/
+			validationMessageNode: null,
 			/**
 			* @type {Node}
 			*/
@@ -96,6 +96,7 @@ define(function( require ) {
 				if ( this.isRequired() || !this.isEmpty() ) {
 					this.checkValidityWithoutRequired();
 				}
+				this.validateValue && this.validateValue();
 				return this.validity.valid;
 			},
 			/**
@@ -152,7 +153,7 @@ define(function( require ) {
 				var id = $node.attr( "id" ), $hint;
 				if ( id ) {
 					$hint = $( "form *[data-validation-message-for='" + id + "']" );
-					validationMessageNode = $hint.length ? $hint : null;
+					this.validationMessageNode = $hint.length ? $hint : null;
 				}
 			},
 			/**
@@ -161,8 +162,8 @@ define(function( require ) {
 			*/
 			showValidationMessage: function() {
 				var msg = this.validationMessage;
-				validationMessageNode.html( msg );
-				validationMessageNode[ msg ? "show" : "hide" ]();
+				this.validationMessageNode.html( msg );
+				this.validationMessageNode[ msg ? "show" : "hide" ]();
 			},
 
 			/**
@@ -172,7 +173,7 @@ define(function( require ) {
 			resetValidationState: function(){
 				this.validity = new ValidityDefaultStateVo();
 				this.validationMessage = "";
-				validationMessageNode && this.showValidationMessage();
+				this.validationMessageNode && this.showValidationMessage();
 			},
 
 

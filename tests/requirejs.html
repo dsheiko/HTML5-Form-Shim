@@ -55,7 +55,12 @@
 					log = [];
 
 			hfFormShim.init({
-				boundingBox: $( "#test1" )
+				boundingBox: $( "#test1" ),
+				handlers: { // OPTIONAL
+					onSubmit: function(){
+						log.push( "onSubmit:triggered" );
+					}
+				}
 			}).onReady(function(){
 
 				log = $debugLog.html().split( "\n" );
@@ -266,25 +271,22 @@
 							validator.validateCustomValidity();
 							assert.ok( !validator.validity.valid );
 							assert.strictEqual( validator.validationMessage, msg );
+							$input.setCustomValidity();
 						});
 
 
-				module( "--" );
-					test( "Shim++ ", function() {
-						var $form = $( "#test1" ),
-								$input = $( "#email" ),
+				module( "Test inline validation messages" );
+					test( "On input on a defined node validation message shows up", function() {
+						var $input = $( "#email" ),
+								input = hfFormShim.getInput( $input ),
+								validator = input.validator,
 								$errMsg = $( "div[data-validation-message-for='email']" );
 
-						$form.on( "submit", function( e ){
-							e.preventDefault();
-						});
-
 						$input.val( "invalid-email" );
-
-						$form.submit();
-						console.info($errMsg);
-						ok( 1 );
-
+						validator.reset();
+						validator.validateValue();
+						validator.showValidationMessage();
+						ok( $errMsg.html() === "Please enter a valid email address" );
 					});
 
 

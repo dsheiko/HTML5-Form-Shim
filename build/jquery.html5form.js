@@ -732,7 +732,8 @@ define(function( require ) {
 							type = "Text";
 						}
 						return util
-							.createInstance( inputConstructors[ type ] || inputConstructors.Text, [ element, this.isCustomValidation() ] );
+							.createInstance( inputConstructors[ type ] || inputConstructors.Text,
+								[ element, this.isCustomValidation() ] );
 					},
 					/**
 					* Handle on-submit event
@@ -744,6 +745,7 @@ define(function( require ) {
 						if ( !this.inputs ) {
 							return;
 						}
+						log.log( NAME, "submitted", this.boundingBox.get( 0 ) );
 						for( i in this.inputs ) {
 							if ( this.inputs.hasOwnProperty( i ) ) {
 								input = this.inputs[ i ];
@@ -752,12 +754,15 @@ define(function( require ) {
 								if ( input.shim.isShimRequired() ) {
 										input.validator.checkValidity();
 										input.updateState();
+										JSON.stringify && log.log( "Input/*", "validity: " + JSON.stringify( input.validator.validity ) +
+												", validation message: " + input.validator.validationMessage,
+												input.boundingBox.get( 0 ) );
 										// Here check for validity
 										if ( !input.validator.validity.valid ) {
 											if ( input.validator.validationMessageNode ) {
 												input.validator.showValidationMessage();
 											} else {
-												// Show tooltip and stop propagation
+												// Show tooltip ONCE and stop propagation
 												isValid && input.showTooltip();
 											}
 											isValid = false;
@@ -765,13 +770,15 @@ define(function( require ) {
 								}
 							}
 						}
-						// Invoke given onSubmit handler
-						this.options.handlers.onSubmit();
+						log.log( NAME, "validation status is " + ( isValid ? "true" : "false" ), this.boundingBox.get( 0 ) );
 						if ( isValid ) {
 							this.setValid();
+							// Invoke given onSubmit handler
+							this.options.handlers.onSubmit();
 						} else {
 							this.setInvalid();
 							e.preventDefault();
+							e.stopImmediatePropagation();
 						}
 					}
 				};
@@ -969,6 +976,10 @@ define(function( require ) {
 			 */
 			validator: null,
 			/**
+			 * @type {function}
+			 */
+			validateValue: null,
+			/**
 			 * @type {module:App/Input/Abstract/Shim}
 			 */
 			shim: null,
@@ -997,6 +1008,7 @@ define(function( require ) {
 				this.boundingBox
 					.removeClass( "valid invalid" )
 					.addClass( state );
+				this.shim.shimConstraintValidationApi( this.validator.validity , this.validator.validationMessage );
 				return state;
 			},
 			/**
@@ -1144,7 +1156,7 @@ define(function( require ) {
 			/**
 			 * Disable HTML5 validatin on the input
 			 */
-			disableH5Validation: function() {
+			disableH5Validation: function(){
 				$node.attr( "novalidate", "novalidate" );
 			},
 			/**
@@ -1152,7 +1164,7 @@ define(function( require ) {
 			* styling as well as for further checks
 			* @access protected
 			*/
-			shimRequiredAttr: function() {
+			shimRequiredAttr: function(){
 				$node.attr( "required" ) === undefined ||
 					$node
 						.removeAttr( "required" )
@@ -1163,7 +1175,7 @@ define(function( require ) {
 			* Toggle .focus class on the input on focus/blur events
 			* @access protected
 			*/
-			shimFocusPseudoClass: function() {
+			shimFocusPseudoClass: function(){
 				$node
 					.on( "focus", function(){
 						$node.addClass( "focus" );
@@ -1177,7 +1189,7 @@ define(function( require ) {
 			* and remove placeholder
 			* @access protected
 			*/
-			shimAutofocus: function() {
+			shimAutofocus: function(){
 				if ( $node.attr( "autofocus" ) !== undefined ) {
 					$node.focus();
 					this.handleOnFocus();
@@ -1187,7 +1199,7 @@ define(function( require ) {
 			* Fallback placeholder handler
 			* @access protected
 			*/
-			shimPlaceholder: function() {
+			shimPlaceholder: function(){
 				var that = this;
 				if ( $node.attr( "placeholder" ) !== undefined ) {
 					$node.attr( "autocomplete", "false" );
@@ -1195,10 +1207,10 @@ define(function( require ) {
 					this.handleOnBlur();
 					// Sync UI
 					$node
-						.on( "focusin", function() {
+						.on( "focusin", function(){
 							that.handleOnFocus();
 						})
-						.on( "focusout", function() {
+						.on( "focusout", function(){
 							that.handleOnBlur();
 						});
 				}
@@ -1207,7 +1219,7 @@ define(function( require ) {
 			* Emulates oninput event
 			* @access protected
 			*/
-			handleOnInput: function() {
+			handleOnInput: function(){
 				var that = this;
 				if ( null !== deferredRequest ) {
 					window.clearTimeout( deferredRequest );
@@ -1227,7 +1239,7 @@ define(function( require ) {
 			* Calls a global handler specified in oninput attribute
 			* @access protected
 			*/
-			invokeOnInputCallBack: function() {
+			invokeOnInputCallBack: function(){
 				var callbackKey, pos;
 				if ( $node.attr( "oninput" ) !== undefined ) {
 					callbackKey = $node.attr( "oninput" );
@@ -1242,7 +1254,7 @@ define(function( require ) {
 			* Remove placeholder on focus
 			* @access protected
 			*/
-			handleOnFocus: function() {
+			handleOnFocus: function(){
 				$node.addClass( "focus" );
 				if ( $node.val() === $node.attr( "placeholder" ) ) {
 					$node.val( "" );
@@ -1254,7 +1266,7 @@ define(function( require ) {
 			* Restore placeholder on blur
 			* @access protected
 			*/
-			handleOnBlur: function() {
+			handleOnBlur: function(){
 				$node.removeClass( "focus" );
 				if ( !$node.val() ) {
 					$node.val( $node.attr( "placeholder" ) );
@@ -1265,10 +1277,10 @@ define(function( require ) {
 			* Subscribe for oninput events
 			* @access protected
 			*/
-			shimOnInput: function() {
+			shimOnInput: function(){
 				var that = this;
 				$node
-					.on( "change mouseup keydown", function() {
+					.on( "change mouseup keydown", function(){
 						that.handleOnInput();
 					});
 				// @TODO: Context menu handling:
@@ -1281,7 +1293,7 @@ define(function( require ) {
 			* @access public
 			* @returns (boolean)
 			*/
-			isShimRequired: function() {
+			isShimRequired: function(){
 				return isFormCustomValidation || !modernizr.supportedInputTypes[ $node.attr( "type" ) ] ||
 					$node.data( "custom-validation" );
 			},
@@ -1290,7 +1302,7 @@ define(function( require ) {
 			 * Example: input.setCustomValidity( "The two passwords must match." );
 			 * @returns {undefined}
 			 */
-			shimSetCustomValidity: function() {
+			shimSetCustomValidity: function(){
 				var old = $node.get( 0 ).setCustomValidity || function(){};
 				$node.get( 0 ).setCustomValidity = function( msg ) {
 					msg && input.validator.throwValidationException( "customError", msg );
@@ -1303,12 +1315,20 @@ define(function( require ) {
 			* embedded input handlers
 			* @access public
 			*/
-			degrade: function() {
+			degrade: function(){
 				log.log( NAME, "degrades", $node.get( 0 ) );
 				$node.get( 0 ).type = "text";
 				return this;
+			},
+			/**
+			 * reflect on properties of Constraint Validation API
+			 * @param {Object} validityState
+			 * @param {string} validationMessage
+			 */
+			shimConstraintValidationApi: function( validityState, validationMessage ){
+				$.extend( $node.validity, validityState );
+				$node.validationMessage = validationMessage;
 			}
-
 		};
 	};
 });
@@ -1436,15 +1456,15 @@ define(function( require ) {
 				/**
 				* @type (module:App/dictionary)
 				*/
-				defaultValidationMessages = _require( "src/App/Input/Abstract/Validator/dictionary.js" ),
-				/**
-				* reference to the bound validation message container
-				* @type {Node}
-				*/
-				validationMessageNode = null;
+				defaultValidationMessages = _require( "src/App/Input/Abstract/Validator/dictionary.js" );
 
 		/** @lends module:App/Input/Abstract/Validator.prototype */
 		return {
+			/**
+			* reference to the bound validation message container
+			* @type {Node}
+			*/
+			validationMessageNode: null,
 			/**
 			* @type {Node}
 			*/
@@ -1489,6 +1509,7 @@ define(function( require ) {
 				if ( this.isRequired() || !this.isEmpty() ) {
 					this.checkValidityWithoutRequired();
 				}
+				this.validateValue && this.validateValue();
 				return this.validity.valid;
 			},
 			/**
@@ -1545,7 +1566,7 @@ define(function( require ) {
 				var id = $node.attr( "id" ), $hint;
 				if ( id ) {
 					$hint = $( "form *[data-validation-message-for='" + id + "']" );
-					validationMessageNode = $hint.length ? $hint : null;
+					this.validationMessageNode = $hint.length ? $hint : null;
 				}
 			},
 			/**
@@ -1554,8 +1575,8 @@ define(function( require ) {
 			*/
 			showValidationMessage: function() {
 				var msg = this.validationMessage;
-				validationMessageNode.html( msg );
-				validationMessageNode[ msg ? "show" : "hide" ]();
+				this.validationMessageNode.html( msg );
+				this.validationMessageNode[ msg ? "show" : "hide" ]();
 			},
 
 			/**
@@ -1565,7 +1586,7 @@ define(function( require ) {
 			resetValidationState: function(){
 				this.validity = new ValidityDefaultStateVo();
 				this.validationMessage = "";
-				validationMessageNode && this.showValidationMessage();
+				this.validationMessageNode && this.showValidationMessage();
 			},
 
 

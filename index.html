@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article" data-debug-console="true">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>HTML5 Form Shim</title>
@@ -10,7 +10,7 @@
         <link rel="publisher" href="https://plus.google.com/113857365337532405020" />
         <link href='http://fonts.googleapis.com/css?family=Berkshire+Swash' rel='stylesheet' type='text/css'>
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,700' rel='stylesheet' type='text/css'>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 
         <script src="./build/jquery.html5form.js" type="text/javascript"></script>
         <!-- Custom input[type=color] widget example -->
@@ -310,12 +310,13 @@ $('form.example3 input[name=confirm]').on("input", function () {
             </article>
         </footer>
     <script type="text/javascript">
+			$( document ).ready(function(){
         // Using setCustomValidity example
         // The setCustomValidity(message), when invoked, must set the custom
         // validity error message to the value of the given message argument.
         $( "form.example5 input[name=confirm]" ).on( "input", function () {
           var input = $( this );
-          if ( input.val() != $( "form.example5 input[name=password]" ).val() ) {
+          if ( input.val() !== $( "form.example5 input[name=password]" ).val() ) {
             input.setCustomValidity( "The two passwords must match." );
           } else {
             // input is valid -- reset the error message
@@ -356,9 +357,13 @@ $('form.example3 input[name=confirm]').on("input", function () {
             control.degrade().boundingBox.datepicker();
         });
 
-				$( "form" ).on( "submit", function() {
+				// Must bound only after DOM is ready, otherwise it will be invoked before H5FormShim's submit handler
+				$( "form" ).on( "submit", function( e ) {
+					e.preventDefault();
 					alert( "Form submitted" );
 				});
+
+			});
 
     </script>
 </body>

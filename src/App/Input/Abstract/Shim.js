@@ -113,7 +113,7 @@ define(function( require ) {
 			/**
 			 * Disable HTML5 validatin on the input
 			 */
-			disableH5Validation: function() {
+			disableH5Validation: function(){
 				$node.attr( "novalidate", "novalidate" );
 			},
 			/**
@@ -121,7 +121,7 @@ define(function( require ) {
 			* styling as well as for further checks
 			* @access protected
 			*/
-			shimRequiredAttr: function() {
+			shimRequiredAttr: function(){
 				$node.attr( "required" ) === undefined ||
 					$node
 						.removeAttr( "required" )
@@ -132,7 +132,7 @@ define(function( require ) {
 			* Toggle .focus class on the input on focus/blur events
 			* @access protected
 			*/
-			shimFocusPseudoClass: function() {
+			shimFocusPseudoClass: function(){
 				$node
 					.on( "focus", function(){
 						$node.addClass( "focus" );
@@ -146,7 +146,7 @@ define(function( require ) {
 			* and remove placeholder
 			* @access protected
 			*/
-			shimAutofocus: function() {
+			shimAutofocus: function(){
 				if ( $node.attr( "autofocus" ) !== undefined ) {
 					$node.focus();
 					this.handleOnFocus();
@@ -156,7 +156,7 @@ define(function( require ) {
 			* Fallback placeholder handler
 			* @access protected
 			*/
-			shimPlaceholder: function() {
+			shimPlaceholder: function(){
 				var that = this;
 				if ( $node.attr( "placeholder" ) !== undefined ) {
 					$node.attr( "autocomplete", "false" );
@@ -164,10 +164,10 @@ define(function( require ) {
 					this.handleOnBlur();
 					// Sync UI
 					$node
-						.on( "focusin", function() {
+						.on( "focusin", function(){
 							that.handleOnFocus();
 						})
-						.on( "focusout", function() {
+						.on( "focusout", function(){
 							that.handleOnBlur();
 						});
 				}
@@ -176,7 +176,7 @@ define(function( require ) {
 			* Emulates oninput event
 			* @access protected
 			*/
-			handleOnInput: function() {
+			handleOnInput: function(){
 				var that = this;
 				if ( null !== deferredRequest ) {
 					window.clearTimeout( deferredRequest );
@@ -196,7 +196,7 @@ define(function( require ) {
 			* Calls a global handler specified in oninput attribute
 			* @access protected
 			*/
-			invokeOnInputCallBack: function() {
+			invokeOnInputCallBack: function(){
 				var callbackKey, pos;
 				if ( $node.attr( "oninput" ) !== undefined ) {
 					callbackKey = $node.attr( "oninput" );
@@ -211,7 +211,7 @@ define(function( require ) {
 			* Remove placeholder on focus
 			* @access protected
 			*/
-			handleOnFocus: function() {
+			handleOnFocus: function(){
 				$node.addClass( "focus" );
 				if ( $node.val() === $node.attr( "placeholder" ) ) {
 					$node.val( "" );
@@ -223,7 +223,7 @@ define(function( require ) {
 			* Restore placeholder on blur
 			* @access protected
 			*/
-			handleOnBlur: function() {
+			handleOnBlur: function(){
 				$node.removeClass( "focus" );
 				if ( !$node.val() ) {
 					$node.val( $node.attr( "placeholder" ) );
@@ -234,10 +234,10 @@ define(function( require ) {
 			* Subscribe for oninput events
 			* @access protected
 			*/
-			shimOnInput: function() {
+			shimOnInput: function(){
 				var that = this;
 				$node
-					.on( "change mouseup keydown", function() {
+					.on( "change mouseup keydown", function(){
 						that.handleOnInput();
 					});
 				// @TODO: Context menu handling:
@@ -250,7 +250,7 @@ define(function( require ) {
 			* @access public
 			* @returns (boolean)
 			*/
-			isShimRequired: function() {
+			isShimRequired: function(){
 				return isFormCustomValidation || !modernizr.supportedInputTypes[ $node.attr( "type" ) ] ||
 					$node.data( "custom-validation" );
 			},
@@ -259,7 +259,7 @@ define(function( require ) {
 			 * Example: input.setCustomValidity( "The two passwords must match." );
 			 * @returns {undefined}
 			 */
-			shimSetCustomValidity: function() {
+			shimSetCustomValidity: function(){
 				var old = $node.get( 0 ).setCustomValidity || function(){};
 				$node.get( 0 ).setCustomValidity = function( msg ) {
 					msg && input.validator.throwValidationException( "customError", msg );
@@ -272,12 +272,20 @@ define(function( require ) {
 			* embedded input handlers
 			* @access public
 			*/
-			degrade: function() {
+			degrade: function(){
 				log.log( NAME, "degrades", $node.get( 0 ) );
 				$node.get( 0 ).type = "text";
 				return this;
+			},
+			/**
+			 * reflect on properties of Constraint Validation API
+			 * @param {Object} validityState
+			 * @param {string} validationMessage
+			 */
+			shimConstraintValidationApi: function( validityState, validationMessage ){
+				$.extend( $node.validity, validityState );
+				$node.validationMessage = validationMessage;
 			}
-
 		};
 	};
 });
