@@ -9,7 +9,7 @@ That is a jQuery plugin, which brings [HTML5 Form](http://www.w3.org/TR/html5/fo
 Different browsers provide different look&feel for the form elements. However you would hardly able to re-style bubble validation messages , date-picker, color-picker and others. With this plugin you may intercept browser native HTML5 Form API control and, therefore, have all the attached UI components always in the same style. Besides, you can have own validation messaging (e.g. showing messages next to the field instead using tooltips).
 
 ### How to use
-To enable the shim you simply mark forms with data-enable-shim="true" while running jQuery and this plugin.
+To enable the shim you simply mark forms with `data-enable-shim="true"` while running jQuery and this plugin.
 
 ```
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
@@ -40,7 +40,7 @@ NOTE: The examples below use CSS3 styles. If you want your forms not only behave
 * Allows custom on-input callbacks
 * Shim formaction, formenctype, formmethod, and formtarget attributes
 * Covered with tests
-* Implemented as UMD (can be used as AMD or CommonJS module)
+* Implemented as UMD (can be used as AMD or CommonJS modules)
 
 
 #### Example 1: Custom form submission validation
@@ -65,7 +65,7 @@ title="Please enter valid tel." />
 
 This form shows custom tooltips as on old browsers as well as on those supporting HTML5.
 
-To make the form showing your custom tooltip on submission validation, define data-custom-validation property on the
+To make the form showing your custom tooltip on submission validation, define `data-custom-validation` property on the
 form element.
 
 The plugin will use $.setCustomValidityCallback to display validation messages. You can override this callback with
@@ -105,7 +105,8 @@ your own function:
     <button class="btn btn-inverse btn-large" type="submit">Submit</button>
 </form>
 ```
-This form forced to custom validation by attribute data-custom-validation. So whatever browser you use it displays validation messages on the elements marked as data-validation-message-for="<input-id>"
+This form is forced to custom validation by attribute `data-custom-validation`.
+So whatever browser you use it displays validation messages on the elements marked as `data-validation-message-for="<input-id>"`
 
 #### Example 3: Custom input type validation
 
@@ -117,11 +118,12 @@ This form forced to custom validation by attribute data-custom-validation. So wh
 </form>
 ```
 
-You can easily define your own input validator by using $.setCustomInputTypeValidator. It receives following arguments:
+You can easily define your own input validator by using `$.setCustomInputTypeValidator`. It receives following arguments:
 
-    (string) Input type (here Zip for <input type="zip">)
-    (string) Input value validation message
-    (string) Validation callback (returns boolean)
+  | (string) | Input type (here Zip for `<input type="zip">`) |
+  | (string) | Input value validation message |
+  | (function) | Validation callback (returns boolean) |
+	| (function) | (OPTIONAL) Initialization callback  |
 
 ```
 $.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function() {
@@ -129,7 +131,7 @@ $.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function(
     return pattern.test( $( this ).val() );
 });
 ```
-Mark that the input element is available within the callback as the context (this).
+Mark that the input element is available within the callback as the context (`this`).
 
 
 #### Example 4: Attaching 3rd-party widgets to form elements
@@ -145,9 +147,10 @@ Mark that the input element is available within the callback as the context (thi
     <button class="btn btn-inverse btn-large" type="submit">Submit</button>
 </form>
 ```
-You can attach to any input element a custom handler. Thus you can enrich inputs of such types as color, date, datetime, week, moth, time, range with corresponding widgets (e.g. how it's implemented in latest Chrome/Opera releases).
+You can attach to any input element a custom handler. Thus you can enrich inputs of such types as color, date,
+datetime, week, moth, time, range with corresponding widgets (e.g. how it's implemented in latest Chrome/Opera releases).
 
-In the example below you can find color input using colorPicker jQuery-plugin and date input using jQueryUI datePicker
+In the example below you can find color input using `colorPicker` jQuery-plugin and date input using jQueryUI `datePicker`
 
 ```
 // Custom color input handler example
@@ -182,7 +185,10 @@ $.setCustomInputTypeValidator( "Date", "Please enter a valid date", function() {
         });
 });
 ```
-As you see here last argument of $.setCustomInputTypeValidator is initialization callback. It injects dependency to input control handler (control). From which you can access the element control.boundingBox(the same as $(this) ) and methods such as control.isShimRequired() (indicates if if the input type supported) and control.degrade() (switch the type to text, which prevents collision with browser-specific element treatment)
+As you see here last argument of `$.setCustomInputTypeValidator` is initialization callback.
+It injects dependency to input control handler (control). From which you can access
+the element `control.boundingBox` ( the same as $(this) ) and methods such as control.isShimRequired()
+(indicates if if the input type supported) and `control.degrade()` (switch the type to text, which prevents collision with browser-specific element treatment)
 
 #### Example 5: Custom oninput callback
 ```
@@ -197,10 +203,12 @@ As you see here last argument of $.setCustomInputTypeValidator is initialization
 </form>
 ```
 
-HTML5 introduces a new event oninput, which can be handled to perform additional validation tests on a field. For example, making registration form you can define a handler which checks by XMLHttpRequest if the given email already exists in DB. Here an example for a cross-browser oninput handler:
+HTML5 introduces a new event `input`, which can be handled to perform additional validation tests on a field.
+For example, making registration form you can define a handler which checks by XMLHttpRequest if the
+given email already exists in DB. Here an example for a cross-browser on-input handler:
 
 ```
-$('form.example3 input[name=confirm]').on("oninput", function () {
+$('form.example3 input[name=confirm]').on("input", function () {
     var input = $(this);
     if (input.val() != $('form.example3 input[name=password]').val()) {
     input.setCustomValidity('The two passwords must match.');
@@ -213,41 +221,67 @@ $('form.example3 input[name=confirm]').on("oninput", function () {
 
 ## API
 
-### Class diagram
-
-![Image](https://raw.github.com/dsheiko/HTML5-Form-Shim/master/doc/class-diagram.png)
 
 ### hfFormShim
 
-#### .init( options )
+#### .init( options ): <self>
 
 Repeat initialization on a given form or all the forms in DOM if no argument given
 
 Whereas options is an object of the following structure:
+```
 {
-    boundingBox: formNode,
+    boundingBox: formNode, // OPTIONAL
     inputs: "input, textarea, select", // OPTIONAL, by default "input, textarea"
     handlers: { // OPTIONAL
-        onSubmit: fn(),
+        onSubmit: fn()
     }
 }
+```
 
-#### .getInput( $input )
+If `boundingBox` property is missing, all the form marked with `data-enable-shim="true"` will be initialized.
+It's pretty handy for ebling HTML5FormShim on dynamically built pages
 
-Obtain AbstractInput (hfFormShim input wrapper) for the given node to get access to The constraint validation API
+#### .getInput( $input ): <AbstractInput>
 
-### AbstractInput
+Obtain AbstractInput (hfFormShim input wrapper) for the given node to get access to `The constraint validation API`
 
-#### .checkValidity( $form )
+#### .onReady( callback ): <self>
 
-Run all the validity tests (checkValidityWithoutRequired, validateValue, validateByPattern, validateCustomValidity) and return validation status
+Invokes the callback function when all the specified forms initialized. The callback takes one parameter - `page` object.
+You can obtain one of initialized form objects by index `page.getForm( index )`.
+
+
+### <AbstractInput>
+
+#### .validator.reset(): void
+Reset input validation state to defaults
+
+#### .validator.checkValidity(): boolean
+Run all the validity tests (validateRequired, validateValue, validateByPattern, validateCustomValidity) and
+return validation status
+
+#### .validator.validateRequired(): boolean
+Throws validation exception if input value is empty on a required input
+
+#### .validator.validateCustomValidity(): void
+Throws validation exception if input node `data-customvalidity` attribute has been modified.
+Handy when `data-customvalidity` been changed externally (e.g. AJAX)
+
+#### .validator.validateByPattern(): void
+Throws validation exception if input value doesn't match the provided pattern
+
+#### .validator.validateValue()(): void
+Throws validation exception if constraints given to this input type are not satisfied
+
 
 #### .throwValidationException( validationProperty, validationMessage )
+Trigger validation exception which reflects on `The constraint validation API`
 
-Trigger validation exception which reflects on The constraint validation API
+#### .shim.isShimRequired(): boolean
+Shim is required when the input type isn't supported or custom validation requested (`data-custom-validation="true"`)
 
-#### .degrade()
-
+#### .shim.degrade(): void
 Set attribute to text to avoid collisions with browser embedded input handlers
 
 
@@ -255,12 +289,13 @@ Set attribute to text to avoid collisions with browser embedded input handlers
 
 ## Building
 
-The project can be built with [Grunt task runner](http://gruntjs.com/). During the build Grunt validates the JavaScript sources with jshint and jscs,
-compiles JavaScripts chunks into a single module (from file structure partly compatible [ZF Naming convention](http://framework.zend.com/manual/1.12/en/coding-standard.naming-conventions.html)),
+The project can be built with [Grunt task runner](http://gruntjs.com/).
+During the build Grunt validates the JavaScript sources with jshint and jscs,
+compiles JavaScripts UMD modules using cjsc,
 runs Qunit tests and minifies JavaScript. To make a build just fire up Grunt anywhere within your project directory:
 
 ```
-grunt
+grunt build
 ```
 
 As you commit TravisCI reports you if the build isn't successful

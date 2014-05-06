@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article" data-debug-console="false">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>HTML5 Form Shim</title>
@@ -10,9 +10,9 @@
         <link rel="publisher" href="https://plus.google.com/113857365337532405020" />
         <link href='http://fonts.googleapis.com/css?family=Berkshire+Swash' rel='stylesheet' type='text/css'>
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:600,700' rel='stylesheet' type='text/css'>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 
-        <script src="./js/build/jquery.html5form.min.js" type="text/javascript"></script>
+        <script src="./build/jquery.html5form.js" type="text/javascript"></script>
         <!-- Custom input[type=color] widget example -->
         <link rel="stylesheet" media="screen" type="text/css" href="http://demo.dsheiko.com/html5formshim/vendors/colorpicker/css/colorpicker.css" />
         <script type="text/javascript" src="http://demo.dsheiko.com/html5formshim/vendors/colorpicker/js/colorpicker.js"></script>
@@ -48,7 +48,7 @@ Different browsers provide different look&feel for the form elements. However yo
                     To enable the shim you simply mark forms with <var>data-enable-shim="true"</var> while running jQuery and this plugin.
                     <textarea rows="7" class="code">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-<script src="./js/build/jquery.html5form.min.js" type="text/javascript"></script>
+<script src="./build/jquery.html5form.min.js" type="text/javascript"></script>
 
 
 <form data-enable-shim="true">
@@ -277,11 +277,11 @@ From which you can access the element <var>control.boundingBox</var>(the same as
                             <p>HTML5 introduces a new event oninput, which can be handled to perform additional validation
                                 tests on a field. For example, making registration form you can define a handler
                                 which checks by XMLHttpRequest if the given email already exists in DB. Here an example for
-                                a cross-browser oninput handler:
+                                a cross-browser on-input handler:
                             </p>
 
                                 <textarea class="code" rows="12">
-$('form.example3 input[name=confirm]').on("oninput", function () {
+$('form.example3 input[name=confirm]').on("input", function () {
     var input = $(this);
     if (input.val() != $('form.example3 input[name=password]').val()) {
     input.setCustomValidity('The two passwords must match.');
@@ -310,53 +310,62 @@ $('form.example3 input[name=confirm]').on("oninput", function () {
             </article>
         </footer>
     <script type="text/javascript">
+
+
+			// Custom input type validator example
+			$.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function() {
+					var pattern = /^[0-9]{6,8}$/;
+					return pattern.test( $( this ).val() );
+			});
+
+
+			// Custom color input handler example
+			$.setCustomInputTypeValidator( "Color", "Please enter a valid hex color", function() {
+					var pattern = /^#(?:[0-9a-f]{3}){1,2}$/i;
+					return pattern.test( $( this ).val() );
+			}, function( control ) {
+					control.isShimRequired() &&
+					control.degrade().boundingBox.ColorPicker({
+							onChange: function( hsb, hex, rgb ) {
+									control.boundingBox.val( "#" + hex );
+							},
+							onBeforeShow: function () {
+									$( this ).ColorPickerSetColor( this.value );
+							}
+					});
+			});
+
+			// Custom date input handler example
+			$.setCustomInputTypeValidator( "Date", "Please enter a valid date", function() {
+					var pattern = /^\d{2,4}(-|\/)\d{2,4}(-|\/)\d{2,4}$/i;
+					return !$( this ).val() || pattern.test( $( this ).val() );
+			}, function( control ) {
+					control.isShimRequired() &&
+					control.degrade().boundingBox.datepicker();
+			});
+
+
+			$( document ).ready(function(){
         // Using setCustomValidity example
         // The setCustomValidity(message), when invoked, must set the custom
         // validity error message to the value of the given message argument.
-        $('form.example5 input[name=confirm]').on( "oninput", function () {
+        $( "form.example5 input[name=confirm]" ).on( "input", function () {
           var input = $( this );
-          if ( input.val() != $('form.example5 input[name=password]' ).val()) {
-            input.setCustomValidity('The two passwords must match.');
+          if ( input.val() !== $( "form.example5 input[name=password]" ).val() ) {
+            input.setCustomValidity( "The two passwords must match." );
           } else {
             // input is valid -- reset the error message
-            input.setCustomValidity('');
+            input.setCustomValidity( "" );
           }
         });
 
+				// Must bound only after DOM is ready, otherwise it will be invoked before H5FormShim's submit handler
+				$( "form" ).on( "submit", function( e ) {
+					e.preventDefault();
+					alert( "Form submitted" );
+				});
 
-        // Custom input type validator example
-        $.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function() {
-            var pattern = /^[0-9]{6,8}$/;
-            return pattern.test( $( this ).val() );
-        });
-
-
-        // Custom color input handler example
-        $.setCustomInputTypeValidator( "Color", "Please enter a valid hex color", function() {
-            var pattern = /^#(?:[0-9a-f]{3}){1,2}$/i;
-            return pattern.test( $( this ).val() );
-        }, function( control ) {
-            control.isShimRequired() &&
-            control.degrade().boundingBox.ColorPicker({
-                onChange: function( hsb, hex, rgb ) {
-                    control.boundingBox.val( "#" + hex );
-                },
-                onBeforeShow: function () {
-                    $( this ).ColorPickerSetColor( this.value );
-                }
-            });
-        });
-
-        // Custom date input handler example
-        $.setCustomInputTypeValidator( "Date", "Please enter a valid date", function() {
-            var pattern = /^\d{2,4}(-|\/)\d{2,4}(-|\/)\d{2,4}$/i;
-            return !$( this ).val() || pattern.test( $( this ).val() );
-        }, function( control ) {
-            control.isShimRequired() &&
-            control.degrade().boundingBox.datepicker();
-        });
-
-
+			});
 
     </script>
 </body>

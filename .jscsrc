@@ -1,9 +1,7 @@
 {
-  "LineLength": false,
-  "QuoteConventions": false,
-	"VariableNamingConventions": {
-		"allowCase": [ "camel", "pascal" ],
-		"allowRepeating": true,
-		"allowNumbers": true
-	}
+  "LineLength": {
+		"allowMaxLength": 120
+	},
+	"Indentation": false,
+  "QuoteConventions": false
 }
