@@ -279,8 +279,7 @@ Shim is required when the input type isn't supported or custom validation reques
 #### .shim.degrade(): void
 Set attribute to text to avoid collisions with browser embedded input handlers
 
-
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/c47f48053eefc566f7a4790801f3ff6e "githalytics.com")](http://githalytics.com/dsheiko/HTML5-Form-Shim)
+![Class Diagramm](https://github.com/dsheiko/HTML5-Form-Shim/raw/master/doc/class-diagram.png)
 
 ## Building
 
@@ -303,3 +302,5 @@ grunt test
 ```
 
 As you commit TravisCI reports you if the build isn't successful
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/c47f48053eefc566f7a4790801f3ff6e "githalytics.com")](http://githalytics.com/dsheiko/HTML5-Form-Shim)
