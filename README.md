@@ -290,12 +290,21 @@ Set attribute to text to avoid collisions with browser embedded input handlers
 ## Building
 
 The project can be built with [Grunt task runner](http://gruntjs.com/).
-During the build Grunt validates the JavaScript sources with jshint and jscs,
-compiles JavaScripts UMD modules using cjsc,
+During the build Grunt validates the JavaScript sources with jshint and [jscs](https://github.com/dsheiko/jscodesniffer),
+compiles JavaScripts UMD modules using [cjsc](https://github.com/dsheiko/cjsc),
 runs Qunit tests and minifies JavaScript. To make a build just fire up Grunt anywhere within your project directory:
 
+Producing .build/jquery.html5form.min.js
 ```
 grunt build
+```
+Producing .build/jquery.html5form.js
+```
+grunt debug
+```
+Running automated tests and code style validation
+```
+grunt test
 ```
 
 As you commit TravisCI reports you if the build isn't successful
