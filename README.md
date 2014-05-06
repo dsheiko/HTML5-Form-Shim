@@ -12,8 +12,8 @@ Different browsers provide different look&feel for the form elements. However yo
 To enable the shim you simply mark forms with `data-enable-shim="true"` while running jQuery and this plugin.
 
 ```
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-    <script src="./js/build/jquery.html5form.min.js" type="text/javascript"></script>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="./build/jquery.html5form.min.js" type="text/javascript"></script>
 ```
 ```
 <form data-enable-shim="true">
@@ -120,10 +120,12 @@ So whatever browser you use it displays validation messages on the elements mark
 
 You can easily define your own input validator by using `$.setCustomInputTypeValidator`. It receives following arguments:
 
-  | (string) | Input type (here Zip for `<input type="zip">`) |
-  | (string) | Input value validation message |
-  | (function) | Validation callback (returns boolean) |
-	| (function) | (OPTIONAL) Initialization callback  |
+type | description
+--- | ---
+(string) | Input type (here Zip for `<input type="zip">`)
+(string) | Input value validation message
+(function) | Validation callback (returns boolean)
+(function) | (OPTIONAL) Initialization callback
 
 ```
 $.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function() {
@@ -155,40 +157,33 @@ In the example below you can find color input using `colorPicker` jQuery-plugin 
 ```
 // Custom color input handler example
 $.setCustomInputTypeValidator( "Color", "Please enter a valid hex color", function() {
-    var pattern = /^#(?:[0-9a-f]{3}){1,2}$/i;
-    return pattern.test( $( this ).val() );
+		var pattern = /^#(?:[0-9a-f]{3}){1,2}$/i;
+		return pattern.test( $( this ).val() );
 }, function( control ) {
-    control.isShimRequired() &&
-    control.degrade().boundingBox.ColorPicker({
-        onChange: function( hsb, hex, rgb ) {
-            control.boundingBox.val( "#" + hex );
-        },
-        onBeforeShow: function () {
-            $( this ).ColorPickerSetColor( this.value );
-        }
-    });
+		control.isShimRequired() &&
+		control.boundingBox.ColorPicker({
+				onChange: function( hsb, hex, rgb ) {
+						control.boundingBox.val( "#" + hex );
+				},
+				onBeforeShow: function () {
+						$( this ).ColorPickerSetColor( this.value );
+				}
+		});
 });
 
 // Custom date input handler example
 $.setCustomInputTypeValidator( "Date", "Please enter a valid date", function() {
-    var pattern = /^\d{2,4}(-|\/)\d{2,4}(-|\/)\d{2,4}$/i;
-    return !$( this ).val() || pattern.test( $( this ).val() );
+		var pattern = /^\d{2,4}(-|\/)\d{2,4}(-|\/)\d{2,4}$/i;
+		return !$( this ).val() || pattern.test( $( this ).val() );
 }, function( control ) {
-    control.isShimRequired() &&
-    control.degrade().boundingBox.datePicker({
-        createButton: false,
-        clickInput: true,
-        startDate: '01/01/1970'
-    })
-        .bind( 'dateSelected', function() {
-            control.validateValue();
-        });
+		control.isShimRequired() &&
+		control.boundingBox.datepicker();
 });
 ```
 As you see here last argument of `$.setCustomInputTypeValidator` is initialization callback.
 It injects dependency to input control handler (control). From which you can access
-the element `control.boundingBox` ( the same as $(this) ) and methods such as control.isShimRequired()
-(indicates if if the input type supported) and `control.degrade()` (switch the type to text, which prevents collision with browser-specific element treatment)
+the element `control.boundingBox` ( the same as $(this) ) and methods such as `control.isShimRequired()`
+(indicates if if the input type supported)
 
 #### Example 5: Custom oninput callback
 ```
@@ -242,17 +237,17 @@ Whereas options is an object of the following structure:
 If `boundingBox` property is missing, all the form marked with `data-enable-shim="true"` will be initialized.
 It's pretty handy for ebling HTML5FormShim on dynamically built pages
 
-#### .getInput( $input ): <AbstractInput>
+#### .getInput( $input ): AbstractInput
 
 Obtain AbstractInput (hfFormShim input wrapper) for the given node to get access to `The constraint validation API`
 
-#### .onReady( callback ): <self>
+#### .onReady( callback ): self
 
 Invokes the callback function when all the specified forms initialized. The callback takes one parameter - `page` object.
 You can obtain one of initialized form objects by index `page.getForm( index )`.
 
 
-### <AbstractInput>
+### AbstractInput
 
 #### .validator.reset(): void
 Reset input validation state to defaults
