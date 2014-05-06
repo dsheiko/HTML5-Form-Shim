@@ -56,7 +56,12 @@ define(function( require ) {
 		 */
 		$.setCustomInputTypeValidator = function() {
 			Form.setCustomInputTypeValidator.apply( this, arguments );
-			page.init();
+		};
+		/**
+		 * After form submit all the inputs must be reset
+		 */
+		$.__resetInputsAcrossThePage = function() {
+			page.reset();
 		};
 
 		/**

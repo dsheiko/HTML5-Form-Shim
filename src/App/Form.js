@@ -155,7 +155,30 @@ define(function( require ) {
 							}
 						});
 					},
-
+					/**
+					* Make an instance of custom validator for a given input type
+					* @access public
+					* @param {Node} element
+					* @constructs module:App/Input/AbstractInput
+					*/
+					inputFactory: function( element ) {
+						var type = util.ucfirst( element.data( "type" ) || element.attr( "type" ) );
+						// If the element has pattern attribute it removes the validator assigned to the eleent type
+						if ( element.is( "[pattern]" ) ) {
+							type = "Text";
+						}
+						return util
+							.createInstance( inputConstructors[ type ] || inputConstructors.Text,
+								[ element, this.isCustomValidation() ] );
+					},
+					/**
+					 * Reset validator for each input
+					 */
+					reset: function() {
+						$.each( this.inputs, function(){
+							this.validator.reset();
+						});
+					},
 					/**
 					* Shim formaction, formenctype, formmethod, and formtarget
 					* http://html5doctor.com/html5-forms-introduction-and-new-attributes/#formaction
@@ -218,22 +241,6 @@ define(function( require ) {
 						this.boundingBox.addClass( "invalid" ).removeClass( "valid" );
 					},
 					/**
-					* Make an instance of custom validator for a given input type
-					* @access public
-					* @param {Node} element
-					* @constructs module:App/Input/AbstractInput
-					*/
-					inputFactory: function( element ) {
-						var type = util.ucfirst( element.data( "type" ) || element.attr( "type" ) );
-						// If the element has pattern attribute it removes the validator assigned to the eleent type
-						if ( element.is( "[pattern]" ) ) {
-							type = "Text";
-						}
-						return util
-							.createInstance( inputConstructors[ type ] || inputConstructors.Text,
-								[ element, this.isCustomValidation() ] );
-					},
-					/**
 					* Handle on-submit event
 					* @param {Event} e
 					* @access protected
@@ -268,6 +275,7 @@ define(function( require ) {
 								}
 							}
 						}
+						$.__resetInputsAcrossThePage();
 						log.log( NAME, "validation status is " + ( isValid ? "true" : "false" ), this.boundingBox.get( 0 ) );
 						if ( isValid ) {
 							this.setValid();

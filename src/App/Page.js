@@ -87,11 +87,11 @@ define(function( require ) {
 				return null;
 			},
 			/**
-			 * Init all the forms (useful when inputs must be reinitialized)
+			 * Reset all the forms (useful when inputs must be reinitialized)
 			 */
-			init: function() {
+			reset: function() {
 				$.each( forms, function( i ){
-					forms[ i ].init();
+					forms[ i ].reset();
 				});
 			}
 		};

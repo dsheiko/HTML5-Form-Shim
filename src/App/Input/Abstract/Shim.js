@@ -47,21 +47,30 @@ define(function( require ) {
 				* @default
 				* @type {string[]}
 				*/
-			 H5_INPUT_TYPES = [
-				 "color",
-				 "date",
-				 "datetime",
-				 "datetime-local",
-				 "email",
-				 "month",
-				 "number",
-				 "range",
-				 "search",
-				 "tel",
-				 "time",
-				 "url",
-				 "week"
-			 ],
+				H5_INPUT_TYPES = [
+					"color",
+					"date",
+					"datetime",
+					"datetime-local",
+					"email",
+					"month",
+					"number",
+					"range",
+					"search",
+					"tel",
+					"time",
+					"url",
+					"week"
+				],
+				/**
+				* Especiall types that must not be degraded
+				* @constant
+				* @default
+				* @type {string[]}
+				*/
+				SPEC_TYPES = [
+				 "password"
+				],
 				/**
 				 * Module that detects HTML5 and CSS3 features in the user’s browser
 				 * @type {modele:modernizr}
@@ -87,7 +96,8 @@ define(function( require ) {
 			init: function(){
 				this.shimSetCustomValidity();
 				// Degrade type of input to text when it's one of HTML5 specific types
-				if ( isFormCustomValidation && $.inArray( $node.attr( "type" ), H5_INPUT_TYPES ) ) {
+				if ( isFormCustomValidation && $.inArray( $node.attr( "type" ), H5_INPUT_TYPES ) &&
+					$.inArray( $node.attr( "type" ), SPEC_TYPES ) ) {
 					this.degrade();
 				}
 				// Shim placeholder attribute when it's not supported
@@ -178,6 +188,7 @@ define(function( require ) {
 			*/
 			handleOnInput: function(){
 				var that = this;
+
 				if ( null !== deferredRequest ) {
 					window.clearTimeout( deferredRequest );
 				}
@@ -186,9 +197,11 @@ define(function( require ) {
 					input.validator.resetValidationState();
 					deferredRequest = null;
 					that.invokeOnInputCallBack();
-					$node.trigger( "input", that );
+					// This causes self calling by some reason
+					// $node.trigger( "input", that );
 					input.validator.checkValidityWithoutRequired();
 					input.updateState();
+					// Show validation message online if msg node is bound
 					input.validator.validationMessageNode && input.validator.showValidationMessage();
 				}, ONINPUT_DELAY );
 			},
@@ -241,7 +254,7 @@ define(function( require ) {
 						that.handleOnInput();
 					});
 				// @TODO: Context menu handling:
-				// $node.get().oncontextmenu =  _private.handleOnInput;
+				// $node.get().oncontextmenu =  .handleOnInput;
 			},
 
 			/**

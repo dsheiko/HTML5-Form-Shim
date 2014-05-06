@@ -130,7 +130,12 @@ define(function( require ) {
 		 */
 		$.setCustomInputTypeValidator = function() {
 			Form.setCustomInputTypeValidator.apply( this, arguments );
-			page.init();
+		};
+		/**
+		 * After form submit all the inputs must be reset
+		 */
+		$.__resetInputsAcrossThePage = function() {
+			page.reset();
 		};
 
 		/**
@@ -486,11 +491,11 @@ define(function( require ) {
 				return null;
 			},
 			/**
-			 * Init all the forms (useful when inputs must be reinitialized)
+			 * Reset all the forms (useful when inputs must be reinitialized)
 			 */
-			init: function() {
+			reset: function() {
 				$.each( forms, function( i ){
-					forms[ i ].init();
+					forms[ i ].reset();
 				});
 			}
 		};
@@ -657,7 +662,30 @@ define(function( require ) {
 							}
 						});
 					},
-
+					/**
+					* Make an instance of custom validator for a given input type
+					* @access public
+					* @param {Node} element
+					* @constructs module:App/Input/AbstractInput
+					*/
+					inputFactory: function( element ) {
+						var type = util.ucfirst( element.data( "type" ) || element.attr( "type" ) );
+						// If the element has pattern attribute it removes the validator assigned to the eleent type
+						if ( element.is( "[pattern]" ) ) {
+							type = "Text";
+						}
+						return util
+							.createInstance( inputConstructors[ type ] || inputConstructors.Text,
+								[ element, this.isCustomValidation() ] );
+					},
+					/**
+					 * Reset validator for each input
+					 */
+					reset: function() {
+						$.each( this.inputs, function(){
+							this.validator.reset();
+						});
+					},
 					/**
 					* Shim formaction, formenctype, formmethod, and formtarget
 					* http://html5doctor.com/html5-forms-introduction-and-new-attributes/#formaction
@@ -720,22 +748,6 @@ define(function( require ) {
 						this.boundingBox.addClass( "invalid" ).removeClass( "valid" );
 					},
 					/**
-					* Make an instance of custom validator for a given input type
-					* @access public
-					* @param {Node} element
-					* @constructs module:App/Input/AbstractInput
-					*/
-					inputFactory: function( element ) {
-						var type = util.ucfirst( element.data( "type" ) || element.attr( "type" ) );
-						// If the element has pattern attribute it removes the validator assigned to the eleent type
-						if ( element.is( "[pattern]" ) ) {
-							type = "Text";
-						}
-						return util
-							.createInstance( inputConstructors[ type ] || inputConstructors.Text,
-								[ element, this.isCustomValidation() ] );
-					},
-					/**
 					* Handle on-submit event
 					* @param {Event} e
 					* @access protected
@@ -770,6 +782,7 @@ define(function( require ) {
 								}
 							}
 						}
+						$.__resetInputsAcrossThePage();
 						log.log( NAME, "validation status is " + ( isValid ? "true" : "false" ), this.boundingBox.get( 0 ) );
 						if ( isValid ) {
 							this.setValid();
@@ -1090,21 +1103,30 @@ define(function( require ) {
 				* @default
 				* @type {string[]}
 				*/
-			 H5_INPUT_TYPES = [
-				 "color",
-				 "date",
-				 "datetime",
-				 "datetime-local",
-				 "email",
-				 "month",
-				 "number",
-				 "range",
-				 "search",
-				 "tel",
-				 "time",
-				 "url",
-				 "week"
-			 ],
+				H5_INPUT_TYPES = [
+					"color",
+					"date",
+					"datetime",
+					"datetime-local",
+					"email",
+					"month",
+					"number",
+					"range",
+					"search",
+					"tel",
+					"time",
+					"url",
+					"week"
+				],
+				/**
+				* Especiall types that must not be degraded
+				* @constant
+				* @default
+				* @type {string[]}
+				*/
+				SPEC_TYPES = [
+				 "password"
+				],
 				/**
 				 * Module that detects HTML5 and CSS3 features in the user’s browser
 				 * @type {modele:modernizr}
@@ -1130,7 +1152,8 @@ define(function( require ) {
 			init: function(){
 				this.shimSetCustomValidity();
 				// Degrade type of input to text when it's one of HTML5 specific types
-				if ( isFormCustomValidation && $.inArray( $node.attr( "type" ), H5_INPUT_TYPES ) ) {
+				if ( isFormCustomValidation && $.inArray( $node.attr( "type" ), H5_INPUT_TYPES ) &&
+					$.inArray( $node.attr( "type" ), SPEC_TYPES ) ) {
 					this.degrade();
 				}
 				// Shim placeholder attribute when it's not supported
@@ -1221,6 +1244,7 @@ define(function( require ) {
 			*/
 			handleOnInput: function(){
 				var that = this;
+
 				if ( null !== deferredRequest ) {
 					window.clearTimeout( deferredRequest );
 				}
@@ -1229,9 +1253,11 @@ define(function( require ) {
 					input.validator.resetValidationState();
 					deferredRequest = null;
 					that.invokeOnInputCallBack();
-					$node.trigger( "input", that );
+					// This causes self calling by some reason
+					// $node.trigger( "input", that );
 					input.validator.checkValidityWithoutRequired();
 					input.updateState();
+					// Show validation message online if msg node is bound
 					input.validator.validationMessageNode && input.validator.showValidationMessage();
 				}, ONINPUT_DELAY );
 			},
@@ -1284,7 +1310,7 @@ define(function( require ) {
 						that.handleOnInput();
 					});
 				// @TODO: Context menu handling:
-				// $node.get().oncontextmenu =  _private.handleOnInput;
+				// $node.get().oncontextmenu =  .handleOnInput;
 			},
 
 			/**

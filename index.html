@@ -310,6 +310,41 @@ $('form.example3 input[name=confirm]').on("input", function () {
             </article>
         </footer>
     <script type="text/javascript">
+
+
+			// Custom input type validator example
+			$.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function() {
+					var pattern = /^[0-9]{6,8}$/;
+					return pattern.test( $( this ).val() );
+			});
+
+
+			// Custom color input handler example
+			$.setCustomInputTypeValidator( "Color", "Please enter a valid hex color", function() {
+					var pattern = /^#(?:[0-9a-f]{3}){1,2}$/i;
+					return pattern.test( $( this ).val() );
+			}, function( control ) {
+					control.isShimRequired() &&
+					control.degrade().boundingBox.ColorPicker({
+							onChange: function( hsb, hex, rgb ) {
+									control.boundingBox.val( "#" + hex );
+							},
+							onBeforeShow: function () {
+									$( this ).ColorPickerSetColor( this.value );
+							}
+					});
+			});
+
+			// Custom date input handler example
+			$.setCustomInputTypeValidator( "Date", "Please enter a valid date", function() {
+					var pattern = /^\d{2,4}(-|\/)\d{2,4}(-|\/)\d{2,4}$/i;
+					return !$( this ).val() || pattern.test( $( this ).val() );
+			}, function( control ) {
+					control.isShimRequired() &&
+					control.degrade().boundingBox.datepicker();
+			});
+
+
 			$( document ).ready(function(){
         // Using setCustomValidity example
         // The setCustomValidity(message), when invoked, must set the custom
@@ -322,39 +357,6 @@ $('form.example3 input[name=confirm]').on("input", function () {
             // input is valid -- reset the error message
             input.setCustomValidity( "" );
           }
-        });
-
-
-        // Custom input type validator example
-        $.setCustomInputTypeValidator( "Zip", "Please enter a valid zip code", function() {
-            var pattern = /^[0-9]{6,8}$/;
-            return pattern.test( $( this ).val() );
-        });
-
-
-        // Custom color input handler example
-        $.setCustomInputTypeValidator( "Color", "Please enter a valid hex color", function() {
-            var pattern = /^#(?:[0-9a-f]{3}){1,2}$/i;
-            return pattern.test( $( this ).val() );
-        }, function( control ) {
-            control.isShimRequired() &&
-            control.degrade().boundingBox.ColorPicker({
-                onChange: function( hsb, hex, rgb ) {
-                    control.boundingBox.val( "#" + hex );
-                },
-                onBeforeShow: function () {
-                    $( this ).ColorPickerSetColor( this.value );
-                }
-            });
-        });
-
-        // Custom date input handler example
-        $.setCustomInputTypeValidator( "Date", "Please enter a valid date", function() {
-            var pattern = /^\d{2,4}(-|\/)\d{2,4}(-|\/)\d{2,4}$/i;
-            return !$( this ).val() || pattern.test( $( this ).val() );
-        }, function( control ) {
-            control.isShimRequired() &&
-            control.degrade().boundingBox.datepicker();
         });
 
 				// Must bound only after DOM is ready, otherwise it will be invoked before H5FormShim's submit handler
