@@ -75,7 +75,7 @@ define(function( require ) {
 				this.boundingBox
 					.removeClass( "valid invalid" )
 					.addClass( state );
-				this.shim.shimConstraintValidationApi( this.validator.validity , this.validator.validationMessage );
+				this.shim.shimConstraintValidationApi( this.validator.validity, this.validator.validationMessage );
 				return state;
 			},
 			/**

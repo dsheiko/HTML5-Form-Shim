@@ -61,7 +61,7 @@
 						log.push( "onSubmit:triggered" );
 					}
 				}
-			}).onReady(function(){
+			}).onReady(function( page ){
 
 				log = $debugLog.html().split( "\n" );
 
@@ -209,6 +209,8 @@
 									var pattern = /^[0-9]{6,8}$/g;
 									return pattern.test( $( this ).val() );
 							});
+							// Re-init form with CustomInputTypeValidator
+							page.getForm( 0 ).init();
 
 							validator = hfFormShim.getInput( $input ).validator;
 							validator.reset();
@@ -231,6 +233,8 @@
 								 isValid || control.throwValidationException( "typeMismatch", "Please enter a valid zip code" );
 								 return isValid;
 						 });
+						 // Re-init form with CustomInputTypeValidator
+							page.getForm( 0 ).init();
 
 							validator = hfFormShim.getInput( $input ).validator;
 							validator.reset();
@@ -251,6 +255,8 @@
 									var pattern = /^[0-9]{6,8}$/g;
 									return pattern.test( $( this ).val() );
 							});
+							// Re-init form with CustomInputTypeValidator
+							page.getForm( 0 ).init();
 							validator = hfFormShim.getInput( $input ).validator;
 							validator.reset();
 							validator.validateValue();

@@ -255,7 +255,8 @@ define(function( require ) {
 							if ( this.inputs.hasOwnProperty( i ) ) {
 								input = this.inputs[ i ];
 								// Reset input validity info before validation
-								input.validator.resetValidationState();
+								input.validator.reset();
+								input.validator.showValidationMessage();
 								if ( input.shim.isShimRequired() ) {
 										input.validator.checkValidity();
 										input.updateState();

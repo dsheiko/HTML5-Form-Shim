@@ -194,7 +194,7 @@ define(function( require ) {
 
 		util.onDomReady(function(){
 			page.syncUi();
-			onReadyCb();
+			onReadyCb( page );
 		});
 
 		if ( typeof $ === "undefined" ) {
@@ -474,6 +474,15 @@ define(function( require ) {
 			add: function( form ) {
 				forms.push( form );
 			},
+			/*
+			 * Access processed form by index in hfFormShim#onReady
+			 * @param {number} inx
+			 * @returns {module:App/Form}
+			 */
+			getForm: function( inx ) {
+				return forms[ inx ] || null;
+			},
+
 			/**
 			* Look up for AbstractInput instance for the given HTMLElement
 			* @public
@@ -762,7 +771,8 @@ define(function( require ) {
 							if ( this.inputs.hasOwnProperty( i ) ) {
 								input = this.inputs[ i ];
 								// Reset input validity info before validation
-								input.validator.resetValidationState();
+								input.validator.reset();
+								input.validator.showValidationMessage();
 								if ( input.shim.isShimRequired() ) {
 										input.validator.checkValidity();
 										input.updateState();
@@ -902,9 +912,9 @@ define(function() {
 					return;
 				}
 				if ( node ) {
-					console.log( "%s: %s on %o", module, action, node );
+					console && console.log( "%s: %s on %o", module, action, node );
 				} else {
-					console.log( "%s: %s", module, action );
+					console && console.log( "%s: %s", module, action );
 				}
 			},
 
@@ -1250,11 +1260,11 @@ define(function( require ) {
 				}
 				deferredRequest = window.setTimeout( function(){
 					// Reset input validity info before validation
-					input.validator.resetValidationState();
+					input.validator.reset();
+					input.validator.showValidationMessage();
 					deferredRequest = null;
 					that.invokeOnInputCallBack();
-					// This causes self calling by some reason
-					// $node.trigger( "input", that );
+					$node.trigger( "input", that );
 					input.validator.checkValidityWithoutRequired();
 					input.updateState();
 					// Show validation message online if msg node is bound
@@ -1517,7 +1527,7 @@ define(function( require ) {
 				this.lookForValidationMessageNode();
 			},
 			/**
-			 * Reset vaidator
+			 * Reset input validation state to defaults
 			 */
 			reset: function() {
 				this.validationMessage = "";
@@ -1528,15 +1538,22 @@ define(function( require ) {
 			* @access public
 			*/
 			checkValidity: function() {
-				if ( !isFormCustomValidation ) {
-					return;
-				}
 				this.validateRequired();
 				if ( this.isRequired() || !this.isEmpty() ) {
 					this.checkValidityWithoutRequired();
 				}
 				this.validateValue && this.validateValue();
 				return this.validity.valid;
+			},
+			/**
+			* We don't validate required on input, otherwise
+			* it would report error as soon as one focuses on the field
+			* @access protected
+			*/
+			checkValidityWithoutRequired: function() {
+				this.validateValue && this.validateValue();
+				this.validateByPattern();
+				this.validateCustomValidity();
 			},
 			/**
 			* Fallback for isRequired validator
@@ -1574,16 +1591,7 @@ define(function( require ) {
 			isRequired: function() {
 				return $node.hasClass( "required" );
 			},
-			/**
-			* We don't validate required on input, otherwise
-			* it would report error as soon as one focuses on the field
-			* @access protected
-			*/
-			checkValidityWithoutRequired: function() {
-				this.validateValue && this.validateValue();
-				this.validateByPattern();
-				this.validateCustomValidity();
-			},
+
 			/**
 			* If validation message node assigned for this input found
 			* It will be used instead of tooltip
@@ -1601,20 +1609,12 @@ define(function( require ) {
 			*/
 			showValidationMessage: function() {
 				var msg = this.validationMessage;
+				if ( !this.validationMessageNode ) {
+					return;
+				}
 				this.validationMessageNode.html( msg );
 				this.validationMessageNode[ msg ? "show" : "hide" ]();
 			},
-
-			/**
-			* Reset to default input validation state
-			* @access public
-			*/
-			resetValidationState: function(){
-				this.validity = new ValidityDefaultStateVo();
-				this.validationMessage = "";
-				this.validationMessageNode && this.showValidationMessage();
-			},
-
 
 			/**
 			* Is used on form submittion to check if

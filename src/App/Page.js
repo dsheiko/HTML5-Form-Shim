@@ -70,6 +70,15 @@ define(function( require ) {
 			add: function( form ) {
 				forms.push( form );
 			},
+			/*
+			 * Access processed form by index in hfFormShim#onReady
+			 * @param {number} inx
+			 * @returns {module:App/Form}
+			 */
+			getForm: function( inx ) {
+				return forms[ inx ] || null;
+			},
+
 			/**
 			* Look up for AbstractInput instance for the given HTMLElement
 			* @public

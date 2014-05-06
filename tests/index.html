@@ -11,7 +11,10 @@
 <body>
 	<div style="visibility: hidden">
 			<form id="test1">
-					<input id="email" type="email" />
+					<fieldset>
+						<input id="email" type="email" />
+						<div data-validation-message-for="email"></div>
+					</fieldset>
 					<input id="number" type="number" min="1" max="10" />
 					<input id="url" type="url" />
 					<input id="tel" type="tel" pattern="^\+(?:[0-9] ?){6,14}[0-9]$" />
@@ -51,8 +54,13 @@
 
 
 			hfFormShim.init({
-				boundingBox: $( "#test1" )
-			}).onReady(function(){
+				boundingBox: $( "#test1" ),
+				handlers: { // OPTIONAL
+					onSubmit: function(){
+						log.push( "onSubmit:triggered" );
+					}
+				}
+			}).onReady(function( page ){
 
 				log = $debugLog.html().split( "\n" );
 
@@ -200,6 +208,8 @@
 									var pattern = /^[0-9]{6,8}$/g;
 									return pattern.test( $( this ).val() );
 							});
+							// Re-init form with CustomInputTypeValidator
+							page.getForm( 0 ).init();
 
 							validator = hfFormShim.getInput( $input ).validator;
 							validator.reset();
@@ -223,6 +233,9 @@
 								 return isValid;
 						 });
 
+						 // Re-init form with CustomInputTypeValidator
+							page.getForm( 0 ).init();
+
 							validator = hfFormShim.getInput( $input ).validator;
 							validator.reset();
 							validator.validateValue();
@@ -242,6 +255,8 @@
 									var pattern = /^[0-9]{6,8}$/g;
 									return pattern.test( $( this ).val() );
 							});
+							// Re-init form with CustomInputTypeValidator
+							page.getForm( 0 ).init();
 							validator = hfFormShim.getInput( $input ).validator;
 							validator.reset();
 							validator.validateValue();
@@ -262,7 +277,22 @@
 							validator.validateCustomValidity();
 							assert.ok( !validator.validity.valid );
 							assert.strictEqual( validator.validationMessage, msg );
+							$input.setCustomValidity();
 						});
+
+
+				module( "Test inline validation messages" );
+					test( "On input on a defined node validation message shows up", function() {
+						var $input = $( "#email" ),
+								input = hfFormShim.getInput( $input ),
+								validator = input.validator,
+								$errMsg = $( "div[data-validation-message-for='email']" );
+						$input.val( "invalid-email" );
+						validator.reset();
+						validator.validateValue();
+						validator.showValidationMessage();
+						ok( $errMsg.html() === "Please enter a valid email address" );
+					});
 
 
 			});

@@ -28,7 +28,7 @@ define(function( require ) {
 	 * @param {Node} node
 	 * @param {Boolean} isFormCustomValidation
 	 */
-	return function( $node, isFormCustomValidation ){
+	return function( $node ){
 		/** @type {module:App/jQuery} */
 		var $ = require( "jquery" ),
 				/**
@@ -78,7 +78,7 @@ define(function( require ) {
 				this.lookForValidationMessageNode();
 			},
 			/**
-			 * Reset vaidator
+			 * Reset input validation state to defaults
 			 */
 			reset: function() {
 				this.validationMessage = "";
@@ -89,15 +89,22 @@ define(function( require ) {
 			* @access public
 			*/
 			checkValidity: function() {
-				if ( !isFormCustomValidation ) {
-					return;
-				}
 				this.validateRequired();
 				if ( this.isRequired() || !this.isEmpty() ) {
 					this.checkValidityWithoutRequired();
 				}
 				this.validateValue && this.validateValue();
 				return this.validity.valid;
+			},
+			/**
+			* We don't validate required on input, otherwise
+			* it would report error as soon as one focuses on the field
+			* @access protected
+			*/
+			checkValidityWithoutRequired: function() {
+				this.validateValue && this.validateValue();
+				this.validateByPattern();
+				this.validateCustomValidity();
 			},
 			/**
 			* Fallback for isRequired validator
@@ -135,16 +142,7 @@ define(function( require ) {
 			isRequired: function() {
 				return $node.hasClass( "required" );
 			},
-			/**
-			* We don't validate required on input, otherwise
-			* it would report error as soon as one focuses on the field
-			* @access protected
-			*/
-			checkValidityWithoutRequired: function() {
-				this.validateValue && this.validateValue();
-				this.validateByPattern();
-				this.validateCustomValidity();
-			},
+
 			/**
 			* If validation message node assigned for this input found
 			* It will be used instead of tooltip
@@ -162,20 +160,12 @@ define(function( require ) {
 			*/
 			showValidationMessage: function() {
 				var msg = this.validationMessage;
+				if ( !this.validationMessageNode ) {
+					return;
+				}
 				this.validationMessageNode.html( msg );
 				this.validationMessageNode[ msg ? "show" : "hide" ]();
 			},
-
-			/**
-			* Reset to default input validation state
-			* @access public
-			*/
-			resetValidationState: function(){
-				this.validity = new ValidityDefaultStateVo();
-				this.validationMessage = "";
-				this.validationMessageNode && this.showValidationMessage();
-			},
-
 
 			/**
 			* Is used on form submittion to check if

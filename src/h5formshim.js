@@ -120,7 +120,7 @@ define(function( require ) {
 
 		util.onDomReady(function(){
 			page.syncUi();
-			onReadyCb();
+			onReadyCb( page );
 		});
 
 		if ( typeof $ === "undefined" ) {

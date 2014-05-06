@@ -194,11 +194,11 @@ define(function( require ) {
 				}
 				deferredRequest = window.setTimeout( function(){
 					// Reset input validity info before validation
-					input.validator.resetValidationState();
+					input.validator.reset();
+					input.validator.showValidationMessage();
 					deferredRequest = null;
 					that.invokeOnInputCallBack();
-					// This causes self calling by some reason
-					// $node.trigger( "input", that );
+					$node.trigger( "input", that );
 					input.validator.checkValidityWithoutRequired();
 					input.updateState();
 					// Show validation message online if msg node is bound

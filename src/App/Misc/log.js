@@ -52,9 +52,9 @@ define(function() {
 					return;
 				}
 				if ( node ) {
-					console.log( "%s: %s on %o", module, action, node );
+					console && console.log( "%s: %s on %o", module, action, node );
 				} else {
-					console.log( "%s: %s", module, action );
+					console && console.log( "%s: %s", module, action );
 				}
 			},
 
