@@ -279,7 +279,8 @@ Shim is required when the input type isn't supported or custom validation reques
 #### .shim.degrade(): void
 Set attribute to text to avoid collisions with browser embedded input handlers
 
-![Class Diagramm](https://github.com/dsheiko/HTML5-Form-Shim/raw/master/doc/class-diagram.png)
+## Class Digram
+![Class Diagram](https://github.com/dsheiko/HTML5-Form-Shim/raw/master/doc/class-diagram.png)
 
 ## Building
 
