@@ -52,16 +52,16 @@ define(function( require ) {
 				* @returns {boolean}
 				*/
 				this.validator.validateValue = function() {
-					util.isNumber( parseInt( this.boundingBox.val(), 10 ) ) ||
+					util.isNumber( parseFloat( this.boundingBox.val(), 10 ) ) ||
 						this.throwValidationException( "typeMismatch",
 							"Please enter a valid number" );
 					if ( this.boundingBox.attr( "min" ) &&
-							parseInt( this.boundingBox.val(), 10 ) < parseInt( this.boundingBox.attr( "min" ), 10 ) ) {
+							parseFloat( this.boundingBox.val(), 10 ) < parseFloat( this.boundingBox.attr( "min" ), 10 ) ) {
 						this.throwValidationException( "rangeUnderflow" );
 					}
 
 					if ( this.boundingBox.attr( "max" ) &&
-						parseInt( this.boundingBox.val(), 10 ) > parseInt( this.boundingBox.attr( "max" ), 10 ) ) {
+						parseFloat( this.boundingBox.val(), 10 ) > parseFloat( this.boundingBox.attr( "max" ), 10 ) ) {
 						this.throwValidationException( "rangeOverflow" );
 					}
 				};
