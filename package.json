@@ -1,43 +1,42 @@
 {
-    "name": "html5formshim",
-    "title": "HTML5 Form Shim",
-    "description": "jQuery plugin, which brings HTML5 Form support on legacy browsers and allow to extend and customize it on new ones",
-    "version": "2.3.1",
-    "author": {
-        "name": "Dmitry Sheiko",
-        "url": "http://dsheiko.com"
-    },
-    "homepage": "http://demo.dsheiko.com/html5formshim/",
-    "main": "./build/jquery.html5form",
-    "devDependencies": {
-        "grunt": "~0.4.1",
-        "grunt-contrib-jshint": "~0.4.3",
-        "grunt-contrib-qunit": "~0.2.1",
-        "qunitjs": "1.x",
-        "grunt-contrib-jscs": ">= 0.1.2",
-        "grunt-contrib-cjsc": "*",
-				"grunt-contrib-clean": "*",
-				"grunt-contrib-watch": "~0.4.4"
-    },
-    "scripts": {
-        "test": "grunt test"
-    },
-    "licenses": [
+  "name": "html5formshim",
+  "title": "HTML5 Form Shim",
+  "description": "jQuery plugin, which brings HTML5 Form support on legacy browsers and allow to extend and customize it on new ones",
+  "version": "2.3.1",
+  "author": {
+    "name": "Dmitry Sheiko",
+    "url": "http://dsheiko.com"
+  },
+  "homepage": "http://demo.dsheiko.com/html5formshim/",
+  "main": "./build/jquery.html5form",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cjsc": ">=1.0.0",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-contrib-qunit": "~0.2.1",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-jscodesniffer": ">=0.1.10",
+    "qunitjs": "1.x"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "licenses": [
     {
-        "type": "MIT",
-        "url": "http://github.com/fawek/codepainter/raw/master/LICENSE"
+      "type": "MIT",
+      "url": "http://github.com/fawek/codepainter/raw/master/LICENSE"
     }
-    ],
-    "maintainers": [
+  ],
+  "maintainers": [
     {
-        "name": "Dmitry Sheiko",
-        "email": "me@dsheiko.com",
-        "web": "http://dsheiko.com"
+      "name": "Dmitry Sheiko",
+      "email": "me@dsheiko.com",
+      "web": "http://dsheiko.com"
     }
-    ],
-    "repository":
-    {
-        "type": "git",
-        "url": "https://dsheiko@github.com/dsheiko/HTML5-Form-Shim.git"
-    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://dsheiko@github.com/dsheiko/HTML5-Form-Shim.git"
+  }
 }

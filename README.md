@@ -304,4 +304,4 @@ grunt test
 
 As you commit TravisCI reports you if the build isn't successful
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/c47f48053eefc566f7a4790801f3ff6e "githalytics.com")](http://githalytics.com/dsheiko/HTML5-Form-Shim)
+[![Analytics](https://ga-beacon.appspot.com/UA-1150677-13/dsheiko/HTML5-Form-Shim)](http://githalytics.com/dsheiko/HTML5-Form-Shim)
