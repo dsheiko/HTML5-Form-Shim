@@ -1,5 +1,8 @@
 HTML5 Form Shim
 ==============
+
+[![NPM](https://nodei.co/npm/html5formshim.png)](https://nodei.co/npm/html5formshim/)
+
 [![Build Status](https://travis-ci.org/dsheiko/HTML5-Form-Shim.png)](https://travis-ci.org/dsheiko/HTML5-Form-Shim)
 
 * The project site: https://github.com/dsheiko/HTML5-Form-Shim
@@ -21,6 +24,11 @@ To enable the shim you simply mark forms with `data-enable-shim="true"` while ru
 </form>
 ```
 
+You can also install the library by using Bower:
+
+```bash
+bower install html5formshim --save
+```
 
 See details on how to use HTML5 form at http://www.html5rocks.com/en/tutorials/forms/html5forms/
 

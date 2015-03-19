@@ -1,11 +1,11 @@
 /*jshint node:true */
 module.exports = function(grunt) {
 
-  grunt.loadNpmTasks("grunt-contrib-jshint");
-	grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks("grunt-contrib-jscs");
-  grunt.loadNpmTasks( "grunt-contrib-cjsc" );
-  grunt.loadNpmTasks("grunt-contrib-qunit");
+  grunt.loadNpmTasks( "grunt-contrib-jshint" );
+	grunt.loadNpmTasks( "grunt-contrib-clean" );
+  grunt.loadNpmTasks( "grunt-jscodesniffer" );
+  grunt.loadNpmTasks( "grunt-cjsc" );
+  grunt.loadNpmTasks( "grunt-contrib-qunit" );
 	grunt.loadNpmTasks( "grunt-contrib-watch" );
 
 

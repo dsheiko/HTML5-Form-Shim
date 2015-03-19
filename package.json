@@ -11,12 +11,12 @@
   "main": "./build/jquery.html5form",
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-cjsc": ">=1.0.0",
+    "grunt-cjsc": "^1.0.2",
     "grunt-contrib-clean": "*",
     "grunt-contrib-jshint": "~0.4.3",
     "grunt-contrib-qunit": "~0.2.1",
     "grunt-contrib-watch": "~0.4.4",
-    "grunt-jscodesniffer": ">=0.1.10",
+    "grunt-jscodesniffer": "^0.1.10",
     "qunitjs": "1.x"
   },
   "scripts": {
