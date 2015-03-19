@@ -4,7 +4,7 @@ HTML5 Form Shim
 [![NPM](https://nodei.co/npm/html5formshim.png)](https://nodei.co/npm/html5formshim/)
 
 [![Build Status](https://travis-ci.org/dsheiko/HTML5-Form-Shim.png)](https://travis-ci.org/dsheiko/HTML5-Form-Shim)
-[![Analytics](https://ga-beacon.appspot.com/UA-1150677-13/dsheiko/HTML5-Form-Shim)](http://githalytics.com/dsheiko/HTML5-Form-Shim)
+[![Bower version](https://badge.fury.io/bo/html5formshim.svg)](http://badge.fury.io/bo/html5formshim)
 
 * The project site: https://github.com/dsheiko/HTML5-Form-Shim
 * The demo site: http://dsheiko.github.io/HTML5-Form-Shim/
@@ -313,3 +313,4 @@ grunt test
 
 As you commit TravisCI reports you if the build isn't successful
 
+[![Analytics](https://ga-beacon.appspot.com/UA-1150677-13/dsheiko/HTML5-Form-Shim)](http://githalytics.com/dsheiko/HTML5-Form-Shim)
