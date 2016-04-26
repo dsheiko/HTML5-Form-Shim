@@ -314,3 +314,6 @@ grunt test
 As you commit TravisCI reports you if the build isn't successful
 
 [![Analytics](https://ga-beacon.appspot.com/UA-1150677-13/dsheiko/HTML5-Form-Shim)](http://githalytics.com/dsheiko/HTML5-Form-Shim)
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/dsheiko/html5-form-shim/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
