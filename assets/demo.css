@@ -617,3 +617,14 @@ button.btn {
     -moz-outline : 0;
     border : 0
 }
+
+/* Hide on xs screens, show on md and larger */
+.jumbotron {
+  display: block;
+}
+
+@media (max-width: 767.98px) {
+  .jumbotron {
+    display: none;
+  }
+}
